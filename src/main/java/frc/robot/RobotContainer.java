@@ -4,10 +4,15 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
@@ -29,7 +34,7 @@ public class RobotContainer {
         return instance;
     }
 
-    // private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser;
     
     // Instance of the controllers used to drive the robot
     private CommandXboxController driverController;
@@ -45,11 +50,11 @@ public class RobotContainer {
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
-        // this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-        // Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        //     .add("Auto Chooser", autoChooser)
-        //     .withWidget(BuiltInWidgets.kComboBoxChooser)
-        //     .withSize(4, 3);
+        this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
+        Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+            .add("Auto Chooser", autoChooser)
+            .withWidget(BuiltInWidgets.kComboBoxChooser)
+            .withSize(4, 3);
     }
 
     /**
@@ -101,6 +106,6 @@ public class RobotContainer {
      * @return The command to run in autonomous.
      */
     public Command getAutonomousCommand() {
-        return Commands.none(); // this.autoChooser.getSelected();
+        return this.autoChooser.getSelected();
     }
 }
