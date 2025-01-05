@@ -4,8 +4,6 @@
 
 package frc.robot.constants;
 
-import edu.wpi.first.math.util.Units;
-
 /**
  * Constants used throughout the code specifically related to subsystems or unchangeable aspects of the bot.
  * @implSpec BACK of the bot is 180 degrees / the battery, use that as a reference for directions.

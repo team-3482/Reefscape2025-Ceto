@@ -4,15 +4,6 @@
 
 package frc.robot.constants;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
-
-import edu.wpi.first.math.util.Units;
-import frc.robot.constants.PhysicalConstants.ShooterConstants;
-
 /**
  * Constants used throughout the code that are not categorized in other constants files.
  */
