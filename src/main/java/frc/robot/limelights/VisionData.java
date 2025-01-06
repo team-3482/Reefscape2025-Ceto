@@ -1,9 +1,6 @@
 package frc.robot.limelights;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
-import frc.robot.constants.LimelightConstants.VisionConstants;
-import frc.robot.swerve.CommandSwerveDrivetrain;
+import frc.robot.constants.LimelightConstants;
 
 /**
  * <p>A helper class used for storing MegaTag and MegaTag2 data from a Limelight
@@ -43,15 +40,15 @@ public class VisionData {
      * @apiNote Dist <= 3 meters ; Angular <= 160 deg/s ; Translational <= 2 m/s.
      */
     private boolean canTrustRotation() {
-        ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
-        double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
+        // ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
+        // double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
         return this.MegaTag2 != null
             // && this.MegaTag2.tagCount > 0
             && this.MegaTag2.avgTagDist <= 3 // 3 Meters
             && this.MegaTag != null
-            && this.MegaTag.tagCount >= 2
-            && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
-            && velocity <= 2;
+            && this.MegaTag.tagCount >= 2;
+            // && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
+            // && velocity <= 2;
     }
 
     /**
@@ -59,14 +56,15 @@ public class VisionData {
      * @return Whether position data can be trusted.
      */
     private boolean canTrustPosition() {
-        ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
-        double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
+        // ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
+        // double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
         return this.MegaTag2 != null
             && this.MegaTag2.tagCount > 0
-            && this.MegaTag2.avgTagDist < VisionConstants.TRUST_TAG_DISTANCE
+            && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE;
             // && CommandSwerveDrivetrain.getInstance().getState().Pose.getTranslation()
                 // .getDistance(this.MegaTag2.pose.getTranslation()) <= 1.5
-            && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
-            && velocity <= 2;
+            // && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
+            // && velocity <= 2;
     }
 }
+// TODO DRIVETRAIN : See if high movement really messes up LL data and needs to be filtered out or not.

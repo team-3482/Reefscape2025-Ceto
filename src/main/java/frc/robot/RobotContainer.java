@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.limelights.VisionSubsystem;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
@@ -57,12 +58,12 @@ public class RobotContainer {
      * This is based on the {@code Phoenix6 Swerve Example} that can be found on GitHub.
      */
     private void configureDrivetrain() {
-        // TODO : Once the drivetrain chassis is built.
+        // TODO DRIVETRAIN
     }
 
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
-        
+        VisionSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
