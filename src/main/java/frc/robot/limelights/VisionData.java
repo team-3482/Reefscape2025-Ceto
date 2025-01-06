@@ -13,7 +13,10 @@ public class VisionData {
     public final LimelightHelpers.PoseEstimate MegaTag2;
     public final boolean canTrustRotation;
     public final boolean canTrustPosition;
-    /** Flag set after optimization to avoid re-optimizing data twice in a row on low FPS. */
+    /**
+     * Flag set after optimization to avoid re-optimizing data twice in a row on low FPS.
+     * This also avoids using the data twice, because optimized data has been processed.
+     */
     public boolean optimized;
 
     /**
@@ -34,37 +37,23 @@ public class VisionData {
     }
 
     /**
-     * Checks if the average tag distance and bot's rotational and translational velocities
-     * are reasonable for trusting rotation data, as well as MegaTag having >= 2 targets.
+     * Checks if the average tag distance is within 3 meters and MegaTag has >= 2 targets.
      * @return Whether rotation data can be trusted.
-     * @apiNote Dist <= 3 meters ; Angular <= 160 deg/s ; Translational <= 2 m/s.
      */
     private boolean canTrustRotation() {
-        // ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
-        // double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
         return this.MegaTag2 != null
-            // && this.MegaTag2.tagCount > 0
             && this.MegaTag2.avgTagDist <= 3 // 3 Meters
             && this.MegaTag != null
             && this.MegaTag.tagCount >= 2;
-            // && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
-            // && velocity <= 2;
     }
 
     /**
-     * Checks if the MegaTag2 Pose2d is within an acceptable distance of the bot's position.
+     * Checks if the average tag distance is within {@link LimelightConstants#TRUST_TAG_DISTANCE} of the robot.
      * @return Whether position data can be trusted.
      */
     private boolean canTrustPosition() {
-        // ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
-        // double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
         return this.MegaTag2 != null
             && this.MegaTag2.tagCount > 0
             && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE;
-            // && CommandSwerveDrivetrain.getInstance().getState().Pose.getTranslation()
-                // .getDistance(this.MegaTag2.pose.getTranslation()) <= 1.5
-            // && Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond) <= 160
-            // && velocity <= 2;
     }
 }
-// TODO DRIVETRAIN : See if high movement really messes up LL data and needs to be filtered out or not.

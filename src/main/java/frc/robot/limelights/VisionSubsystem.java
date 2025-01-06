@@ -194,21 +194,6 @@ public class VisionSubsystem extends SubsystemBase {
             this.lastHeartbeatRightLL = heartbeatRightLL == -1 ? this.lastHeartbeatRightLL : heartbeatRightLL;
         }
 
-        // TODO DRIVETRAIN : See if high movement really messes up LL data and needs to be filtered out or not.
-        // ChassisSpeeds robotChassisSpeeds = CommandSwerveDrivetrain.getInstance().getCurrentRobotChassisSpeeds();
-        // double velocity = Math.sqrt(Math.pow(robotChassisSpeeds.vxMetersPerSecond, 2) + Math.pow(robotChassisSpeeds.vyMetersPerSecond, 2));
-        // // If the bot's angular velocity is greater than 270 deg/s, translational velocity is over 2 m/s,
-        // // or for both LLs the data is outdated or has no data, ignore vision updates.
-        // if (Math.abs(Units.radiansToDegrees(robotChassisSpeeds.omegaRadiansPerSecond)) > 270
-        //     || Math.abs(velocity) > 2 // m/s
-        //     || (this.lastHeartbeatRightLL != heartbeatRightLL && this.lastHeartbeatLeftLL != heartbeatLeftLL)
-        //     || ((frontLLDataMT2 == null || frontLLDataMT2.tagCount == 0) && (backLLDataMT2 == null || backLLDataMT2.tagCount == 0))
-        //     || ((frontLLDataMT2 == null || frontLLDataMT2.avgTagDist > LimelightConstants.TRUST_TAG_DISTANCE)
-        //         && (backLLDataMT2 == null || backLLDataMT2.avgTagDist > LimelightConstants.TRUST_TAG_DISTANCE))
-        // ) {
-        //     return new VisionData[0];
-        // }
-
         // There is no point actually filtering out nonexistent or null data,
         // because the code in the notifierLoop method will call VisionData's
         // methods to see if the data is valid for position/rotation. 
