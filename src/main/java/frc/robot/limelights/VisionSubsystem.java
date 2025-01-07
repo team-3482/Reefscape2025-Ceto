@@ -7,7 +7,6 @@ package frc.robot.limelights;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -79,19 +78,20 @@ public class VisionSubsystem extends SubsystemBase {
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.LEFT_LL, leftLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withPosition(0, 0);
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.RIGHT_LL, rightLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withPosition(6, 0);
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
         }
+
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.LEFT_LL, LimelightConstants.ALL_TAG_IDS);
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.RIGHT_LL, LimelightConstants.ALL_TAG_IDS);
 
         this.lastDataTimer = new Timer();
         this.lastDataTimer.start();
 
-        this.notifier = new Notifier(() -> notifierLoop());
+        this.notifier = new Notifier(this::notifierLoop);
         this.notifier.setName("Vision Notifier");
         // Assuming ~32 fps / 31.25 ms cycle.
         this.notifier.startPeriodic(0.03125);
@@ -112,7 +112,7 @@ public class VisionSubsystem extends SubsystemBase {
         /* 
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
-        for (VisionData data : fetchLimelightData()) { // This method gets data in about 4 to 8 ms.
+        for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
             if (data.canTrustRotation) {
                 // Only trust rotational data when adding this pose.
@@ -187,13 +187,13 @@ public class VisionSubsystem extends SubsystemBase {
 
         // There is no point actually filtering out nonexistent or null data,
         // because the code in the notifierLoop method will call VisionData's
-        // methods to see if the data is valid for position/rotation. 
+        // methods to see if the data is valid for position/rotation.
         return this.limelightDatas;
     }
 
     private VisionData getVisionData(String limelight) {
-        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
         LimelightHelpers.PoseEstimate mt = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
 
         double leftX = -1;
         double rightX = -1;
@@ -219,7 +219,7 @@ public class VisionSubsystem extends SubsystemBase {
                     if (xy.get(0).asDouble(-1) > rightX || rightX == -1) {
                         rightX = xy.get(0).asDouble(-1);
                     }
-                    
+                    // Y-origin is at the top for some reason
                     if (800 - xy.get(1).asDouble(-1) < bottomY || bottomY == -1) {
                         bottomY = 800 - xy.get(1).asDouble(-1);
                     }
@@ -229,7 +229,11 @@ public class VisionSubsystem extends SubsystemBase {
                 }
             }
         }
-        catch (JsonProcessingException | NullPointerException e) {
+        // JsonProcessingException is thrown by readTree()
+        // NullPointerException is thrown when the LL hasn't yet populated the "json" NT entry
+        // This catches all errors because if this breaks it will crash robot code
+        // This fallback uses only the primary target's corners instead of all target corners
+        catch (Exception e) {
             DoubleArrayEntry cornersEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelight, "tcornxy");
             double[] corners = cornersEntry.get(new double[0]);
 
@@ -257,21 +261,18 @@ public class VisionSubsystem extends SubsystemBase {
      * A helper method used to optimize Limelight FPS.
      */
     private void optimizeLimelights() {
-        // if (this.limelightDatas[0] != null && this.limelightDatas[0].MegaTag2 != null) System.out.println(this.limelightDatas[0].MegaTag2.tagCount);
-        byte index = 0; // Used only for setting the optimized flag, so that this can be a for-each loop.
         for (VisionData limelightData : this.limelightDatas) {
             if (limelightData == null || limelightData.optimized) {
-                return;
+                continue;
             }
             else {
-                this.limelightDatas[index++].optimized = true;
+                limelightData.optimized = true;
             }
             
             // Avoid unnecessary optimization for a LL with no tags and
             // reset any optimization that might have been done previously.
             if (limelightData.MegaTag2 == null || limelightData.MegaTag2.tagCount == 0) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
-                LimelightHelpers.SetFiducialIDFiltersOverride(limelightData.name, LimelightConstants.ALL_TAG_IDS);
                 LimelightHelpers.setCropWindow(
                     limelightData.name,
                     -LimelightConstants.DEFAULT_CROP_SIZE,
@@ -286,10 +287,10 @@ public class VisionSubsystem extends SubsystemBase {
             if (limelightData.MegaTag2.avgTagDist < 1.5) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 2) {
+            else if (limelightData.MegaTag2.avgTagDist < 2.5) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 2.5) {
+            else if (limelightData.MegaTag2.avgTagDist < 3.5) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
             }
             else {
@@ -312,10 +313,10 @@ public class VisionSubsystem extends SubsystemBase {
                 double bottomCrop = limelightData.bottomY / (LimelightConstants.RES_Y / 2) - 1;
                 double topCrop = limelightData.topY / (LimelightConstants.RES_Y / 2) - 1;
 
-                leftCrop -= 0.2;
-                rightCrop += 0.2;
-                bottomCrop -= 0.2;
-                topCrop += 0.2;
+                leftCrop -= LimelightConstants.BOUNDING_BOX;
+                rightCrop += LimelightConstants.BOUNDING_BOX;
+                bottomCrop -= LimelightConstants.BOUNDING_BOX;
+                topCrop += LimelightConstants.BOUNDING_BOX;
                 
                 for (LimelightHelpers.RawFiducial fiducial : limelightData.MegaTag2.rawFiducials) {
                     if (17 <= fiducial.id || (6 <= fiducial.id && fiducial.id <= 11)) {
