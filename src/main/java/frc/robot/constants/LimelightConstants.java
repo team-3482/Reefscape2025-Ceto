@@ -4,7 +4,7 @@
 
 package frc.robot.constants;
 
-import frc.robot.limelights.VisionSubsystem;
+import frc.robot.vision.VisionSubsystem;
 
 /** Constants for Limelight-related code. */
 public final class LimelightConstants {
