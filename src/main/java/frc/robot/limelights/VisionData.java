@@ -13,6 +13,13 @@ public class VisionData {
     public final LimelightHelpers.PoseEstimate MegaTag2;
     public final boolean canTrustRotation;
     public final boolean canTrustPosition;
+
+    // Used for smart cropping optimization
+    public final double leftX;
+    public final double rightX;
+    public final double bottomY;
+    public final double topY;
+
     /**
      * Flag set after optimization to avoid re-optimizing data twice in a row on low FPS.
      * This also avoids using the data twice, because optimized data has been processed.
@@ -24,12 +31,24 @@ public class VisionData {
      * @param name - The name of this Limelight.
      * @param MegaTag data.
      * @param MegaTag2 data.
+     * @param leftX - Leftmost corner pixel x-coordinate.
+     * @param rightY - Rightmost corner pixel x-coordinate.
+     * @param bottomY - Bottommost corner pixel y-coordinate.
+     * @param topY - Topmost corner pixel y-coordinate.
      */
-    public VisionData(String name, LimelightHelpers.PoseEstimate MegaTag, LimelightHelpers.PoseEstimate MegaTag2) {
+    public VisionData(
+        String name, LimelightHelpers.PoseEstimate MegaTag, LimelightHelpers.PoseEstimate MegaTag2,
+        double leftX, double rightX, double bottomY, double topY
+    ) {
         this.name = name;
         this.MegaTag = MegaTag;
         this.MegaTag2 = MegaTag2;
         this.optimized = false;
+
+        this.leftX = leftX;
+        this.rightX = rightX;
+        this.bottomY = bottomY;
+        this.topY = topY;
 
         // These are calculated when the measurement is created
         this.canTrustRotation = canTrustRotation();

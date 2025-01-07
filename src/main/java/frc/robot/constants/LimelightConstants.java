@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import java.util.function.Function;
+
 import frc.robot.limelights.VisionSubsystem;
 
 /** Constants for Limelight-related code. */
@@ -23,25 +25,26 @@ public final class LimelightConstants {
     public static final int[] ALL_TAG_IDS = new int[]{
         1, 2, 3, 4, 5,
         6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20,
-        21, 22
+        11, 12, 13, 14,
+        15, 16, 17, 18,
+        19, 20, 21, 22
     };
     
     /** Crop window size when no tags are in view (used for smart cropping) */
     public static final double DEFAULT_CROP_SIZE = 0.85;
 
+    /** Function that takes the distance to the tag in meters and produces a multiplier for the cropping.  */
+    public static final Function<Double, Double> DIST_TO_CROP_INCREASE =
+        (Double distance) -> 1.5;
+
     /**
      * The time limit for considering data to be recent in seconds.
      * @see {@link VisionSubsystem#recentVisionData()}
      */
-    public static final double RECENT_DATA_CUTOFF = 3.5;
+    public static final double RECENT_DATA_CUTOFF = 3.0;
     
-    // See https://docs.limelightvision.io/docs/docs-limelight/hardware-comparison.
-    /** Horizontal FOV of LL3G in degrees (used for smart cropping) */
-    public static final double FOV_X = 82;
-    /** Vertical FOV of LL3G in degrees (used for smart cropping) */
-    public static final double FOV_Y = 56.2;
-    /** FOV area of the LL3g in degrees squared (used for smart cropping) */
-    public static final double FOV_AREA = FOV_X * FOV_Y;
+    /** Horizontal resolution of limelight in pixels. */
+    public static final double RES_X = 1280;
+    /** Vertical resolution of limelight in pixels. */
+    public static final double RES_Y = 800;
 }
