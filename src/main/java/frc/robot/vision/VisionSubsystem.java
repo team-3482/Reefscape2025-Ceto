@@ -93,8 +93,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         this.notifier = new Notifier(this::notifierLoop);
         this.notifier.setName("Vision Notifier");
-        // Assuming ~32 fps / 31.25 ms cycle.
-        this.notifier.startPeriodic(0.03125);
+        // The processing takes no longer than a regular robot cycle.
+        // FPS will never be high enough to take advantage of every cycle,
+        // but it's fine because repeat frames are entirely ignored (see heartbeats).
+        this.notifier.startPeriodic(0.02);
     }
 
     // This method will be called once per scheduler run
@@ -275,22 +277,22 @@ public class VisionSubsystem extends SubsystemBase {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
                 LimelightHelpers.setCropWindow(
                     limelightData.name,
-                    -LimelightConstants.DEFAULT_CROP_SIZE,
-                    LimelightConstants.DEFAULT_CROP_SIZE,
-                    -LimelightConstants.DEFAULT_CROP_SIZE,
-                    LimelightConstants.DEFAULT_CROP_SIZE
+                    LimelightConstants.DEFAULT_CROPS[0],
+                    LimelightConstants.DEFAULT_CROPS[1],
+                    LimelightConstants.DEFAULT_CROPS[2],
+                    LimelightConstants.DEFAULT_CROPS[3]
                 );
                 continue;
             }
 
             // Downscaling closer to tags.
-            if (limelightData.MegaTag2.avgTagDist < 1.5) {
+            if (limelightData.MegaTag2.avgTagDist < 1) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 2.5) {
+            else if (limelightData.MegaTag2.avgTagDist < 2) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 3.5) {
+            else if (limelightData.MegaTag2.avgTagDist < 3) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
             }
             else {
@@ -301,10 +303,10 @@ public class VisionSubsystem extends SubsystemBase {
             if (limelightData.leftX == -1) {
                 LimelightHelpers.setCropWindow(
                     limelightData.name,
-                    -LimelightConstants.DEFAULT_CROP_SIZE,
-                    LimelightConstants.DEFAULT_CROP_SIZE,
-                    -LimelightConstants.DEFAULT_CROP_SIZE,
-                    LimelightConstants.DEFAULT_CROP_SIZE
+                    LimelightConstants.DEFAULT_CROPS[0],
+                    LimelightConstants.DEFAULT_CROPS[1],
+                    LimelightConstants.DEFAULT_CROPS[2],
+                    LimelightConstants.DEFAULT_CROPS[3]
                 );
             }
             else {
@@ -312,19 +314,23 @@ public class VisionSubsystem extends SubsystemBase {
                 double rightCrop = limelightData.rightX / (LimelightConstants.RES_X / 2) - 1;
                 double bottomCrop = limelightData.bottomY / (LimelightConstants.RES_Y / 2) - 1;
                 double topCrop = limelightData.topY / (LimelightConstants.RES_Y / 2) - 1;
-
-                leftCrop -= LimelightConstants.BOUNDING_BOX;
-                rightCrop += LimelightConstants.BOUNDING_BOX;
+                
+                if (
+                    limelightData.MegaTag2.tagCount == 1
+                    && (17 <= limelightData.MegaTag2.rawFiducials[0].id
+                        || (6 <= limelightData.MegaTag2.rawFiducials[0].id
+                            && limelightData.MegaTag2.rawFiducials[0].id <= 11))
+                ) {
+                    leftCrop -= 1.4 / limelightData.MegaTag2.avgTagDist;
+                    rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
+                }
+                else {
+                    leftCrop -= LimelightConstants.BOUNDING_BOX;
+                    rightCrop += LimelightConstants.BOUNDING_BOX;
+                }
+                
                 bottomCrop -= LimelightConstants.BOUNDING_BOX;
                 topCrop += LimelightConstants.BOUNDING_BOX;
-                
-                for (LimelightHelpers.RawFiducial fiducial : limelightData.MegaTag2.rawFiducials) {
-                    if (17 <= fiducial.id || (6 <= fiducial.id && fiducial.id <= 11)) {
-                        leftCrop = Math.min(leftCrop, -LimelightConstants.DEFAULT_CROP_SIZE);
-                        rightCrop = Math.max(rightCrop, LimelightConstants.DEFAULT_CROP_SIZE);
-                        break;
-                    }
-                }
 
                 LimelightHelpers.setCropWindow(limelightData.name, leftCrop, rightCrop, bottomCrop, topCrop);
             }

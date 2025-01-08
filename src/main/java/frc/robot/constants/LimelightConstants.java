@@ -34,8 +34,12 @@ public final class LimelightConstants {
         19, 20, 21, 22
     };
     
-    /** Crop window size when no tags are in view (used for smart cropping) */
-    public static final double DEFAULT_CROP_SIZE = 0.85;
+    /**
+     * Crop window size when no tags are in view (used for smart cropping).
+     * {@code xMin, xMax, yMin, yMax}.
+     */
+    public static final double[] DEFAULT_CROPS = new double[]{ -0.75, 0.75, -0.85, 0.85 }; // Doubles FPS from 4 to 10 in busy scenes.
+    // TODO : Whatever will be reasonable for each LL's position.
     
     /** Horizontal resolution of limelight in pixels. */
     public static final double RES_X = 1280;
