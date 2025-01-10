@@ -64,11 +64,18 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        
+        // TODO ROBOT BUILT : Find Max Module Speed
+        // CommandSwerveDrivetrain.getInstance().setControl(
+        //     new SwerveRequest.SysIdSwerveTranslation().withVolts(12)
+        // );
     }
 
     @Override
     public void testPeriodic() {}
 
     @Override
-    public void testExit() {}
+    public void testExit() {
+        // CommandSwerveDrivetrain.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
+    }
 }
