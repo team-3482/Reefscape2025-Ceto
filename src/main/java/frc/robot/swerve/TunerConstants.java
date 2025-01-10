@@ -68,8 +68,11 @@ public class TunerConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
+    // TODO FULL ROBOT : Find MaxSpeed
     public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.73);
-    public static final AngularVelocity kAngularSpeedMax = RadiansPerSecond.of(2 * Math.PI);
+    public static final LinearVelocity kTopSpeed = MetersPerSecond.of(4);
+    public static final AngularVelocity kAngularSpeedNormal = RadiansPerSecond.of(2 * Math.PI);
+    public static final AngularVelocity kAngularSpeedFast = RadiansPerSecond.of(3 * Math.PI);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
