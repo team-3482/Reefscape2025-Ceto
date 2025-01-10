@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.swerve.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
     private Command auton;
@@ -64,11 +67,18 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        
+        // TODO ROBOT BUILT : Find Max Module Speed
+        // CommandSwerveDrivetrain.getInstance().setControl(
+        //     new SwerveRequest.SysIdSwerveTranslation().withVolts(12)
+        // );
     }
 
     @Override
     public void testPeriodic() {}
 
     @Override
-    public void testExit() {}
+    public void testExit() {
+        // CommandSwerveDrivetrain.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
+    }
 }
