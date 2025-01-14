@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.swerve.CommandSwerveDrivetrain;
 
 public class Robot extends TimedRobot {
     private Command auton;
@@ -74,8 +71,14 @@ public class Robot extends TimedRobot {
         // );
     }
 
+    // private double topSpeed;
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+        // ChassisSpeeds speeds = CommandSwerveDrivetrain.getInstance().getState().Speeds;
+        // double speed = Math.sqrt(Math.pow(speeds.vyMetersPerSecond, 2) + Math.pow(speeds.vxMetersPerSecond, 2));
+        // topSpeed = Math.max(this.topSpeed, speed);
+        // System.out.println(this.topSpeed);
+    }
 
     @Override
     public void testExit() {
