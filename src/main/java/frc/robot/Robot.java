@@ -90,11 +90,24 @@ public class Robot extends LoggedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        
+        // TODO ROBOT BUILT : Find Max Module Speed
+        // CommandSwerveDrivetrain.getInstance().setControl(
+        //     new SwerveRequest.SysIdSwerveTranslation().withVolts(12)
+        // );
+    }
+
+    // private double topSpeed;
+    @Override
+    public void testPeriodic() {
+        // ChassisSpeeds speeds = CommandSwerveDrivetrain.getInstance().getState().Speeds;
+        // double speed = Math.sqrt(Math.pow(speeds.vyMetersPerSecond, 2) + Math.pow(speeds.vxMetersPerSecond, 2));
+        // topSpeed = Math.max(this.topSpeed, speed);
+        // System.out.println(this.topSpeed);
     }
 
     @Override
-    public void testPeriodic() {}
-
-    @Override
-    public void testExit() {}
+    public void testExit() {
+        // CommandSwerveDrivetrain.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
+    }
 }
