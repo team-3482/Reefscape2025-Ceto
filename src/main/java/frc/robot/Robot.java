@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -39,8 +40,6 @@ public class Robot extends LoggedRobot {
             Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
             Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
         }
-
-        Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
     }
 
     @Override
@@ -49,13 +48,19 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void disabledInit() {}
-
-    @Override
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledInit() {
+        SignalLogger.stop();
+        Logger.end();
+    }
+
+    @Override
+    public void disabledExit() {
+        SignalLogger.start();
+        Logger.start();
+    }
 
     @Override
     public void autonomousInit() {
