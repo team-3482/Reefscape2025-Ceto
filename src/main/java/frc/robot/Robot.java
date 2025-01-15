@@ -66,6 +66,9 @@ public class Robot extends LoggedRobot {
     @Override
     public void autonomousInit() {
         this.auton = RobotContainer.getInstance().getAutonomousCommand();
+
+        Logger.recordOutput("Auton/AutonCommand", auton.getName());
+
         if (this.auton != null) {
             this.auton.schedule();
         }
