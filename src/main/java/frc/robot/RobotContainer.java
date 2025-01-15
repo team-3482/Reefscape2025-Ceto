@@ -62,8 +62,7 @@ public class RobotContainer {
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
         Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
             .add("Auto Chooser", autoChooser)
-            .withWidget(BuiltInWidgets.kComboBoxChooser)
-            .withSize(4, 3);
+            .withWidget(BuiltInWidgets.kComboBoxChooser);
     }
 
     /**
@@ -79,7 +78,7 @@ public class RobotContainer {
 
         final SwerveRequest.FieldCentric fieldCentricDrive_withDeadband = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * ControllerConstants.DEADBAND)
-            .withRotationalDeadband(NormalAngularSpeed * ControllerConstants.DEADBAND) // Add a deadband
+            .withRotationalDeadband(FastAngularSpeed * ControllerConstants.DEADBAND) // Add a deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         
         final Telemetry logger = new Telemetry(MaxSpeed);
@@ -203,7 +202,7 @@ public class RobotContainer {
 
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
-        this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+        // this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
     }
 
     /**

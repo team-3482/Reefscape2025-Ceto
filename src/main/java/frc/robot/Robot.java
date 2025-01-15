@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends LoggedRobot {
     private Command auton;
 
+    @SuppressWarnings({ "resource", "unused" })
     public Robot() {
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
@@ -32,7 +33,7 @@ public class Robot extends LoggedRobot {
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY == 1 ? "true" : "false");            
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "true" : "false");            
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         } else {
             setUseTiming(false); // Run as fast as possible
