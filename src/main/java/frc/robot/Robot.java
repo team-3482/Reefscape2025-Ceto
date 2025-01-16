@@ -41,6 +41,8 @@ public class Robot extends LoggedRobot {
             Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
             Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
         }
+
+        Logger.start();
     }
 
     @Override
@@ -52,16 +54,10 @@ public class Robot extends LoggedRobot {
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledInit() {
-        SignalLogger.stop();
-        Logger.end();
-    }
+    public void disabledInit() {}
 
     @Override
-    public void disabledExit() {
-        SignalLogger.start();
-        Logger.start();
-    }
+    public void disabledExit() {}
 
     @Override
     public void autonomousInit() {
