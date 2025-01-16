@@ -1,30 +1,17 @@
 package frc.robot.led;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.io.Console;
-import java.util.Vector;
-
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.LEDConstants;
+import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile LEDSubsystem instance;
     private static Object mutex = new Object();
-
-    private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
-    private AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
-    private Color blinkColor = Color.kBlack;
-    private boolean shouldBlink = false;
-    private Timer blinkTimer = new Timer();
 
     public static LEDSubsystem getInstance() {
         LEDSubsystem result = instance;
@@ -40,8 +27,14 @@ public class LEDSubsystem extends SubsystemBase {
         return instance;
     }
 
+    private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
+    private AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
 
-    /** Creates a new ExampleSubsystem. */
+    private Color blinkColor = Color.kBlack;
+    private boolean shouldBlink = false;
+    private Timer blinkTimer = new Timer();
+
+    /** Creates a new LEDSubsystem. */
     private LEDSubsystem() {
         super("LEDSubsystem");
 
@@ -56,31 +49,36 @@ public class LEDSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
 
-        if (this.shouldBlink) {
-            boolean timeElapsed = this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN);
+        if (this.shouldBlink && this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN)) {
+            Color color = this.getColor(); // store so we dont unnesscary call it
 
-            if (timeElapsed) {
-                Color color = this.getColor(); // store so we dont unnesscary call it
-
-                if (color.equals(Color.kBlack)) {
-                    this.setColor(this.blinkColor, true);
-                }
-                else {
-                    this.setColor(Color.kBlack, true);
-                }
-                
-                this.blinkTimer.reset();
+            if (color.equals(Color.kBlack)) {
+                this.setColor(this.blinkColor, true);
             }
+            else {
+                this.setColor(Color.kBlack, true);
+            }
+            
+            this.blinkTimer.reset();
         }
     }
 
-    /** Gets color of the current strip. Note, this uses the FIRST index of the led strip (first note),
-     *  yet this should not be a problem because we always set the whole strip to a solid color */
+    /** 
+     * Gets color of the current strip.
+     * @return The color of the strip.
+     * @apiNote This uses the FIRST index of the led strip (first note),
+     * but this should not be a problem because we always set the whole strip to a solid color.
+     */
     public Color getColor() {
         return this.LEDStripBuffer.getLED(0);
     }
 
-    /** Forcefully sets the current color of led strip. this is private for the blink functionality */
+    /**
+     * Forcefully sets the current color of led strip.
+     * @param newColor - The color to set.
+     * @param forBlink - Whether the color should be blinked.
+     * @see {@link LEDSubsystem#periodic()}
+     */
     private void setColor(Color newColor, boolean forBlink) {
         this.shouldBlink = forBlink;
 
@@ -89,18 +87,19 @@ public class LEDSubsystem extends SubsystemBase {
         this.LEDStrip.setData(this.LEDStripBuffer);
     }
 
-    /** Forcefully sets the current color of led strip */
+    /**
+     * Forcefully sets the current color of led strip
+     * @param newColor - The color to set.
+     */
     public void setColor(Color newColor) {
-        this.shouldBlink = false;
-
-        LEDPattern color = LEDPattern.solid(newColor);
-        color.applyTo(this.LEDStripBuffer);
-        this.LEDStrip.setData(this.LEDStripBuffer);
+        setColor(newColor, false);
     }
 
-    /** Blinks the color every LEDConsants.BLINK_COOLDOWN */
+    /**
+     * Blinks the color every LEDConsants.BLINK_COOLDOWN
+     * @param newColor - The color to blink.
+     */
     public void blinkColor(Color newColor) {
-        this.blinkColor = newColor;
-        this.shouldBlink = true;
+        setColor(newColor, true);
     }
 }
