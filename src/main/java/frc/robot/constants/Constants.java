@@ -29,4 +29,14 @@ public final class Constants {
         /** Speed multiplier when using fine-control movement. */
         public static final double FINE_CONTROL_MULT = 0.15;
     }
+
+    /** Constants for the LED strips */
+    public static final class LEDConstants {
+        /** Id for PWM */
+        public static final int PWM_HEADER = 0;
+        /** i think this is how many leds nodes there are in a strip; not sure at all tho */
+        public static final int LED_LENGTH = 70;
+        /** Blink cooldown; time that the selected blink color will stay for, then blink */
+        public static final double BLINK_COOLDOWN = 0.2;
+    }
 }
