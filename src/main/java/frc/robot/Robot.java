@@ -5,6 +5,10 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import java.io.File;
+import java.util.Date;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -29,17 +33,24 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("ProjectName", "Reefscape2025"); // Set a metadata value
 
         if (isReal()) {
-            Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+            String now = new Date().toString().replace(":", ".");
+            String path = "/U/logs/" + now;
+
+            System.out.println(new File(path).mkdirs());
+
+            System.out.println(path);
+
+            SignalLogger.setPath(path);
+            
+            Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "true" : "false");            
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-        } else {
-            setUseTiming(false); // Run as fast as possible
-            String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-            Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+
+            Logger.start();
         }
     }
 
@@ -54,13 +65,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         SignalLogger.stop();
-        Logger.end();
     }
 
     @Override
     public void disabledExit() {
         SignalLogger.start();
-        Logger.start();
     }
 
     @Override
