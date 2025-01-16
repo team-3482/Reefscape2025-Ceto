@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.littletonrobotics.junction.Logger;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -106,6 +107,11 @@ public class Telemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleStates", m_moduleStatesArray);
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
+
+        Logger.recordOutput("DriveState/Pose", m_poseArray);
+        Logger.recordOutput("DriveState/ModuleStates", m_moduleStatesArray);
+        Logger.recordOutput("DriveState/ModuleTargets", m_moduleTargetsArray);
+        Logger.recordOutput("DriveState/OdometryPeriod", state.OdometryPeriod);
 
         /* Telemeterize the pose to a Field2d */
         fieldTypePub.set("Field2d");
