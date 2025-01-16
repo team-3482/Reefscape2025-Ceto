@@ -16,4 +16,14 @@ public final class PhysicalConstants {
         /** Name of the CTRE CAN bus (configured on the CANivore). */
         public static final String CTRE_CAN_BUS = "ctre";
     }
+
+    /** Constants for the LED strips */
+    public static final class LEDConstants {
+        /** Id for PWM */
+        public static final int PWM_HEADER = 0;
+        /** This is how many nodes are on the strip */
+        public static final int LED_LENGTH = 70;
+        /** Blink cooldown; time that the selected blink color will stay for, then blink */
+        public static final double BLINK_COOLDOWN = 0.2;
+    }
 }
