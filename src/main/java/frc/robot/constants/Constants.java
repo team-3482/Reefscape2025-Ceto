@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.wpilibj.util.Color;
+
 /**
  * Constants used throughout the code that are not categorized in other constants files.
  */
@@ -28,5 +30,16 @@ public final class Constants {
         public static final boolean DPAD_DRIVE_INPUT = true;
         /** Speed multiplier when using fine-control movement. */
         public static final double FINE_CONTROL_MULT = 0.15;
+    }
+
+    /** Colors used with the LEDSubsystem, these are named for readability. */
+    public static final class NamedColors {
+        public static final Color OFF = Color.kBlack;
+        public static final Color ERROR = Color.kRed;
+        public static final Color WARNING = Color.kOrange;
+        public static final Color OK = Color.kGreen;
+        
+        public static final Color CORAL = Color.kWhite;
+        public static final Color ALGAE = Color.kBlue;
     }
 }

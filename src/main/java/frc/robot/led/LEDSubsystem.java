@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.NamedColors;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -52,11 +53,11 @@ public class LEDSubsystem extends SubsystemBase {
         if (this.shouldBlink && this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN)) {
             Color color = this.getColor(); // store so we dont unnesscary call it
 
-            if (color.equals(Color.kBlack)) {
+            if (color.equals(NamedColors.OFF)) {
                 this.setColor(this.blinkColor, true);
             }
             else {
-                this.setColor(Color.kBlack, true);
+                this.setColor(NamedColors.OFF, true);
             }
             
             this.blinkTimer.reset();
@@ -100,6 +101,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The color to blink.
      */
     public void blinkColor(Color newColor) {
+        this.blinkColor = newColor;
         setColor(newColor, true);
     }
 }
