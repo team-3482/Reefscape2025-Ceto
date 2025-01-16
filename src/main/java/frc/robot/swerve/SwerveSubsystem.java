@@ -29,19 +29,19 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
  * Subsystem so it can easily be used in command-based projects.
  */
-public class CommandSwerveDrivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
+public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
     // Thread-safe singleton design pattern.
-    private static volatile CommandSwerveDrivetrain instance;
+    private static volatile SwerveSubsystem instance;
     private static Object mutex = new Object();
 
-    public static CommandSwerveDrivetrain getInstance() {
-        CommandSwerveDrivetrain result = instance;
+    public static SwerveSubsystem getInstance() {
+        SwerveSubsystem result = instance;
         
         if (result == null) {
             synchronized (mutex) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new CommandSwerveDrivetrain();
+                    instance = result = new SwerveSubsystem();
                 }
             }
         }
@@ -139,7 +139,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain<TalonFX, TalonFX, 
      * the devices themselves. If they need the devices, they can access them through
      * getters in the classes.
      */
-    private CommandSwerveDrivetrain() {
+    private SwerveSubsystem() {
         super(
             TalonFX::new,
             TalonFX::new,

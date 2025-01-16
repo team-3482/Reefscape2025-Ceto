@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.swerve.CommandSwerveDrivetrain;
+import frc.robot.swerve.SwerveSubsystem;
 
 /**
  * A class that holds static methods that group Commands under specific names.
@@ -39,7 +39,7 @@ public final class CommandGenerators {
      * @return The command.
      */
     public static Command SetForwardDirectionCommand() {
-        return Commands.runOnce(() -> CommandSwerveDrivetrain.getInstance().seedFieldCentric());
+        return Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric());
     }
 
     /**
@@ -51,7 +51,7 @@ public final class CommandGenerators {
         return Commands.runOnce(() -> {
             // TODO VISION
             Pose2d estimatedPose = new Pose2d(); //VisionSubsystem.getInstance().getEstimatedPose();
-            CommandSwerveDrivetrain.getInstance().resetPose(estimatedPose);
+            SwerveSubsystem.getInstance().resetPose(estimatedPose);
         });
     }
 

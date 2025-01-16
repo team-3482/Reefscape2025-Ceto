@@ -190,5 +190,5 @@ public class TunerConstants {
         );
     
     // createSwerveDrivetrain() and TunerSwerveDrivetrain both replaced with a
-    // single constructor in CommandSwerveDrivetrain and a getInstance()
+    // single constructor in SwerveSubsystem and a getInstance()
 }

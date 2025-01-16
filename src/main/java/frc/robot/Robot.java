@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "true" : "false");            
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "true" : "false");
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
             Logger.start();
@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().cancelAll();
         
         // TODO ROBOT BUILT : Find Max Module Speed
-        // CommandSwerveDrivetrain.getInstance().setControl(
+        // SwerveSubsystem.getInstance().setControl(
         //     new SwerveRequest.SysIdSwerveTranslation().withVolts(12)
         // );
     }
@@ -116,7 +116,7 @@ public class Robot extends LoggedRobot {
     // private double topSpeed;
     @Override
     public void testPeriodic() {
-        // ChassisSpeeds speeds = CommandSwerveDrivetrain.getInstance().getState().Speeds;
+        // ChassisSpeeds speeds = SwerveSubsystem.getInstance().getState().Speeds;
         // double speed = Math.sqrt(Math.pow(speeds.vyMetersPerSecond, 2) + Math.pow(speeds.vxMetersPerSecond, 2));
         // topSpeed = Math.max(this.topSpeed, speed);
         // System.out.println(this.topSpeed);
@@ -124,6 +124,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void testExit() {
-        // CommandSwerveDrivetrain.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
+        // SwerveSubsystem.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
     }
 }

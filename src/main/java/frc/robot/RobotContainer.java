@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.swerve.CommandSwerveDrivetrain;
+import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.Telemetry;
 import frc.robot.swerve.TunerConstants;
 import frc.robot.utilities.CommandGenerators;
@@ -70,7 +70,7 @@ public class RobotContainer {
      * This is based on the {@code Phoenix6 Swerve Example} that can be found on GitHub.
      */
     private void configureDrivetrain() {
-        final CommandSwerveDrivetrain Drivetrain = CommandSwerveDrivetrain.getInstance();
+        final SwerveSubsystem Drivetrain = SwerveSubsystem.getInstance();
         final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(Units.MetersPerSecond);
         final double LesserMaxSpeed = TunerConstants.kTopSpeed.in(Units.MetersPerSecond);
         final double NormalAngularSpeed = TunerConstants.kAngularSpeedNormal.in(Units.RadiansPerSecond);
@@ -115,9 +115,7 @@ public class RobotContainer {
         );
         
         // Useful for testing
-        // final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
         // final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-        // this.driverController.x().whileTrue(drivetrain.applyRequest(() -> brake));
         // this.driverController.y().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(
         //     new Rotation2d(
         //         Math.abs(driverController.getLeftY()) >= 0.25 ? -driverController.getLeftY() : 0,
@@ -198,6 +196,9 @@ public class RobotContainer {
          *     Right Trigger > 0.5 : Use FINE CONTROL for joysticks
          *                           Use ROBOT CENTRIC for POV 
          */
+        this.driverController.x().whileTrue(
+            SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+        );
     }
 
     /** Configures the button bindings of the operator controller. */
