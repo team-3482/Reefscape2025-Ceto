@@ -21,15 +21,15 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import org.littletonrobotics.junction.Logger;
 
-public class Telemetry {
+public class SwerveTelemetry {
     private final double MaxSpeed;
 
     /**
-     * Construct a telemetry object, with the specified max speed of the robot
+     * Construct a swerve telemetry object, with the specified max speed of the robot
      * 
      * @param maxSpeed Maximum speed in meters per second
      */
-    public Telemetry(double maxSpeed) {
+    public SwerveTelemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
     }
 

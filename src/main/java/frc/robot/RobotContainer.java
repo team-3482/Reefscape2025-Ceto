@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.swerve.Telemetry;
+import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
 import frc.robot.utilities.CommandGenerators;
 
@@ -81,7 +81,7 @@ public class RobotContainer {
             .withRotationalDeadband(FastAngularSpeed * ControllerConstants.DEADBAND) // Add a deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         
-        final Telemetry logger = new Telemetry(MaxSpeed);
+        final SwerveTelemetry logger = new SwerveTelemetry(MaxSpeed);
 
         Trigger leftTrigger = this.driverController.leftTrigger();
         Trigger rightTrigger = this.driverController.rightTrigger();
