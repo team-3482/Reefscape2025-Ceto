@@ -4,15 +4,9 @@
 
 package frc.robot.constants;
 
-import com.ctre.phoenix6.controls.VoltageOut;
-
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.Voltage;
-
 /**
  * Constants used throughout the code specifically related to subsystems or unchangeable aspects of the bot.
- * @implSpec BACK of the bot is 180 degrees / the battery, use that as a reference for directions.
+ * @implSpec FRONT of the bot is where the elevator is, use that as a reference for directions.
  */
 public final class PhysicalConstants {
     /**
@@ -33,14 +27,15 @@ public final class PhysicalConstants {
         public static final double BLINK_COOLDOWN = 0.2;
     }
 
-    public static final class OuttakeConstants
-    {
+    public static final class OuttakeConstants {
         public static final int RIGHT_MOTOR_ID = 0;
         public static final int LEFT_MOTOR_ID = 1;
+
         public static final int FRONT_LASER_ID = 2;
+
         public static final double INTAKE_VOLTAGE = 3;
         public static final double OUTTAKE_VOLTAGE = 12;
+
         public static final double MECHANISM_RATIO = 1;
     }
-    }
-
+}
