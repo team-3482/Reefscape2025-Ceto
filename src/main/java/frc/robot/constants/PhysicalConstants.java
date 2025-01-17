@@ -26,4 +26,33 @@ public final class PhysicalConstants {
         /** Blink cooldown; time that the selected blink color will stay for, then blink */
         public static final double BLINK_COOLDOWN = 0.2;
     }
+
+    /** Constants for the Elevator system */
+    public static final class ElevatorConstants {
+        public static final double ROTOR_TO_MECHANISM_RATIO = 1/25;
+        public static final double CRUISE_SPEED = 0;
+        public static final double ACCELERATION = 0;
+
+        public static final int LEFT_MOTOR_ID = 0;
+        public static final int RIGHT_MOTOR_ID = 0;
+
+        public static final double LOWER_HARD_STOP = 0;
+        public static final double UPPER_HEIGHT_LIMIT = 0;
+
+        public static final int BOTTOM_LIMIT_ID = 0;
+        public static final int UPPER_LIMIT_ID = 0;
+
+        public static  final double ROLLER_DIAMETER = 0;
+
+        /** Gains used for MotionMagic slot 0. */
+        public static final class ElevatorSlot0Gains {
+            public static final double kG = 0;
+            public static final double kS = 0;
+            public static final double kV = 0;
+            public static final double kA = 0;
+            public static final double kP = 0;
+            public static final double kI = 0;
+            public static final double kD = 0;
+        }
+    }
 }
