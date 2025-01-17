@@ -6,24 +6,18 @@ package frc.robot.outtake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.PhysicalConstants;
+import frc.robot.constants.PhysicalConstants.OuttakeConstants;;
 
 public class OuttakeSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile OuttakeSubsystem instance;
     private static Object mutex = new Object();
-
-    private TalonFX rightMotor = new TalonFX(PhysicalConstants.OuttakeConstants.RIGHT_MOTOR_ID);
-    private TalonFX leftMotor = new TalonFX(PhysicalConstants.OuttakeConstants.LEFT_MOTOR_ID); 
-    private DigitalInput frontLaser = new DigitalInput(PhysicalConstants.OuttakeConstants.FRONT_LASER_ID);
-
 
     public static OuttakeSubsystem getInstance() {
         OuttakeSubsystem result = instance;
@@ -39,12 +33,16 @@ public class OuttakeSubsystem extends SubsystemBase {
         return instance;
     }
 
-    /** Creates a new ExampleSubsystem. */
+    private TalonFX rightMotor = new TalonFX(OuttakeConstants.RIGHT_MOTOR_ID);
+    private TalonFX leftMotor = new TalonFX(OuttakeConstants.LEFT_MOTOR_ID); 
+    private DigitalInput frontLaser = new DigitalInput(OuttakeConstants.FRONT_LASER_ID);
+
+    /** Creates a new OuttakeSubsystem. */
     private OuttakeSubsystem() {
         super("OuttakeSubsystem");
         configureMotors();
 
-        Follower follow = new Follower(PhysicalConstants.OuttakeConstants.RIGHT_MOTOR_ID, true);
+        Follower follow = new Follower(OuttakeConstants.RIGHT_MOTOR_ID, true);
         this.leftMotor.setControl(follow);
     }
 
@@ -53,48 +51,46 @@ public class OuttakeSubsystem extends SubsystemBase {
     public void periodic() {}
 
     /**
-     * Sets the voltage to v
-     * @param v, the voltage you want to set
+     * Configures the gear ratio of the motors to our gear ratio
      */
-    private void voltage(double v)
-    {
-        rightMotor.setVoltage(v);
+    private void configureMotors() {
+        TalonFXConfiguration configuration = new TalonFXConfiguration();
+        configuration.Feedback.SensorToMechanismRatio = OuttakeConstants.MECHANISM_RATIO;
+
+        configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        this.rightMotor.getConfigurator().apply(configuration);
+        configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        this.leftMotor.getConfigurator().apply(configuration);
     }
+
     /**
      * Sets the speed of the motors to the intake speed
      */
-    public void intake()
-    {
-        rightMotor.setVoltage(PhysicalConstants.OuttakeConstants.INTAKE_VOLTAGE);
+    public void intake() {
+        rightMotor.setVoltage(OuttakeConstants.INTAKE_VOLTAGE);
     }
+
     /**
      * Sets the speed of the motors to the outtake speed
      */
-    public void outtake()
-    {
-        rightMotor.setVoltage(PhysicalConstants.OuttakeConstants.OUTTAKE_VOLTAGE);
+    public void outtake() {
+        rightMotor.setVoltage(OuttakeConstants.OUTTAKE_VOLTAGE);
     }
-    /**
-     * Configures the gear ratio of the motors to our gear ratio
-     */
-    public void configureMotors()
-    {
-        TalonFXConfiguration configuration = new TalonFXConfiguration();
-        configuration.Feedback.SensorToMechanismRatio = PhysicalConstants.OuttakeConstants.MECHANISM_RATIO;
-    }
+
     /**
      * Stops the motors immediately
      */
-    public void stop()
-    {
+    public void stop() {
         rightMotor.setVoltage(0);
     }
+
     /**
      * Returns a boolean value of whether there is a coral in the shooter
      * @return whether it has coral
      */
-    public boolean hasCoral()
-    {
+    public boolean hasCoral() {
         return !frontLaser.get();
     }
 }
