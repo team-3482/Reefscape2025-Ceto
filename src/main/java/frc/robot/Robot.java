@@ -31,8 +31,7 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("ProjectName", "Reefscape2025"); // Set a metadata value
 
         if (isReal()) {
-            String now = new Date().toString().replace(":", ".");
-            String path = "/U/logs/" + now;
+            String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
 
             System.out.println(new File(path).mkdirs());
 
