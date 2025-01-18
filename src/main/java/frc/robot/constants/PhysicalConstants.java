@@ -29,20 +29,33 @@ public final class PhysicalConstants {
 
     /** Constants for the Elevator system */
     public static final class ElevatorConstants {
+        /** Motion Magic Config */
         public static final double ROTOR_TO_MECHANISM_RATIO = 1/25;
         public static final double CRUISE_SPEED = 0;
         public static final double ACCELERATION = 0;
 
+        /** Tolerance used for elevator command
+         * @see {@link ElevatorCommand}
+         */
+        public static final double HEIGHT_TOLERANCE = 0;
+
+        /** Motor Ids */
         public static final int LEFT_MOTOR_ID = 0;
         public static final int RIGHT_MOTOR_ID = 0;
 
+        /** Physical Constants (Hard stops) */
         public static final double LOWER_HARD_STOP = 0;
         public static final double UPPER_HEIGHT_LIMIT = 0;
 
+        /** Limits (ids) with CRTE DIOs */
         public static final int BOTTOM_LIMIT_ID = 0;
         public static final int UPPER_LIMIT_ID = 0;
 
-        public static  final double ROLLER_DIAMETER = 0;
+        /** 
+         * The dimater of the bar that rolls to control the elevator
+         * @implSpec this is in meters and is very important to calculate the position of the elevator
+         */
+        public static final double ROLLER_DIAMETER = 0;
 
         /** Gains used for MotionMagic slot 0. */
         public static final class ElevatorSlot0Gains {

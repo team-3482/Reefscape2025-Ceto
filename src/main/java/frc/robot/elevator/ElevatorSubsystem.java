@@ -58,13 +58,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput upperLimit = new DigitalInput(ElevatorConstants.UPPER_LIMIT_ID);
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
+    /** Shuffleboard stuff */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("PivotSubsystem", BuiltInLayouts.kGrid)
+        .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
         .withSize(4, 1)
         .withPosition(0, 0);
     private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
-        .add("Pivot Position Dial", 0)
+        .add("Elevator Position Dial", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("Min", 0, "Max", 1, "Show Value", true))
         .withSize(4, 1)
@@ -80,12 +81,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.rightMotor.getPosition().setUpdateFrequency(50);
 
         this.leftMotor.setControl(new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true));
-        final DutyCycleOut m_dutyCycle = new DutyCycleOut(0.0);
-
-        // this.notifier = new Notifier(() -> notifierLoop());
-        // this.notifier.setName("Pivot Notifier");
-        // // 100 ms cycle, or 5 robot cycles.
-        // this.notifier.startPeriodic(0.1);
     }
 
     @Override
@@ -96,13 +91,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.shuffleboardPositionNumberBar.setDouble(position);
     }
 
-    // private synchronized void notifierLoop() {
-    //     double position = getPosition();
-    //     this.shuffleboardPositionNumberBar.setDouble(position);
-    // }
-
+    /**
+     * A helper method that configures MotionMagic on both motors.
+     */
     private void configureMotors() {
-         TalonFXConfiguration configuration = new TalonFXConfiguration();
+        TalonFXConfiguration configuration = new TalonFXConfiguration();
 
         FeedbackConfigs feedbackConfigs = configuration.Feedback;
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -138,16 +131,29 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.leftMotor.getConfigurator().apply(configuration);
     }
 
+    /**
+     * Sets the position of the elevator in meters.
+     * @param position - The position in meters.
+     */
     public void setPosition(double position) {
         position = this.metersToRotation(position);
         this.rightMotor.setPosition(position);
         this.leftMotor.setPosition(position);
     }
 
+    /**
+     * Gets the position of the elevator in meters.
+     * @return The position in meters.
+     */
     public double getPosition() {
         return this.rotationsToMeters(this.rightMotor.getPosition().getValueAsDouble());
     }
 
+    /**
+     * Sets the position of the elevator in meters using Motion Magic.
+     * @param position - The position in meters.
+     * @param clamp - Whether to clamp the position to the hard stops.
+     */
     public void motionMagicPosition(double position, boolean clamp) {
         if (clamp) {
             position = MathUtil.clamp(position, ElevatorConstants.LOWER_HARD_STOP, ElevatorConstants.UPPER_HEIGHT_LIMIT);
@@ -162,17 +168,34 @@ public class ElevatorSubsystem extends SubsystemBase {
             .withLimitForwardMotion(this.upperLimit.get()));
     }
     
+    /**
+     * Checks if the current elevator position is within a tolerance of a position.
+     * @param position - The position to check against.
+     * @return Whether the current position is within the tolerance.
+     */
+    public boolean withinTolerance(double position) {
+        return Math.abs(getPosition() - positon) <= ElevatorConstants.HEIGHT_TOLERANCE;
+    }
+
+    /**
+     * Converts rotations to meters.
+     * @param rotations - The rotations to convert.
+     * @return The meters.
+     * @apiNote This method is private and not used by other classes.
+     * @see {@link ElevatorConstants#ROLLER_DIAMETER}
+     */
     private double rotationsToMeters(double rotations) {
         return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations;
     }
 
+    /**
+     * Converts meters to rotations.
+     * @param meters - The meters to convert.
+     * @return The rotations.
+     * @apiNote This method is private and not used by other classes.
+     * @see {@link ElevatorConstants#ROLLER_DIAMETER}
+     */
     private double metersToRotation(double meters) {
         return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI;
     }
-    // getposition, setposition, motionMagicPosition, configureMotors (init), shuffleboard shit numberboard for position 0-1 meter we dont know height
-    // basically all of it
-    // set frequencey to 50hz
-
-    // command has isFinished and sets motionMagicPosition
-    // tolerance 1 cm
 }
