@@ -33,9 +33,7 @@ public class Robot extends LoggedRobot {
         if (isReal()) {
             String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
 
-            System.out.println(new File(path).mkdirs());
-
-            System.out.println(path);
+            System.out.println("logging to: " + path + " (new directory: " + new File(path).mkdirs() + ")");
 
             SignalLogger.setPath(path);
             
