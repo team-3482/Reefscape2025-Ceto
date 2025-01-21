@@ -30,24 +30,25 @@ public final class PhysicalConstants {
     /** Constants for the Elevator system */
     public static final class ElevatorConstants {
         /** Motion Magic Config */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 1/25;
+        public static final double ROTOR_TO_MECHANISM_RATIO = (double) 1 / 25;
         public static final double CRUISE_SPEED = 0;
         public static final double ACCELERATION = 0;
 
-        /** Tolerance used for elevator command
+        /**
+         * Tolerance used for elevator command in meters.
          * @see {@link ElevatorCommand}
          */
-        public static final double HEIGHT_TOLERANCE = 0;
+        public static final double HEIGHT_TOLERANCE = 0.01;
 
-        /** Motor Ids */
+        /* Motor IDs */
         public static final int LEFT_MOTOR_ID = 0;
         public static final int RIGHT_MOTOR_ID = 0;
 
         /** Physical Constants (Hard stops) */
-        public static final double LOWER_HARD_STOP = 0;
-        public static final double UPPER_HEIGHT_LIMIT = 0;
+        public static final double LOWER_STOP = 0;
+        public static final double UPPER_STOP = 0;
 
-        /** Limits (ids) with CRTE DIOs */
+        /* Limit switch IDs on the DIO */
         public static final int BOTTOM_LIMIT_ID = 0;
         public static final int UPPER_LIMIT_ID = 0;
 

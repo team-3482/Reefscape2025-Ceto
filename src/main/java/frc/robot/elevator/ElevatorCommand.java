@@ -1,11 +1,10 @@
-package main.java.frc.robot.elevator;
+package frc.robot.elevator;
 
-import frc.robot.constants.PhysicalConstants.ElevatorConstants;
-import frc.robot.elevator.ElevatorSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
 
-/** An example command that does nothing. */
+/** A command that moves the elevator to a position. */
 public class ElevatorCommand extends Command {
-    double position;
+    final double position;
 
     /**
      * Creates a new ExampleCommand.
@@ -17,7 +16,7 @@ public class ElevatorCommand extends Command {
         this.position = position;
 
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(ElevatorSubsystem.getInstance());  
+        addRequirements(ElevatorSubsystem.getInstance());
     }
 
 

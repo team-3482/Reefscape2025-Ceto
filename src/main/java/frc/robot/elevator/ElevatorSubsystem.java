@@ -2,27 +2,22 @@ package frc.robot.elevator;
 
 import java.util.Map;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -54,16 +49,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private TalonFX leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
-    private DigitalInput bottomLimit = new DigitalInput(ElevatorConstants.BOTTOM_LIMIT_ID);
-    private DigitalInput upperLimit = new DigitalInput(ElevatorConstants.UPPER_LIMIT_ID);
+
+    private DigitalInput lowerLimitSwitch = new DigitalInput(ElevatorConstants.BOTTOM_LIMIT_ID);
+    private DigitalInput upperLimitSwitch = new DigitalInput(ElevatorConstants.UPPER_LIMIT_ID);
+
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     /** Shuffleboard stuff */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
-        .withSize(4, 1)
-        .withPosition(0, 0);
+        .withSize(4, 1);
     private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
         .add("Elevator Position Dial", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
@@ -87,8 +83,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
 
-        double position = getPosition();
-        this.shuffleboardPositionNumberBar.setDouble(position);
+        this.shuffleboardPositionNumberBar.setDouble(getPosition());
     }
 
     /**
@@ -150,13 +145,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the position of the elevator in meters using Motion Magic.
+     * Moves the elevator to a position in meters using Motion Magic.
      * @param position - The position in meters.
-     * @param clamp - Whether to clamp the position to the hard stops.
+     * @param clamp - Whether to clamp the position to the soft stops.
      */
     public void motionMagicPosition(double position, boolean clamp) {
         if (clamp) {
-            position = MathUtil.clamp(position, ElevatorConstants.LOWER_HARD_STOP, ElevatorConstants.UPPER_HEIGHT_LIMIT);
+            position = MathUtil.clamp(position, ElevatorConstants.LOWER_STOP, ElevatorConstants.UPPER_STOP);
         }
 
         MotionMagicVoltage control = motionMagicVoltage
@@ -164,8 +159,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             .withPosition(this.metersToRotation(position));   
 
         this.rightMotor.setControl(control
-            .withLimitReverseMotion(this.bottomLimit.get())
-            .withLimitForwardMotion(this.upperLimit.get()));
+            .withLimitReverseMotion(this.lowerLimitSwitch.get())
+            .withLimitForwardMotion(this.upperLimitSwitch.get())
+        );
     }
     
     /**
@@ -174,26 +170,26 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return Whether the current position is within the tolerance.
      */
     public boolean withinTolerance(double position) {
-        return Math.abs(getPosition() - positon) <= ElevatorConstants.HEIGHT_TOLERANCE;
+        return Math.abs(getPosition() - position) <= ElevatorConstants.HEIGHT_TOLERANCE;
     }
 
     /**
-     * Converts rotations to meters.
+     * Converts motor rotations to elevator meters.
      * @param rotations - The rotations to convert.
      * @return The meters.
-     * @apiNote This method is private and not used by other classes.
      * @see {@link ElevatorConstants#ROLLER_DIAMETER}
+     * @apiNote This method is private and not used by other classes.
      */
     private double rotationsToMeters(double rotations) {
         return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations;
     }
 
     /**
-     * Converts meters to rotations.
+     * Converts elevator meters to motor rotations.
      * @param meters - The meters to convert.
      * @return The rotations.
-     * @apiNote This method is private and not used by other classes.
      * @see {@link ElevatorConstants#ROLLER_DIAMETER}
+     * @apiNote This method is private and not used by other classes.
      */
     private double metersToRotation(double meters) {
         return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI;
