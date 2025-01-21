@@ -1,12 +1,19 @@
 package frc.robot.led;
 
+import java.util.Map;
+
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.NamedColors;
+import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -34,6 +41,14 @@ public class LEDSubsystem extends SubsystemBase {
     private Color blinkColor = Color.kBlack;
     private boolean shouldBlink = false;
     private Timer blinkTimer = new Timer();
+
+    private SimpleWidget shuffleboard_widget = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .add("LED", false);
+    private GenericEntry shuffleboard_entry = shuffleboard_widget
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withProperties(Map.of("colorWhenFalse", NamedColors.OFF.toHexString()))
+        .withSize(2, 2)
+        .getEntry();
 
     /** Creates a new LEDSubsystem. */
     private LEDSubsystem() {
@@ -86,6 +101,14 @@ public class LEDSubsystem extends SubsystemBase {
         LEDPattern color = LEDPattern.solid(newColor);
         color.applyTo(this.LEDStripBuffer);
         this.LEDStrip.setData(this.LEDStripBuffer);
+
+        if (newColor.equals(NamedColors.OFF)) {
+            this.shuffleboard_entry.setBoolean(false);
+        }
+        else {
+            this.shuffleboard_widget.withProperties(Map.of("colorWhenTrue", newColor.toHexString()));
+            this.shuffleboard_entry.setBoolean(true);
+        }
     }
 
     /**

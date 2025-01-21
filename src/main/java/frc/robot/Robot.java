@@ -5,8 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.Constants.NamedColors;
+import frc.robot.led.LEDSubsystem;
 
 public class Robot extends TimedRobot {
     private Command auton;
@@ -15,6 +18,8 @@ public class Robot extends TimedRobot {
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
         robotContainer.configureOperatorBindings();
+
+        LEDSubsystem.getInstance().blinkColor(Color.kOrange);
     }
 
     @Override
@@ -23,22 +28,29 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        // Blink like the RSL when disabled
+        LEDSubsystem.getInstance().blinkColor(Color.kOrange);
+    }
 
     @Override
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        LEDSubsystem.getInstance().setColor(Color.kOrange);
+    }
 
     @Override
     public void autonomousInit() {
         this.auton = RobotContainer.getInstance().getAutonomousCommand();
         if (this.auton != null) {
             this.auton.schedule();
+            LEDSubsystem.getInstance().setColor(NamedColors.OK);
         }
         else {
             System.err.println("No auton command found.");
+            LEDSubsystem.getInstance().blinkColor(NamedColors.ERROR);
         }
     }
 
