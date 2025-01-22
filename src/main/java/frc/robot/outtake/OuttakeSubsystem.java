@@ -4,14 +4,22 @@
 
 package frc.robot.outtake;
 
+import java.util.Map;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.OuttakeConstants;;
 
 public class OuttakeSubsystem extends SubsystemBase {
@@ -37,6 +45,17 @@ public class OuttakeSubsystem extends SubsystemBase {
     private TalonFX leftMotor = new TalonFX(OuttakeConstants.LEFT_MOTOR_ID); 
     private DigitalInput frontLaser = new DigitalInput(OuttakeConstants.FRONT_LASER_ID);
 
+    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .getLayout("IntakeSubsystem", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Number of columns", 1, "Number of rows", 3, "Label position", "TOP"))
+        .withSize(2, 2);
+    private GenericEntry shuffleboard_entry = shuffleboardLayout
+        .add("Front Laser", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
+        .withSize(2, 1)
+        .getEntry();
+
     /** Creates a new OuttakeSubsystem. */
     private OuttakeSubsystem() {
         super("OuttakeSubsystem");
@@ -48,7 +67,9 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     // This method will be called once per scheduler run
     @Override
-    public void periodic() {}
+    public void periodic() {
+        this.shuffleboard_entry.setBoolean(hasCoral());
+    }
 
     /**
      * Configures the gear ratio of the motors to our gear ratio
