@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
@@ -79,6 +80,13 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+        
+        this.operatorController.pov(90)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+        this.operatorController.pov(270)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
     }
 
     /**

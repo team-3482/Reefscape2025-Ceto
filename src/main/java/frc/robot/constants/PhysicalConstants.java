@@ -26,4 +26,14 @@ public final class PhysicalConstants {
         /** Blink cooldown; time that the selected blink color will stay for, then blink */
         public static final double BLINK_COOLDOWN = 0.2;
     }
+
+    public static final class AlgaeConstants {
+        public static final int RIGHT_MOTOR_ID = 0;
+        public static final int LEFT_MOTOR_ID = 0;
+
+        public static final double INTAKE_OUTTAKE_VOLTAGE = 6;
+        public static final double INTAKE_TIME = 1;
+
+        public static final double MECHANISM_RATIO = 1;
+    }
 }
