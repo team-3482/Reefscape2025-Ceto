@@ -20,33 +20,34 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.constants.PhysicalConstants.OuttakeConstants;;
+import frc.robot.constants.PhysicalConstants.CoralConstants;
+//import frc.robot.constants.PhysicalConstants.CoralConstants;
 
-public class OuttakeSubsystem extends SubsystemBase {
+public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
-    private static volatile OuttakeSubsystem instance;
+    private static volatile CoralSubsystem instance;
     private static Object mutex = new Object();
 
-    public static OuttakeSubsystem getInstance() {
-        OuttakeSubsystem result = instance;
+    public static CoralSubsystem getInstance() {
+        CoralSubsystem result = instance;
         
         if (result == null) {
             synchronized (mutex) {
                 result = instance;
                 if (result == null) {
-                    instance = result = new OuttakeSubsystem();
+                    instance = result = new CoralSubsystem();
                 }
             }
         }
         return instance;
     }
 
-    private TalonFX rightMotor = new TalonFX(OuttakeConstants.RIGHT_MOTOR_ID);
-    private TalonFX leftMotor = new TalonFX(OuttakeConstants.LEFT_MOTOR_ID); 
-    private DigitalInput frontLaser = new DigitalInput(OuttakeConstants.FRONT_LASER_ID);
+    private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID);
+    private TalonFX leftMotor = new TalonFX(CoralConstants.LEFT_MOTOR_ID); 
+    private DigitalInput frontLaser = new DigitalInput(CoralConstants.FRONT_LASER_ID);
 
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("IntakeSubsystem", BuiltInLayouts.kGrid)
+        .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 3, "Label position", "TOP"))
         .withSize(2, 2);
     private GenericEntry shuffleboard_entry = shuffleboardLayout
@@ -57,11 +58,11 @@ public class OuttakeSubsystem extends SubsystemBase {
         .getEntry();
 
     /** Creates a new OuttakeSubsystem. */
-    private OuttakeSubsystem() {
-        super("OuttakeSubsystem");
+    private CoralSubsystem() {
+        super("CoralSubsystem");
         configureMotors();
 
-        Follower follow = new Follower(OuttakeConstants.RIGHT_MOTOR_ID, true);
+        Follower follow = new Follower(CoralConstants.RIGHT_MOTOR_ID, true);
         this.leftMotor.setControl(follow);
     }
 
@@ -76,7 +77,7 @@ public class OuttakeSubsystem extends SubsystemBase {
      */
     private void configureMotors() {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
-        configuration.Feedback.SensorToMechanismRatio = OuttakeConstants.MECHANISM_RATIO;
+        configuration.Feedback.SensorToMechanismRatio = CoralConstants.MECHANISM_RATIO;
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -90,14 +91,14 @@ public class OuttakeSubsystem extends SubsystemBase {
      * Sets the speed of the motors to the intake speed
      */
     public void intake() {
-        rightMotor.setVoltage(OuttakeConstants.INTAKE_VOLTAGE);
+        rightMotor.setVoltage(CoralConstants.INTAKE_VOLTAGE);
     }
 
     /**
      * Sets the speed of the motors to the outtake speed
      */
     public void outtake() {
-        rightMotor.setVoltage(OuttakeConstants.OUTTAKE_VOLTAGE);
+        rightMotor.setVoltage(CoralConstants.OUTTAKE_VOLTAGE);
     }
 
     /**

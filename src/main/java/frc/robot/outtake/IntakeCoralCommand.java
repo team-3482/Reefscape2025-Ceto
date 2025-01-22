@@ -8,15 +8,15 @@ package frc.robot.outtake;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that does nothing. */
-public class IntakeCommand extends Command {
+public class IntakeCoralCommand extends Command {
 
     /**
      * Creates a new ExampleCommand.
      */
-    public IntakeCommand() {
-        setName("IntakeCommand");
+    public IntakeCoralCommand() {
+        setName("IntakeCoralCommand");
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(OuttakeSubsystem.getInstance());
+        addRequirements(CoralSubsystem.getInstance());
     }
 
     // Called when the command is initially scheduled.
@@ -26,7 +26,7 @@ public class IntakeCommand extends Command {
      */
     @Override
     public void initialize() {
-        OuttakeSubsystem.getInstance().intake();
+        CoralSubsystem.getInstance().intake();
     }
 
     /**
@@ -39,12 +39,12 @@ public class IntakeCommand extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        OuttakeSubsystem.getInstance().stop();
+        CoralSubsystem.getInstance().stop();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return OuttakeSubsystem.getInstance().hasCoral();
+        return CoralSubsystem.getInstance().hasCoral();
     }
 }

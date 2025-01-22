@@ -8,16 +8,16 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that does nothing. */
-public class OuttakeCommand extends Command {
+public class OuttakeCoralCommand extends Command {
     private Timer timer = new Timer();
 
     /**
      * Creates a new ExampleCommand.
      */
-    public OuttakeCommand() {
-        setName("OuttakeCommand");
+    public OuttakeCoralCommand() {
+        setName("OuttakeCoralCommand");
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(OuttakeSubsystem.getInstance());
+        addRequirements(CoralSubsystem.getInstance());
     }
 
     // Called when the command is initially scheduled.
@@ -26,7 +26,7 @@ public class OuttakeCommand extends Command {
      */
     @Override
     public void initialize() {
-        OuttakeSubsystem.getInstance().outtake();
+        CoralSubsystem.getInstance().outtake();
         this.timer.reset();
     }
 
@@ -36,7 +36,7 @@ public class OuttakeCommand extends Command {
      */
     @Override
     public void execute() {
-        if(!OuttakeSubsystem.getInstance().hasCoral())
+        if(!CoralSubsystem.getInstance().hasCoral())
         {
             this.timer.start();
         }
@@ -48,7 +48,7 @@ public class OuttakeCommand extends Command {
      */
     @Override
     public void end(boolean interrupted) {
-        OuttakeSubsystem.getInstance().stop();
+        CoralSubsystem.getInstance().stop();
         this.timer.stop();
     }
 

@@ -27,7 +27,7 @@ public final class PhysicalConstants {
         public static final double BLINK_COOLDOWN = 0.2;
     }
 
-    public static final class OuttakeConstants {
+    public static final class CoralConstants {
         public static final int RIGHT_MOTOR_ID = 0;
         public static final int LEFT_MOTOR_ID = 1;
 
