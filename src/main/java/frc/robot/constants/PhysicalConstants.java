@@ -42,14 +42,14 @@ public final class PhysicalConstants {
 
         /* Motor IDs */
         public static final int LEFT_MOTOR_ID = 0;
-        public static final int RIGHT_MOTOR_ID = 0;
+        public static final int RIGHT_MOTOR_ID = 20;
 
         /** Physical Constants (Hard stops) */
         public static final double LOWER_STOP = 0;
         public static final double UPPER_STOP = 0;
 
         /* Limit switch IDs on the DIO */
-        public static final int BOTTOM_LIMIT_ID = 0;
+        public static final int BOTTOM_LIMIT_ID = 1;
         public static final int UPPER_LIMIT_ID = 0;
 
         /** 
