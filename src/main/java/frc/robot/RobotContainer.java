@@ -22,6 +22,7 @@ import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
+import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
@@ -166,7 +167,7 @@ public class RobotContainer {
 
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
-        
+        LEDSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
