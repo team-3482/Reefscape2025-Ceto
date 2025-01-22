@@ -7,7 +7,6 @@ package frc.robot;
 import com.ctre.phoenix6.SignalLogger;
 
 import java.io.File;
-import java.util.Date;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -45,7 +44,8 @@ public class Robot extends LoggedRobot {
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY != 0 ? "true" : "false");
+            // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY > 0 ? "true" : "false");
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
             Logger.start();
