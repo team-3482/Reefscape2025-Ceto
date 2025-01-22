@@ -55,12 +55,12 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void disabledPeriodic() {}
-
-    @Override
     public void disabledInit() {
         SignalLogger.stop();
     }
+
+    @Override
+    public void disabledPeriodic() {}
 
     @Override
     public void disabledExit() {
