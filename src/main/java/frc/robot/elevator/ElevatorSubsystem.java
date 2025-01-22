@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -59,14 +60,27 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
-        .withSize(4, 1);
+        .withSize(4, 2);
     private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
-        .add("Elevator Position Dial", 0)
+        .add("Elevator Position Number Bar", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("Min", 0, "Max", 1, "Show Value", true))
-        .withSize(4, 1)
+        .withSize(4, 2)
         .withPosition(0, 0)
         .getEntry();
+    private GenericEntry shuffleboardTopSensorBoolean = shuffleboardLayout
+        .add("Top Sensor", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withPosition(0, 1)
+        .withSize(2, 2)
+        .getEntry();
+    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout
+        .add("Bottom Sensor", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withPosition(0, 2)
+        .withSize(2, 2)
+        .getEntry();
+    
 
     /** Creates a new ExampleSubsystem. */
     private ElevatorSubsystem() {
@@ -82,8 +96,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+        String controlName = this.rightMotor.getAppliedControl().getControlInfo().get("Name");
 
         this.shuffleboardPositionNumberBar.setDouble(getPosition());
+        this.shuffleboardTopSensorBoolean.setBoolean(atUpperLimit());
+        this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+
+        if (controlName.equals("VoltageOut")) {
+            this.rightMotor.setControl(((VoltageOut) this.rightMotor.getAppliedControl())
+                .withLimitForwardMotion(this.upperLimitSwitch.get())
+                .withLimitReverseMotion(this.lowerLimitSwitch.get())
+            );
+        }
+        else if (controlName.equals("MotionMagicVoltage")) {
+            this.rightMotor.setControl(((MotionMagicVoltage) this.rightMotor.getAppliedControl())
+                .withLimitForwardMotion(this.upperLimitSwitch.get())
+                .withLimitReverseMotion(this.lowerLimitSwitch.get())
+            );
+        }
     }
 
     /**
@@ -133,7 +163,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void setPosition(double position) {
         position = this.metersToRotation(position);
         this.rightMotor.setPosition(position);
-        this.leftMotor.setPosition(position);
+        // this.leftMotor.setPosition(position);
     }
 
     /**
@@ -163,7 +193,23 @@ public class ElevatorSubsystem extends SubsystemBase {
             .withLimitForwardMotion(this.upperLimitSwitch.get())
         );
     }
-    
+
+    /**
+     * Sends a voltage to the motor
+     * @param voltage - Voltage in between 12 and -12
+     * @param clamp - Whether or not to clamp
+     */
+    public void setVoltage(double voltage, boolean clamp) {
+        if (clamp) {
+            voltage = MathUtil.clamp(voltage, ElevatorConstants.LOWER_STOP, ElevatorConstants.UPPER_STOP);
+        }
+
+        rightMotor.setControl(new VoltageOut(voltage)
+            .withLimitForwardMotion(this.upperLimitSwitch.get())
+            .withLimitReverseMotion(this.lowerLimitSwitch.get())
+        );
+    }
+
     /**
      * Checks if the current elevator position is within a tolerance of a position.
      * @param position - The position to check against.
@@ -171,6 +217,22 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public boolean withinTolerance(double position) {
         return Math.abs(getPosition() - position) <= ElevatorConstants.HEIGHT_TOLERANCE;
+    }
+
+    /**
+     * Checks if the current elevator position is at the top sensor
+     * @return Whether the current position is at the top  sensor
+     */
+    public boolean atUpperLimit(){
+        return this.upperLimitSwitch.get();
+    }
+
+    /**
+     * Checks if the current elevator position is at the bottom sensor
+     * @return Whether the current position is at the bottom sensor
+     */
+    public boolean atLowerLimit(){
+        return this.lowerLimitSwitch.get();
     }
 
     /**
