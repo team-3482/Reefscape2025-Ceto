@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.PhysicalConstants.AlgaeConstants;
+import frc.robot.constants.PhysicalConstants.RobotConstants;
 
 public class AlgaeSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -32,8 +33,8 @@ public class AlgaeSubsystem extends SubsystemBase {
         return instance;
     }
 
-    private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID);
-    private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID);
+    private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
+    private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
     /** Creates a new OuttakeSubsystem. */
     private AlgaeSubsystem() {

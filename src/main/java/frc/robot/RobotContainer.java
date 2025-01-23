@@ -43,7 +43,7 @@ public class RobotContainer {
 
         configureDrivetrain(); // This is done separately because it works differently from other Subsystems
         initializeSubsystems();
-        
+
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 

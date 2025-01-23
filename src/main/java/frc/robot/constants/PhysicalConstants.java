@@ -31,8 +31,7 @@ public final class PhysicalConstants {
         public static final int RIGHT_MOTOR_ID = 0;
         public static final int LEFT_MOTOR_ID = 0;
 
-        public static final double INTAKE_OUTTAKE_VOLTAGE = 6;
-        public static final double INTAKE_TIME = 1;
+        public static final double INTAKE_OUTTAKE_VOLTAGE = 1.5;
 
         public static final double MECHANISM_RATIO = 1;
     }
