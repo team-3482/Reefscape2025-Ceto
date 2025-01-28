@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.outtake.IntakeCoralCommand;
+import frc.robot.outtake.OuttakeCoralCommand;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
@@ -79,6 +81,11 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+
+        this.operatorController.x().whileTrue(new IntakeCoralCommand());
+        this.operatorController.y().whileTrue(new OuttakeCoralCommand());
+
+        
     }
 
     /**

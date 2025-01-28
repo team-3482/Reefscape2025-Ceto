@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 //import frc.robot.constants.PhysicalConstants.CoralConstants;
+import frc.robot.constants.PhysicalConstants.RobotConstants;
 
 public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -42,8 +43,8 @@ public class CoralSubsystem extends SubsystemBase {
         return instance;
     }
 
-    private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID);
-    private TalonFX leftMotor = new TalonFX(CoralConstants.LEFT_MOTOR_ID); 
+    private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
+    private TalonFX leftMotor = new TalonFX(CoralConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS); 
     private DigitalInput frontLaser = new DigitalInput(CoralConstants.FRONT_LASER_ID);
 
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
