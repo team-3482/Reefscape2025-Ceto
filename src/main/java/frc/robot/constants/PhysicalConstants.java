@@ -29,6 +29,11 @@ public final class PhysicalConstants {
 
     /** Constants for the Elevator system */
     public static final class ElevatorConstants {
+        /* The voltage that will be given to the motors to lift the motors in the zero command */
+        public static final double ZERO_LIFT_VOLTAGE = 0;
+        /* The time that the elevator will lift up slowly in the zero command */
+        public static final double ZERO_LIFT_TIME = 0;
+
         /** Motion Magic Config */
         public static final double ROTOR_TO_MECHANISM_RATIO = (double) 1 / 25;
         public static final double CRUISE_SPEED = 0;
