@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
@@ -51,8 +52,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private TalonFX leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX rightMotor = new TalonFX(ElevatorConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
-    private DigitalInput lowerLimitSwitch = new DigitalInput(ElevatorConstants.BOTTOM_LIMIT_ID);
-    private DigitalInput upperLimitSwitch = new DigitalInput(ElevatorConstants.UPPER_LIMIT_ID);
+    private DigitalInput lowerLimitSwitch = new DigitalInput(ElevatorConstants.BOTTOM_LASER_ID);
+    private DigitalInput stageTwoUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_TWO_UPPER_LASER_ID);
+    private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
@@ -60,7 +62,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
-        .withSize(4, 2);
+        .withSize(4, 6);
     private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
         .add("Elevator Position Number Bar", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
@@ -68,16 +70,22 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withSize(4, 2)
         .withPosition(0, 0)
         .getEntry();
-    private GenericEntry shuffleboardTopSensorBoolean = shuffleboardLayout
-        .add("Top Sensor", false)
+    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout
+        .add("Stage Three Top Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withPosition(0, 1)
+        .withSize(2, 2)
+        .getEntry();
+    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout
+        .add("Stage Two Top Sensor", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withPosition(0, 2)
         .withSize(2, 2)
         .getEntry();
     private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout
         .add("Bottom Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withPosition(0, 2)
+        .withPosition(0, 3)
         .withSize(2, 2)
         .getEntry();
     
@@ -102,19 +110,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         System.out.printf("Position : %f ; Velocity : %f%n", getPosition(), getRotorVelocity());
 
         this.shuffleboardPositionNumberBar.setDouble(getPosition());
-        this.shuffleboardTopSensorBoolean.setBoolean(atUpperLimit());
+        this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
+        this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
         this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
 
         if (controlName.equals("VoltageOut")) {
             this.rightMotor.setControl(((VoltageOut) this.rightMotor.getAppliedControl())
-                .withLimitForwardMotion(this.upperLimitSwitch.get())
-                .withLimitReverseMotion(this.lowerLimitSwitch.get())
+                .withLimitForwardMotion(atUpperLimit())
+                .withLimitReverseMotion(atLowerLimit())
             );
         }
         else if (controlName.equals("MotionMagicVoltage")) {
             this.rightMotor.setControl(((MotionMagicVoltage) this.rightMotor.getAppliedControl())
-                .withLimitForwardMotion(this.upperLimitSwitch.get())
-                .withLimitReverseMotion(this.lowerLimitSwitch.get())
+                .withLimitForwardMotion(atUpperLimit())
+                .withLimitReverseMotion(atLowerLimit())
             );
         }
     }
@@ -189,7 +198,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public void motionMagicPosition(double position, boolean clamp) {
         if (clamp) {
-            position = MathUtil.clamp(position, ElevatorConstants.LOWER_STOP, ElevatorConstants.UPPER_STOP);
+            position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.BOTTOM_HEIGHT);
         }
 
         MotionMagicVoltage control = motionMagicVoltage
@@ -197,8 +206,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             .withPosition(this.metersToRotation(position));   
 
         this.rightMotor.setControl(control
-            .withLimitReverseMotion(this.lowerLimitSwitch.get())
-            .withLimitForwardMotion(this.upperLimitSwitch.get())
+            .withLimitForwardMotion(atUpperLimit())
+            .withLimitReverseMotion(atLowerLimit())
         );
     }
 
@@ -210,8 +219,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         voltage = MathUtil.clamp(voltage, -12, 12);
 
         rightMotor.setControl(new VoltageOut(voltage)
-            .withLimitForwardMotion(this.upperLimitSwitch.get())
-            .withLimitReverseMotion(this.lowerLimitSwitch.get())
+            .withLimitForwardMotion(atUpperLimit())
+            .withLimitReverseMotion(atLowerLimit())
         );
     }
 
@@ -225,18 +234,34 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Checks if the current elevator position is at the top sensor
+     * Checks if the second stage is at its highest point.
+     * @return Whether the second stage is at its highest point.
+     */
+    private boolean atUpperLimit_StageTwo() {
+        return this.stageTwoUpperLimitSwitch.get();
+    }
+
+    /**
+     * Checks if the third stage is at its highest point.
+     * @return Whether the third stage is at its highest point.
+     */
+    private boolean atUpperLimit_StageThree() {
+        return this.stageThreeUpperLimitSwitch.get();
+    }
+
+    /**
+     * Checks if the current elevator position is at the top sensors
      * @return Whether the current position is at the top  sensor
      */
-    public boolean atUpperLimit(){
-        return this.upperLimitSwitch.get();
+    public boolean atUpperLimit() {
+        return atUpperLimit_StageTwo() && atUpperLimit_StageThree();
     }
 
     /**
      * Checks if the current elevator position is at the bottom sensor
      * @return Whether the current position is at the bottom sensor
      */
-    public boolean atLowerLimit(){
+    public boolean atLowerLimit() {
         return this.lowerLimitSwitch.get();
     }
 

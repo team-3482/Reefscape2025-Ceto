@@ -31,15 +31,24 @@ public final class PhysicalConstants {
 
     /** Constants for the Elevator system */
     public static final class ElevatorConstants {
-        /* The voltage that will be given to the motors to lift the motors in the zero command */
-        public static final double ZERO_LIFT_VOLTAGE = 0;
-        /* The time that the elevator will lift up slowly in the zero command */
-        public static final double ZERO_LIFT_TIME = 0;
+        /* Motor IDs */
+        public static final int LEFT_MOTOR_ID = 20;
+        public static final int RIGHT_MOTOR_ID = 21;
 
-        /** Motion Magic Config */
-        public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
-        public static final double CRUISE_SPEED = 0;
-        public static final double ACCELERATION = 0;
+        /* Limit switch IDs on the DIO */
+        public static final int BOTTOM_LASER_ID = 0;
+        public static final int STAGE_TWO_UPPER_LASER_ID = 1;
+        public static final int STAGE_THREE_UPPER_LASER_ID = 2;
+
+        /** 
+         * The dimater of the bar that the string wraps around on the elevator
+         * @implSpec This is in meters and is very important to calculate the position of the elevator
+         */
+        public static final double ROLLER_DIAMETER = Units.inchesToMeters(1.25);
+        /**
+         * Heuristic constant found because the math was off by this coefficient.
+         */
+        public static final double LINEAR_CONSTANT_MULT = 0.75;
 
         /**
          * Tolerance used for elevator command in meters.
@@ -47,27 +56,10 @@ public final class PhysicalConstants {
          */
         public static final double HEIGHT_TOLERANCE = 0.01;
 
-        /* Motor IDs */
-        public static final int LEFT_MOTOR_ID = 20;
-        public static final int RIGHT_MOTOR_ID = 21;
-
-        /** Physical Constants (Hard stops) */
-        public static final double LOWER_STOP = 0;
-        public static final double UPPER_STOP = 0;
-
-        /* Limit switch IDs on the DIO */
-        public static final int BOTTOM_LIMIT_ID = 1;
-        public static final int UPPER_LIMIT_ID = 0;
-
-        /** 
-         * The dimater of the bar that rolls to control the elevator
-         * @implSpec this is in meters and is very important to calculate the position of the elevator
-         */
-        public static final double ROLLER_DIAMETER = Units.inchesToMeters(1.25);
-        /**
-         * Heuristic constant found because the math was off by this coefficient.
-         */
-        public static final double LINEAR_CONSTANT_MULT = 0.75;
+        /* Motion Magic Config */
+        public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
+        public static final double CRUISE_SPEED = 0;
+        public static final double ACCELERATION = 0;
 
         /** Gains used for MotionMagic slot 0. */
         public static final class ElevatorSlot0Gains {

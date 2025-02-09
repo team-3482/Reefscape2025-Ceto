@@ -83,13 +83,17 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
         this.operatorController.a().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().setVoltage(2);
+            ElevatorSubsystem.getInstance().setVoltage(5);
         }))
         .onFalse(ElevatorSubsystem.getInstance().runOnce(() -> {
             ElevatorSubsystem.getInstance().setVoltage(0);
         }));
 
-        this.operatorController.y().whileTrue(new ZeroElevatorCommand());
+        this.operatorController.y().onTrue(new ZeroElevatorCommand());
+        this.operatorController.x().whileTrue(ElevatorSubsystem.getInstance().runEnd(
+            () -> ElevatorSubsystem.getInstance().setVoltage(-1),
+            () -> ElevatorSubsystem.getInstance().setVoltage(0)
+        ));
     }
 
     /**

@@ -1,7 +1,7 @@
 package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.PhysicalConstants.ElevatorConstants;
+import frc.robot.constants.Constants.ScoringConstants;
 
 /** A command which lifts the elevator and lets it fall down slowly to reset position. */
 public class ZeroElevatorCommand extends Command {
@@ -35,7 +35,7 @@ public class ZeroElevatorCommand extends Command {
         }
         else {
             ElevatorSubsystem.getInstance().setVoltage(0);
-            ElevatorSubsystem.getInstance().setPosition(ElevatorConstants.LOWER_STOP);
+            ElevatorSubsystem.getInstance().setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
     }
 
