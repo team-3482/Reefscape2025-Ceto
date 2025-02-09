@@ -28,10 +28,10 @@ public final class PhysicalConstants {
     }
 
     public static final class CoralConstants {
-        public static final int RIGHT_MOTOR_ID = 0;
-        public static final int LEFT_MOTOR_ID = 0;
+        public static final int RIGHT_MOTOR_ID = 31;
+        public static final int LEFT_MOTOR_ID = 30;
 
-        public static final int FRONT_LASER_ID = 0;
+        public static final int FRONT_LASER_ID = 2;
 
         public static final double INTAKE_VOLTAGE = 1.5;
         public static final double OUTTAKE_VOLTAGE = 1.5;

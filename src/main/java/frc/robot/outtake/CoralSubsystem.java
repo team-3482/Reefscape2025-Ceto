@@ -71,6 +71,7 @@ public class CoralSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         this.shuffleboard_entry.setBoolean(hasCoral());
+        System.out.println(hasCoral());
     }
 
     /**
