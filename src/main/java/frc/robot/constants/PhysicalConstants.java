@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * Constants used throughout the code specifically related to subsystems or unchangeable aspects of the bot.
  * @implSpec BACK of the bot is 180 degrees / the battery, use that as a reference for directions.
@@ -35,7 +37,7 @@ public final class PhysicalConstants {
         public static final double ZERO_LIFT_TIME = 0;
 
         /** Motion Magic Config */
-        public static final double ROTOR_TO_MECHANISM_RATIO = (double) 1 / 25;
+        public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
         public static final double CRUISE_SPEED = 0;
         public static final double ACCELERATION = 0;
 
@@ -46,8 +48,8 @@ public final class PhysicalConstants {
         public static final double HEIGHT_TOLERANCE = 0.01;
 
         /* Motor IDs */
-        public static final int LEFT_MOTOR_ID = 0;
-        public static final int RIGHT_MOTOR_ID = 20;
+        public static final int LEFT_MOTOR_ID = 20;
+        public static final int RIGHT_MOTOR_ID = 21;
 
         /** Physical Constants (Hard stops) */
         public static final double LOWER_STOP = 0;
@@ -61,7 +63,11 @@ public final class PhysicalConstants {
          * The dimater of the bar that rolls to control the elevator
          * @implSpec this is in meters and is very important to calculate the position of the elevator
          */
-        public static final double ROLLER_DIAMETER = 0;
+        public static final double ROLLER_DIAMETER = Units.inchesToMeters(1.25);
+        /**
+         * Heuristic constant found because the math was off by this coefficient.
+         */
+        public static final double LINEAR_CONSTANT_MULT = 1.72;
 
         /** Gains used for MotionMagic slot 0. */
         public static final class ElevatorSlot0Gains {

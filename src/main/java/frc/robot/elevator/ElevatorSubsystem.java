@@ -1,5 +1,6 @@
 package frc.robot.elevator;
 
+import java.io.Console;
 import java.util.Map;
 
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -89,6 +90,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.configureMotors();
 
         this.rightMotor.getPosition().setUpdateFrequency(50);
+        this.rightMotor.getVelocity().setUpdateFrequency(50);
 
         this.leftMotor.setControl(new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true));
     }
@@ -97,6 +99,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         String controlName = this.rightMotor.getAppliedControl().getControlInfo().get("Name");
+
+        System.out.printf("Position : %f ; Velocity : %f%n", getPosition(), getRotorVelocity());
 
         this.shuffleboardPositionNumberBar.setDouble(getPosition());
         this.shuffleboardTopSensorBoolean.setBoolean(atUpperLimit());
@@ -149,10 +153,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         // motionMagicConfigs.MotionMagicJerk = PivotConstants.MOTION_MAGIC_JERK;
 
         // Motor-specific configurations.
-        motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Right motor not inverted.
+        motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Right motor not inverted.
         this.rightMotor.getConfigurator().apply(configuration);
 
-        motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Left motor inverted.
+        motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Left motor inverted.
         this.leftMotor.getConfigurator().apply(configuration);
     }
 
@@ -172,6 +176,11 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public double getPosition() {
         return this.rotationsToMeters(this.rightMotor.getPosition().getValueAsDouble());
+    }
+
+
+    public double getRotorVelocity() {
+        return this.rightMotor.getVelocity().getValueAsDouble();
     }
 
     /**
@@ -197,12 +206,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     /**
      * Sends a voltage to the motor
      * @param voltage - Voltage in between 12 and -12
-     * @param clamp - Whether or not to clamp
      */
-    public void setVoltage(double voltage, boolean clamp) {
-        if (clamp) {
-            voltage = MathUtil.clamp(voltage, ElevatorConstants.LOWER_STOP, ElevatorConstants.UPPER_STOP);
-        }
+    public void setVoltage(double voltage) {
+        voltage = MathUtil.clamp(voltage, -12, 12);
 
         rightMotor.setControl(new VoltageOut(voltage)
             .withLimitForwardMotion(this.upperLimitSwitch.get())
@@ -243,7 +249,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @apiNote This method is private and not used by other classes.
      */
     private double rotationsToMeters(double rotations) {
-        return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations;
+        return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations / ElevatorConstants.LINEAR_CONSTANT_MULT;
     }
 
     /**
@@ -254,6 +260,6 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @apiNote This method is private and not used by other classes.
      */
     private double metersToRotation(double meters) {
-        return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI;
+        return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI * ElevatorConstants.LINEAR_CONSTANT_MULT;
     }
 }

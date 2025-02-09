@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
 
@@ -64,6 +66,7 @@ public class RobotContainer {
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
+        ElevatorSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
@@ -79,6 +82,14 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+        this.operatorController.a().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
+            ElevatorSubsystem.getInstance().setVoltage(0.5);
+        }))
+        .onFalse(ElevatorSubsystem.getInstance().runOnce(() -> {
+            ElevatorSubsystem.getInstance().setVoltage(0);
+        }));
+
+        this.operatorController.y().whileTrue(new ZeroElevatorCommand());
     }
 
     /**
