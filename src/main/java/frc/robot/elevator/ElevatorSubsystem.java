@@ -1,6 +1,5 @@
 package frc.robot.elevator;
 
-import java.io.Console;
 import java.util.Map;
 
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -249,7 +248,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @apiNote This method is private and not used by other classes.
      */
     private double rotationsToMeters(double rotations) {
-        return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations / ElevatorConstants.LINEAR_CONSTANT_MULT;
+        return Math.PI * ElevatorConstants.ROLLER_DIAMETER * rotations * ElevatorConstants.LINEAR_CONSTANT_MULT;
     }
 
     /**
@@ -260,6 +259,6 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @apiNote This method is private and not used by other classes.
      */
     private double metersToRotation(double meters) {
-        return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI * ElevatorConstants.LINEAR_CONSTANT_MULT;
+        return meters / ElevatorConstants.ROLLER_DIAMETER / Math.PI / ElevatorConstants.LINEAR_CONSTANT_MULT;
     }
 }

@@ -67,7 +67,7 @@ public final class PhysicalConstants {
         /**
          * Heuristic constant found because the math was off by this coefficient.
          */
-        public static final double LINEAR_CONSTANT_MULT = 1.72;
+        public static final double LINEAR_CONSTANT_MULT = 0.75;
 
         /** Gains used for MotionMagic slot 0. */
         public static final class ElevatorSlot0Gains {
