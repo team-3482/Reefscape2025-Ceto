@@ -83,7 +83,7 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
         this.operatorController.a().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().setVoltage(5);
+            ElevatorSubsystem.getInstance().setVoltage(1.5);
         }))
         .onFalse(ElevatorSubsystem.getInstance().runOnce(() -> {
             ElevatorSubsystem.getInstance().setVoltage(0);
