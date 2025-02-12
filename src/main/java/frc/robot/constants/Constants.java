@@ -49,5 +49,6 @@ public final class Constants {
         public static final double L2_HEIGHT = 0;
         public static final double L3_HEIGHT = 0;
         public static final double BOTTOM_HEIGHT = 0;
+        public static final double MAX_HEIGHT = 0;
     }
 }

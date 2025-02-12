@@ -90,7 +90,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         .getEntry();
     
 
-    /** Creates a new ExampleSubsystem. */
+    /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
         super("ElevatorSubsystem");
 
@@ -125,6 +125,10 @@ public class ElevatorSubsystem extends SubsystemBase {
                 .withLimitForwardMotion(atUpperLimit())
                 .withLimitReverseMotion(atLowerLimit())
             );
+        }
+
+        if (atUpperLimit()) {
+            motionMagicPosition(getPosition() - 0.01, false);
         }
     }
 
@@ -173,8 +177,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param position - The position in meters.
      */
     public void setPosition(double position) {
-        position = this.metersToRotation(position);
-        this.rightMotor.setPosition(position);
+        this.rightMotor.setPosition(this.metersToRotation(position));
         // this.leftMotor.setPosition(position);
     }
 
@@ -186,7 +189,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return this.rotationsToMeters(this.rightMotor.getPosition().getValueAsDouble());
     }
 
-
+    /**
+     * Returns the velocity of the motor with no unit conversions
+     * @return The velocity of the motors
+     */
     public double getRotorVelocity() {
         return this.rightMotor.getVelocity().getValueAsDouble();
     }
@@ -198,7 +204,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public void motionMagicPosition(double position, boolean clamp) {
         if (clamp) {
-            position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.BOTTOM_HEIGHT);
+            position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.MAX_HEIGHT);
         }
 
         MotionMagicVoltage control = motionMagicVoltage

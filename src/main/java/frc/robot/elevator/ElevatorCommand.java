@@ -7,7 +7,7 @@ public class ElevatorCommand extends Command {
     final double position;
 
     /**
-     * Creates a new ExampleCommand.
+     * Creates a new ElevatorCommand.
      * @param position - The position the elevator will move to. In meters.
      */
     public ElevatorCommand(double position) {
