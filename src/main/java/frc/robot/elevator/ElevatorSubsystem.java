@@ -143,7 +143,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (atUpperLimit()) {
             motionMagicPosition(getPosition() - 0.01, false);
         }
-        else if (this.shuffleboardToggleInput.getBoolean(false)) {
+        else if (this.shuffleboardToggleInput.getBoolean(false) && getCurrentCommand() == null) {
             if (!this.shuffleboardInputOn) {
                 this.shuffleboardSliderInput.setDouble(getPosition());
                 this.shuffleboardInputOn = true;

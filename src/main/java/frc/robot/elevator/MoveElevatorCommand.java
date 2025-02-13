@@ -3,14 +3,14 @@ package frc.robot.elevator;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** A command that moves the elevator to a position. */
-public class ElevatorCommand extends Command {
+public class MoveElevatorCommand extends Command {
     final double position;
 
     /**
      * Creates a new ElevatorCommand.
      * @param position - The position the elevator will move to. In meters.
      */
-    public ElevatorCommand(double position) {
+    public MoveElevatorCommand(double position) {
         setName("ElevatorCommand");
         
         this.position = position;

@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
@@ -82,25 +84,21 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
-        this.operatorController.a().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().setVoltage(1.5);
-        }))
-        .onFalse(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().setVoltage(0);
-        }));
-
-        this.operatorController.y().onTrue(new ZeroElevatorCommand());
-        this.operatorController.x().whileTrue(ElevatorSubsystem.getInstance().runEnd(
-            () -> ElevatorSubsystem.getInstance().setVoltage(-1),
-            () -> ElevatorSubsystem.getInstance().setVoltage(0)
-        ));
-
-        this.operatorController.rightBumper().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().motionMagicPosition(0.75, false);
-        }));
-        this.operatorController.leftBumper().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
-            ElevatorSubsystem.getInstance().motionMagicPosition(0, true);
-        }));
+        
+        // Elevator
+        this.operatorController.a()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.x()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.y()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.rightBumper()
+            .onTrue(new ZeroElevatorCommand());
+        
+        // Outtake
     }
 
     /**
