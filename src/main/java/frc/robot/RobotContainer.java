@@ -94,6 +94,13 @@ public class RobotContainer {
             () -> ElevatorSubsystem.getInstance().setVoltage(-1),
             () -> ElevatorSubsystem.getInstance().setVoltage(0)
         ));
+
+        this.operatorController.rightBumper().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
+            ElevatorSubsystem.getInstance().motionMagicPosition(0.75, false);
+        }));
+        this.operatorController.leftBumper().onTrue(ElevatorSubsystem.getInstance().runOnce(() -> {
+            ElevatorSubsystem.getInstance().motionMagicPosition(0, true);
+        }));
     }
 
     /**

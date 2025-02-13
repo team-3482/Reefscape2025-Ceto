@@ -45,10 +45,10 @@ public final class Constants {
 
     public static final class ScoringConstants {
         /* Heights in elevator meters for scoring at these heights. */
-        public static final double L1_HEIGHT = 0; // TODO FIELD/ELEVATOR : Test these with field elements
-        public static final double L2_HEIGHT = 0;
-        public static final double L3_HEIGHT = 0;
+        public static final double L1_HEIGHT = 0.21;
+        public static final double L2_HEIGHT = 0.32;
+        public static final double L3_HEIGHT = 0.73;
         public static final double BOTTOM_HEIGHT = 0;
-        public static final double MAX_HEIGHT = 0;
+        public static final double MAX_HEIGHT = 0.75;
     }
 }

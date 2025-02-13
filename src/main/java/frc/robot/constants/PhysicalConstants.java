@@ -58,16 +58,16 @@ public final class PhysicalConstants {
 
         /* Motion Magic Config */
         public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
-        public static final double CRUISE_SPEED = 0;
-        public static final double ACCELERATION = 0;
+        public static final double CRUISE_SPEED = 200; // TODO : More reasonable values
+        public static final double ACCELERATION = 30;
 
         /** Gains used for MotionMagic slot 0. */
         public static final class ElevatorSlot0Gains {
-            public static final double kG = 0;
-            public static final double kS = 0;
+            public static final double kG = 0.35;
+            public static final double kS = 0.45;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 0;
+            public static final double kP = 32;
             public static final double kI = 0;
             public static final double kD = 0;
         }

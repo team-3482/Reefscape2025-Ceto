@@ -59,36 +59,42 @@ public class ElevatorSubsystem extends SubsystemBase {
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     /** Shuffleboard stuff */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
+    private final ShuffleboardLayout shuffleboardLayout_Sensors = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .getLayout("ElevatorSubsystem – Sensors", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
         .withSize(4, 6);
-    private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
+    private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout_Sensors
         .add("Elevator Position Number Bar", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", 0, "Max", 1, "Show Value", true))
+        .withProperties(Map.of("Min", ScoringConstants.BOTTOM_HEIGHT, "Max", ScoringConstants.MAX_HEIGHT, "Num tick marks", 0))
         .withSize(4, 2)
         .withPosition(0, 0)
         .getEntry();
-    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout
+    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout_Sensors
         .add("Stage Three Top Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withPosition(0, 1)
         .withSize(2, 2)
         .getEntry();
-    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout
+    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout_Sensors
         .add("Stage Two Top Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withPosition(0, 2)
         .withSize(2, 2)
         .getEntry();
-    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout
+    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout_Sensors
         .add("Bottom Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withPosition(0, 3)
         .withSize(2, 2)
         .getEntry();
-    
+
+    private ShuffleboardLayout shuffleboardLayout_Input = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .getLayout("ElevatorSubsystem – Controls", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
+        .withSize(4, 4);
+
+    // TODO ALEXIS
 
     /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
@@ -209,7 +215,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         MotionMagicVoltage control = motionMagicVoltage
             .withSlot(0)
-            .withPosition(this.metersToRotation(position));   
+            .withPosition(this.metersToRotation(position));
 
         this.rightMotor.setControl(control
             .withLimitForwardMotion(atUpperLimit())
