@@ -57,44 +57,51 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private boolean shuffleboardInputOn = false;
 
     /** Shuffleboard stuff */
-    private final ShuffleboardLayout shuffleboardLayout_Sensors = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("ElevatorSubsystem – Sensors", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 1, "Label position", "TOP"))
-        .withSize(4, 6);
-    private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout_Sensors
-        .add("Elevator Position Number Bar", 0)
+    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Number of columns", 1, "Number of rows", 6, "Label position", "TOP"))
+        .withSize(4, 8);
+    private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
+        .add("Elevator Position (meters)", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
         .withProperties(Map.of("Min", ScoringConstants.BOTTOM_HEIGHT, "Max", ScoringConstants.MAX_HEIGHT, "Num tick marks", 0))
         .withSize(4, 2)
         .withPosition(0, 0)
         .getEntry();
-    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout_Sensors
+    private GenericEntry shuffleboardToggleInput = shuffleboardLayout
+        .add("Toggle Shuffleboard Input Slider", false)
+        .withWidget(BuiltInWidgets.kToggleButton)
+        .withSize(4, 1)
+        .withPosition(0, 1)
+        .getEntry();
+    private GenericEntry shuffleboardSliderInput = shuffleboardLayout
+        .add("Set Elevator Position (meters)", 0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("Min", ScoringConstants.BOTTOM_HEIGHT, "Max", ScoringConstants.MAX_HEIGHT, "Block increment", 0.01))
+        .withSize(4, 2)
+        .withPosition(0, 2)
+        .getEntry();
+    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout
         .add("Stage Three Top Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withPosition(0, 1)
-        .withSize(2, 2)
+        .withSize(4, 1)
+        .withPosition(0, 3)
         .getEntry();
-    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout_Sensors
+    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout
         .add("Stage Two Top Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withPosition(0, 2)
-        .withSize(2, 2)
+        .withSize(4, 1)
+        .withPosition(0, 4)
         .getEntry();
-    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout_Sensors
+    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout
         .add("Bottom Sensor", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withPosition(0, 3)
-        .withSize(2, 2)
+        .withSize(4, 1)
+        .withPosition(0, 5)
         .getEntry();
-
-    private ShuffleboardLayout shuffleboardLayout_Input = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("ElevatorSubsystem – Controls", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(4, 4);
-
-    // TODO ALEXIS
 
     /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
@@ -135,6 +142,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         if (atUpperLimit()) {
             motionMagicPosition(getPosition() - 0.01, false);
+        }
+        else if (this.shuffleboardToggleInput.getBoolean(false)) {
+            if (!this.shuffleboardInputOn) {
+                this.shuffleboardSliderInput.setDouble(getPosition());
+                this.shuffleboardInputOn = true;
+            }
+            motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true);
+        }
+        else if (!this.shuffleboardToggleInput.getBoolean(false)) {
+            this.shuffleboardInputOn = false;
         }
     }
 
