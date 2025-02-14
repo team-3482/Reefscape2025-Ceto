@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -19,10 +20,12 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
@@ -57,7 +60,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
-    private boolean shuffleboardInputOn = false;
 
     /** Shuffleboard stuff */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -113,45 +115,55 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.rightMotor.getVelocity().setUpdateFrequency(50);
 
         this.leftMotor.setControl(new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true));
+
+        if (atLowerLimit()) {
+            setPosition(ScoringConstants.BOTTOM_HEIGHT);
+        }
     }
 
     @Override
+    // This method will be called once per scheduler run
     public void periodic() {
-        // This method will be called once per scheduler run
-        String controlName = this.rightMotor.getAppliedControl().getControlInfo().get("Name");
-
-        System.out.printf("Position : %f ; Velocity : %f%n", getPosition(), getRotorVelocity());
-
         this.shuffleboardPositionNumberBar.setDouble(getPosition());
         this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
         this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
         this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
 
-        if (controlName.equals("VoltageOut")) {
-            this.rightMotor.setControl(((VoltageOut) this.rightMotor.getAppliedControl())
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
-        }
-        else if (controlName.equals("MotionMagicVoltage")) {
-            this.rightMotor.setControl(((MotionMagicVoltage) this.rightMotor.getAppliedControl())
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
-        }
+        boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
 
-        if (atUpperLimit()) {
-            motionMagicPosition(getPosition() - 0.01, false);
+        if (!inputToggled) {
+            this.shuffleboardSliderInput.setDouble(getPosition());
         }
-        else if (this.shuffleboardToggleInput.getBoolean(false) && getCurrentCommand() == null) {
-            if (!this.shuffleboardInputOn) {
-                this.shuffleboardSliderInput.setDouble(getPosition());
-                this.shuffleboardInputOn = true;
+        
+        if (DriverStation.isEnabled()) {
+            ControlRequest appliedControl = this.rightMotor.getAppliedControl();
+            String controlName = appliedControl.getControlInfo().get("Name");
+
+            if (controlName.equals("VoltageOut")) {
+                this.rightMotor.setControl(((VoltageOut) appliedControl)
+                    .withLimitForwardMotion(atUpperLimit())
+                    .withLimitReverseMotion(atLowerLimit())
+                );
             }
-            motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true);
+            else if (controlName.equals("MotionMagicVoltage")) {
+                this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
+                    .withLimitForwardMotion(atUpperLimit())
+                    .withLimitReverseMotion(atLowerLimit())
+                );
+            }
+
+            Command currentCommand = getCurrentCommand();
+
+            if (atUpperLimit()) {
+                motionMagicPosition(getPosition() - 0.01, false);
+            }
+            else if (inputToggled && currentCommand == null) {
+                motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true);
+            }
         }
-        else if (!this.shuffleboardToggleInput.getBoolean(false)) {
-            this.shuffleboardInputOn = false;
+        else {
+            this.shuffleboardToggleInput.setBoolean(false);
+            setVoltage(0);
         }
     }
 

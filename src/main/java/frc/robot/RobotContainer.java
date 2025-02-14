@@ -95,7 +95,7 @@ public class RobotContainer {
         this.operatorController.y()
             .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT))
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
-        this.operatorController.rightBumper()
+        this.operatorController.rightStick()
             .onTrue(new ZeroElevatorCommand());
         
         // Outtake

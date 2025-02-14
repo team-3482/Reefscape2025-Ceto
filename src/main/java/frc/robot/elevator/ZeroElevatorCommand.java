@@ -18,7 +18,7 @@ public class ZeroElevatorCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        ElevatorSubsystem.getInstance().setVoltage(-1);
+        ElevatorSubsystem.getInstance().setVoltage(-2);
     }
 
 
@@ -30,11 +30,8 @@ public class ZeroElevatorCommand extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        if (interrupted) {
-            ElevatorSubsystem.getInstance().motionMagicPosition(ElevatorSubsystem.getInstance().getPosition(), false);
-        }
-        else {
-            ElevatorSubsystem.getInstance().setVoltage(0);
+        ElevatorSubsystem.getInstance().setVoltage(0);
+        if (!interrupted) {
             ElevatorSubsystem.getInstance().setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
     }
@@ -43,6 +40,6 @@ public class ZeroElevatorCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return ElevatorSubsystem.getInstance().getRotorVelocity() == 0;
+        return ElevatorSubsystem.getInstance().atLowerLimit() && ElevatorSubsystem.getInstance().getRotorVelocity() == 0;
     }
 }
