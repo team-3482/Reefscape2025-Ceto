@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.elevator.MoveElevatorCommand;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
 
@@ -65,6 +69,7 @@ public class RobotContainer {
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
+        ElevatorSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
@@ -81,6 +86,19 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
         
+      // Elevator
+        this.operatorController.a()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.x()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.y()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.rightStick()
+            .onTrue(new ZeroElevatorCommand());
+
         // Algae
         this.operatorController.pov(90)
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))

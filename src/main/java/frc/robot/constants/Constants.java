@@ -42,4 +42,13 @@ public final class Constants {
         public static final Color CORAL = Color.kWhite;
         public static final Color ALGAE = Color.kBlue;
     }
+
+    public static final class ScoringConstants {
+        /* Heights in elevator meters for scoring at these heights. */
+        public static final double L1_HEIGHT = 0.21;
+        public static final double L2_HEIGHT = 0.32;
+        public static final double L3_HEIGHT = 0.73;
+        public static final double BOTTOM_HEIGHT = 0;
+        public static final double MAX_HEIGHT = 0.75;
+    }
 }
