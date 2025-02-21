@@ -36,8 +36,7 @@ public class OuttakeCoralCommand extends Command {
      */
     @Override
     public void execute() {
-        if(!CoralSubsystem.getInstance().hasCoral())
-        {
+        if (!CoralSubsystem.getInstance().hasCoral()) {
             this.timer.start();
         }
     }
@@ -54,8 +53,7 @@ public class OuttakeCoralCommand extends Command {
 
     // Returns true when the command should end.
     @Override
-    public boolean isFinished() 
-    {
+    public boolean isFinished() {
         return timer.hasElapsed(0.1);
     }
 }

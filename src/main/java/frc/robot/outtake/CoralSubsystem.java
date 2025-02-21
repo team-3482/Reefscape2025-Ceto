@@ -46,16 +46,25 @@ public class CoralSubsystem extends SubsystemBase {
     private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX leftMotor = new TalonFX(CoralConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS); 
     private DigitalInput frontLaser = new DigitalInput(CoralConstants.FRONT_LASER_ID);
+    private DigitalInput backLaser = new DigitalInput(CoralConstants.BACK_LASER_ID);
 
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 3, "Label position", "TOP"))
+        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(2, 2);
-    private GenericEntry shuffleboard_entry = shuffleboardLayout
+    private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
         .add("Front Laser", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
         .withSize(2, 1)
+        .withPosition(0, 0)
+        .getEntry();
+    private GenericEntry shuffleboard_entry_backLaser = shuffleboardLayout
+        .add("Back Laser", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
+        .withSize(2, 1)
+        .withPosition(0, 1)
         .getEntry();
 
     /** Creates a new OuttakeSubsystem. */
@@ -70,8 +79,8 @@ public class CoralSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        this.shuffleboard_entry.setBoolean(hasCoral());
-        System.out.println(hasCoral());
+        this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
+        this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
     }
 
     /**
@@ -97,6 +106,13 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     /**
+     * Sets the speed of the motors to the slow intake speed
+     */
+    public void slowIntake() {
+        this.rightMotor.setVoltage(CoralConstants.SLOW_INTAKE_VOLTAGE);
+    }
+
+    /**
      * Sets the speed of the motors to the outtake speed
      */
     public void outtake() {
@@ -111,10 +127,26 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns a boolean value of whether there is a coral in the shooter
+     * Checks if the front laser sees the coral
+     * @return Whether it sees the coral
+     */
+    public boolean hasCoral_frontLaser() {
+        return !this.frontLaser.get();
+    }
+
+    /**
+     * Checks if the back laser sees the coral
+     * @return Whether it sees the coral
+     */
+    public boolean hasCoral_backLaser() {
+        return !this.backLaser.get();
+    }
+
+    /**
+     * Returns a boolean value of whether there is a coral in the outtake
      * @return whether it has coral
      */
     public boolean hasCoral() {
-        return !frontLaser.get();
+        return hasCoral_backLaser() && hasCoral_frontLaser();
     }
 }

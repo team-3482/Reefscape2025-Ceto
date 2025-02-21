@@ -34,7 +34,11 @@ public class IntakeCoralCommand extends Command {
      */
     // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public void execute() {}
+    public void execute() {
+        if (CoralSubsystem.getInstance().hasCoral_frontLaser()) {
+            CoralSubsystem.getInstance().slowIntake();
+        }
+    }
 
     // Called once the command ends or is interrupted.
     @Override
@@ -45,6 +49,6 @@ public class IntakeCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return CoralSubsystem.getInstance().hasCoral();
+        return CoralSubsystem.getInstance().hasCoral_frontLaser() && !CoralSubsystem.getInstance().hasCoral_backLaser();
     }
 }
