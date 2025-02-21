@@ -7,7 +7,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.elevator.MoveElevatorCommand;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.outtake.IntakeCoralCommand;
 import frc.robot.outtake.OuttakeCoralCommand;
@@ -44,7 +49,7 @@ public class RobotContainer {
 
         configureDrivetrain(); // This is done separately because it works differently from other Subsystems
         initializeSubsystems();
-        
+
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
@@ -66,6 +71,7 @@ public class RobotContainer {
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
+        ElevatorSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
@@ -81,6 +87,27 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+
+        // Elevator
+        this.operatorController.a()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.x()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.y()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+        this.operatorController.rightStick()
+            .onTrue(new ZeroElevatorCommand());
+
+        // Algae
+        this.operatorController.pov(90)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+        this.operatorController.pov(270)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
 
         // Coral
         this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
