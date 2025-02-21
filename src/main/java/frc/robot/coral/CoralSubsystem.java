@@ -51,7 +51,7 @@ public class CoralSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(2, 2);
+        .withSize(2, 3);
     private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
         .add("Front Laser", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
