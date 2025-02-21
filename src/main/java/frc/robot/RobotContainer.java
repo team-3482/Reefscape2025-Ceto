@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.elevator.MoveElevatorCommand;
@@ -46,7 +47,7 @@ public class RobotContainer {
 
         configureDrivetrain(); // This is done separately because it works differently from other Subsystems
         initializeSubsystems();
-        
+
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
@@ -85,7 +86,7 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
         
-        // Elevator
+      // Elevator
         this.operatorController.a()
             .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
@@ -97,8 +98,14 @@ public class RobotContainer {
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
         this.operatorController.rightStick()
             .onTrue(new ZeroElevatorCommand());
-        
-        // Outtake
+
+        // Algae
+        this.operatorController.pov(90)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+        this.operatorController.pov(270)
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
     }
 
     /**
