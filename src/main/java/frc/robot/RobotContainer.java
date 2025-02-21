@@ -14,6 +14,8 @@ import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.outtake.IntakeCoralCommand;
+import frc.robot.outtake.OuttakeCoralCommand;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
@@ -85,8 +87,8 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
-        
-      // Elevator
+
+        // Elevator
         this.operatorController.a()
             .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
@@ -106,6 +108,10 @@ public class RobotContainer {
         this.operatorController.pov(270)
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
             .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+
+        // Coral
+        this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
+        this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
     }
 
     /**

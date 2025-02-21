@@ -8,7 +8,7 @@ import edu.wpi.first.math.util.Units;
 
 /**
  * Constants used throughout the code specifically related to subsystems or unchangeable aspects of the bot.
- * @implSpec BACK of the bot is 180 degrees / the battery, use that as a reference for directions.
+ * @implSpec FRONT of the bot is where the elevator is, use that as a reference for directions.
  */
 public final class PhysicalConstants {
     /**
@@ -80,6 +80,18 @@ public final class PhysicalConstants {
         public static final double INTAKE_OUTTAKE_VOLTAGE = 1.5;
         public static final double HOLDING_VOLTAGE = 0.45; // TODO
 
+        public static final double MECHANISM_RATIO = 1;
+    }
+
+    public static final class CoralConstants {
+        public static final int RIGHT_MOTOR_ID = 31;
+        public static final int LEFT_MOTOR_ID = 30;
+
+        public static final int FRONT_LASER_ID = 2;
+
+        public static final double INTAKE_VOLTAGE = 1.5;
+        public static final double OUTTAKE_VOLTAGE = 1.5;
+        
         public static final double MECHANISM_RATIO = 1;
     }
 }
