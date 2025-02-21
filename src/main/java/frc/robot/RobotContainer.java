@@ -82,10 +82,9 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        this.operatorController.x().whileTrue(new IntakeCoralCommand());
-        this.operatorController.y().whileTrue(new OuttakeCoralCommand());
-
-        
+        // Coral
+        this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
+        this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
     }
 
     /**
