@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.coral.IntakeCoralCommand;
+import frc.robot.coral.OuttakeCoralCommand;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
-import frc.robot.outtake.IntakeCoralCommand;
-import frc.robot.outtake.OuttakeCoralCommand;
 import frc.robot.utilities.CommandGenerators;
 
 public class RobotContainer {
