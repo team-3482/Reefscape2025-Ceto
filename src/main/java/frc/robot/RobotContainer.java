@@ -78,8 +78,6 @@ public class RobotContainer {
         final double FastAngularSpeed = TunerConstants.kAngularSpeedFast.in(Units.RadiansPerSecond);
 
         final SwerveRequest.FieldCentric fieldCentricDrive_withDeadband = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * ControllerConstants.DEADBAND)
-            .withRotationalDeadband(FastAngularSpeed * ControllerConstants.DEADBAND) // Add a deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         
         final SwerveTelemetry logger = new SwerveTelemetry(MaxSpeed);
@@ -111,7 +109,9 @@ public class RobotContainer {
                         -driverController.getRightX()
                         * (topSpeed ? NormalAngularSpeed : FastAngularSpeed)
                         * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    );
+                    )
+                    .withDeadband(ControllerConstants.DEADBAND * (fineControl ? LesserMaxSpeed : MaxSpeed))
+                    .withRotationalDeadband(ControllerConstants.DEADBAND * (fineControl ? NormalAngularSpeed : FastAngularSpeed));
             }).ignoringDisable(true)
         );
         
