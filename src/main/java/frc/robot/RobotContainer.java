@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -88,16 +90,18 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
+        Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController.rightTrigger().getAsBoolean();
+
         // Elevator
         this.operatorController.a()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
         this.operatorController.x()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
         this.operatorController.y()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT));
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
         this.operatorController.rightStick()
             .onTrue(new ZeroElevatorCommand());
 

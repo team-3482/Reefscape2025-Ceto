@@ -1,19 +1,24 @@
 package frc.robot.elevator;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 /** A command that moves the elevator to a position. */
 public class MoveElevatorCommand extends Command {
-    final double position;
+    private final double position;
+    private final Supplier<Boolean> slowSupplier;
 
     /**
      * Creates a new ElevatorCommand.
-     * @param position - The position the elevator will move to. In meters.
+     * @param position - The position the elevator will move to. In meters
+     * @param slowSupplier - The supplier for running the elevator slower.
      */
-    public MoveElevatorCommand(double position) {
+    public MoveElevatorCommand(double position, Supplier<Boolean> slowSupplier) {
         setName("ElevatorCommand");
         
         this.position = position;
+        this.slowSupplier = slowSupplier;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ElevatorSubsystem.getInstance());
@@ -23,7 +28,7 @@ public class MoveElevatorCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        ElevatorSubsystem.getInstance().motionMagicPosition(this.position, true);
+        ElevatorSubsystem.getInstance().motionMagicPosition(this.position, true, this.slowSupplier.get());
     }
 
 

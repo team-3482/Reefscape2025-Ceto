@@ -60,6 +60,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final Follower FOLLOW_RIGHT = new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true);
+    private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
 
     /** Shuffleboard stuff */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -114,7 +116,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.rightMotor.getPosition().setUpdateFrequency(50);
         this.rightMotor.getVelocity().setUpdateFrequency(50);
 
-        this.leftMotor.setControl(new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true));
+        this.leftMotor.setControl(this.FOLLOW_RIGHT);
 
         if (atLowerLimit()) {
             setPosition(ScoringConstants.BOTTOM_HEIGHT);
@@ -138,27 +140,54 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (DriverStation.isEnabled()) {
             ControlRequest appliedControl = this.rightMotor.getAppliedControl();
             String controlName = appliedControl.getControlInfo().get("Name");
+            boolean leftMotor = false;
+
+            if (controlName.equals("Follower")) {
+                appliedControl = this.leftMotor.getAppliedControl();
+                controlName = appliedControl.getControlInfo().get("Name");
+                leftMotor = true;
+            }
 
             if (controlName.equals("VoltageOut")) {
-                this.rightMotor.setControl(((VoltageOut) appliedControl)
-                    .withLimitForwardMotion(atUpperLimit())
-                    .withLimitReverseMotion(atLowerLimit())
-                );
+                if (leftMotor) {
+                    this.leftMotor.setControl(((VoltageOut) appliedControl)
+                        .withLimitForwardMotion(atUpperLimit())
+                        .withLimitReverseMotion(atLowerLimit())
+                    );
+                    this.rightMotor.setControl(this.FOLLOW_LEFT);
+                }
+                else {
+                    this.rightMotor.setControl(((VoltageOut) appliedControl)
+                        .withLimitForwardMotion(atUpperLimit())
+                        .withLimitReverseMotion(atLowerLimit())
+                    );
+                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                }
             }
             else if (controlName.equals("MotionMagicVoltage")) {
-                this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
-                    .withLimitForwardMotion(atUpperLimit())
-                    .withLimitReverseMotion(atLowerLimit())
-                );
+                if (leftMotor) {
+                    this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
+                        .withLimitForwardMotion(atUpperLimit())
+                        .withLimitReverseMotion(atLowerLimit())
+                    );
+                    this.rightMotor.setControl(this.FOLLOW_LEFT);
+                }
+                else {
+                    this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
+                        .withLimitForwardMotion(atUpperLimit())
+                        .withLimitReverseMotion(atLowerLimit())
+                    );
+                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                }
             }
 
             Command currentCommand = getCurrentCommand();
 
             if (atUpperLimit()) {
-                motionMagicPosition(getPosition() - 0.01, false);
+                motionMagicPosition(getPosition() - 0.01, false, true);
             }
             else if (inputToggled && currentCommand == null) {
-                motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true);
+                motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true, false);
             }
         }
         else {
@@ -204,6 +233,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.rightMotor.getConfigurator().apply(configuration);
 
         motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive; // Left motor inverted.
+        motionMagicConfigs.MotionMagicCruiseVelocity = ElevatorConstants.SLOW_CRUISE_SPEED;
+        motionMagicConfigs.MotionMagicAcceleration = ElevatorConstants.SLOW_ACCELERATION;
         this.leftMotor.getConfigurator().apply(configuration);
     }
 
@@ -236,8 +267,9 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Moves the elevator to a position in meters using Motion Magic.
      * @param position - The position in meters.
      * @param clamp - Whether to clamp the position to the soft stops.
+     * @param slow - Whether or not to limit the elevator's max speed and acceleration.
      */
-    public void motionMagicPosition(double position, boolean clamp) {
+    public void motionMagicPosition(double position, boolean clamp, boolean slow) {
         if (clamp) {
             position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.MAX_HEIGHT);
         }
@@ -246,10 +278,20 @@ public class ElevatorSubsystem extends SubsystemBase {
             .withSlot(0)
             .withPosition(this.metersToRotation(position));
 
-        this.rightMotor.setControl(control
-            .withLimitForwardMotion(atUpperLimit())
-            .withLimitReverseMotion(atLowerLimit())
-        );
+        if (slow) {
+            this.leftMotor.setControl(control
+                .withLimitForwardMotion(atUpperLimit())
+                .withLimitReverseMotion(atLowerLimit())
+            );
+            this.rightMotor.setControl(this.FOLLOW_LEFT);
+        }
+        else {
+            this.rightMotor.setControl(control
+                .withLimitForwardMotion(atUpperLimit())
+                .withLimitReverseMotion(atLowerLimit())
+            );
+            this.leftMotor.setControl(this.FOLLOW_RIGHT);
+        }
     }
 
     /**
