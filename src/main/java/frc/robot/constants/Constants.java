@@ -47,7 +47,7 @@ public final class Constants {
         /* Heights in elevator meters for scoring at these heights. */
         public static final double L1_CORAL = 0.21;
         public static final double L2_CORAL = 0.33;
-        public static final double L2_ALGAE = 0.67;
+        public static final double L2_ALGAE = 0.63;
         public static final double L3_CORAL = 0.74;
         public static final double BOTTOM_HEIGHT = 0;
         public static final double MAX_HEIGHT = 0.75;
