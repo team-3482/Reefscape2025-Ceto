@@ -36,7 +36,7 @@ public class AlgaeSubsystem extends SubsystemBase {
     private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
-    /** Creates a new OuttakeSubsystem. */
+    /** Creates a new AlgaeSubsystem. */
     private AlgaeSubsystem() {
         super("AlgaeSubsystem");
         configureMotors();
@@ -47,7 +47,13 @@ public class AlgaeSubsystem extends SubsystemBase {
 
     // This method will be called once per scheduler run
     @Override
-    public void periodic() {}
+    public void periodic() {
+        // Command currentCommand = getCurrentCommand();
+
+        // if (currentCommand == null) {
+        //     hold();
+        // }
+    }
 
     /**
      * Configures the gear ratio of the motors to our gear ratio
@@ -76,6 +82,13 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void outtake() {
         rightMotor.setVoltage(-AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
+    }
+
+    /**
+     * Sets the speed of the motors to the holding voltage.
+     */
+    public void hold() {
+        this.rightMotor.setVoltage(AlgaeConstants.HOLDING_VOLTAGE);
     }
 
     /**

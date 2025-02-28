@@ -186,6 +186,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             if (atUpperLimit()) {
                 motionMagicPosition(getPosition() - 0.01, false, true);
             }
+            else if (currentCommand != null) {
+                this.shuffleboardToggleInput.setBoolean(false);
+            }
             else if (inputToggled && currentCommand == null) {
                 motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true, false);
             }

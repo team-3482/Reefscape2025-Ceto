@@ -93,24 +93,27 @@ public class RobotContainer {
         Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController.rightTrigger().getAsBoolean();
 
         // Elevator
-        this.operatorController.a()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_HEIGHT, slowElevatorSupplier))
+        this.operatorController.povDown()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_CORAL, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.povRight()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_CORAL, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.povUp()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier))
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
         this.operatorController.x()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_HEIGHT, slowElevatorSupplier))
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier))
             .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
-        this.operatorController.y()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_HEIGHT, slowElevatorSupplier))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
-        this.operatorController.rightStick()
+        this.operatorController.povLeft()
             .onTrue(new ZeroElevatorCommand());
 
         // Algae
-        this.operatorController.pov(90)
-            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
-        this.operatorController.pov(270)
+        this.operatorController.a()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+        this.operatorController.y()
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
             .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
 
         // Coral
