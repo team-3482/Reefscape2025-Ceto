@@ -5,9 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.io.File;
 
@@ -16,16 +13,15 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.Constants.NamedColors;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
-import frc.robot.swerve.SwerveSubsystem;
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -122,27 +118,11 @@ public class Robot extends LoggedRobot {
     public void teleopExit() {}
 
     @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-        
-        CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-        // TODO ROBOT BUILT : Find Max Module Speed
-        SwerveSubsystem.getInstance().setControl(
-            new SwerveRequest.RobotCentric().withVelocityX(MetersPerSecond.of(1))
-        );
-    }
-
-    private double topSpeed;
-    @Override
-    public void testPeriodic() {
-        ChassisSpeeds speeds = SwerveSubsystem.getInstance().getState().Speeds;
-        double speed = Math.sqrt(Math.pow(speeds.vyMetersPerSecond, 2) + Math.pow(speeds.vxMetersPerSecond, 2));
-        topSpeed = speed;
-        System.out.println(this.topSpeed);
-    }
+    public void testInit() {}
 
     @Override
-    public void testExit() {
-        // SwerveSubsystem.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
-    }
+    public void testPeriodic() {}
+
+    @Override
+    public void testExit() {}
 }
