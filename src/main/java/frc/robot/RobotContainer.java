@@ -24,6 +24,7 @@ import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
+import frc.robot.vision.VisionSubsystem;
 
 public class RobotContainer {
     // Thread-safe singleton design pattern.
@@ -168,6 +169,7 @@ public class RobotContainer {
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
+        VisionSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */

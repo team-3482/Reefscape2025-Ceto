@@ -32,6 +32,11 @@ public class Robot extends LoggedRobot {
 
     @SuppressWarnings({ "resource", "unused" })
     public Robot() {
+        for (int port = 5800; port <= 5809; port++) {
+            PortForwarder.add(port, LimelightConstants.LEFT_LL + ".local", port);
+            PortForwarder.add(port + 10, LimelightConstants.RIGHT_LL + ".local", port);
+        }
+
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
         robotContainer.configureOperatorBindings();
