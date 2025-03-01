@@ -4,15 +4,33 @@
 
 package frc.robot;
 
-import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.TimedRobot;
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import java.io.File;
+
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.LimelightConstants;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.Constants.NamedColors;
+import frc.robot.led.LEDSubsystem;
+import frc.robot.swerve.SwerveSubsystem;
 
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
     private Command auton;
 
+    @SuppressWarnings({ "resource", "unused" })
     public Robot() {
         for (int port = 5800; port <= 5809; port++) {
             PortForwarder.add(port, LimelightConstants.LEFT_LL + ".local", port);
@@ -22,6 +40,29 @@ public class Robot extends TimedRobot {
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
         robotContainer.configureOperatorBindings();
+
+        Logger.recordMetadata("ProjectName", "Reefscape2025"); // Set a metadata value
+
+        if (isReal()) {
+            String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
+
+            System.out.println("logging to: " + path + " (new directory: " + new File(path).mkdirs() + ")");
+
+            SignalLogger.setPath(path);
+            
+            Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
+            Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+
+            Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+            // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY > 0 ? "true" : "false");
+            Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+
+            Logger.start();
+        }
+
+        LEDSubsystem.getInstance().blinkColor(Color.kOrange);
     }
 
     @Override
@@ -30,22 +71,34 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        SignalLogger.stop();
+        // Blink like the RSL when disabled
+        LEDSubsystem.getInstance().blinkColor(Color.kOrange);
+    }
 
     @Override
     public void disabledPeriodic() {}
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+        SignalLogger.start();
+        LEDSubsystem.getInstance().setColor(Color.kOrange);
+    }
 
     @Override
     public void autonomousInit() {
         this.auton = RobotContainer.getInstance().getAutonomousCommand();
+
+        Logger.recordOutput("Auton/AutonCommand", auton.getName());
+
         if (this.auton != null) {
             this.auton.schedule();
+            LEDSubsystem.getInstance().setColor(NamedColors.OK);
         }
         else {
             System.err.println("No auton command found.");
+            LEDSubsystem.getInstance().blinkColor(NamedColors.ERROR);
         }
     }
 
@@ -60,7 +113,7 @@ public class Robot extends TimedRobot {
         if (auton != null) {
             this.auton.cancel();
         }
-    }
+    } 
 
     @Override
     public void teleopPeriodic() {}
@@ -71,11 +124,25 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         CommandScheduler.getInstance().cancelAll();
+        
+        CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
+        // TODO ROBOT BUILT : Find Max Module Speed
+        SwerveSubsystem.getInstance().setControl(
+            new SwerveRequest.RobotCentric().withVelocityX(MetersPerSecond.of(1))
+        );
+    }
+
+    private double topSpeed;
+    @Override
+    public void testPeriodic() {
+        ChassisSpeeds speeds = SwerveSubsystem.getInstance().getState().Speeds;
+        double speed = Math.sqrt(Math.pow(speeds.vyMetersPerSecond, 2) + Math.pow(speeds.vxMetersPerSecond, 2));
+        topSpeed = speed;
+        System.out.println(this.topSpeed);
     }
 
     @Override
-    public void testPeriodic() {}
-
-    @Override
-    public void testExit() {}
+    public void testExit() {
+        // SwerveSubsystem.getInstance().setControl(new SwerveRequest.SwerveDriveBrake());
+    }
 }
