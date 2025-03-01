@@ -172,7 +172,6 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
                         .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                         .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())
                 ),
-                // TODO FINAL ROBOT : Tune PathPlanner PID
                 new PPHolonomicDriveController(
                     // PID constants for translation
                     new PIDConstants(7, 0, 0),

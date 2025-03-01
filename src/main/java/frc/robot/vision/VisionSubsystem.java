@@ -7,10 +7,12 @@ package frc.robot.vision;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
 
 /** 
@@ -96,7 +99,7 @@ public class VisionSubsystem extends SubsystemBase {
         // The processing takes no longer than a regular robot cycle.
         // FPS will never be high enough to take advantage of every cycle,
         // but it's fine because repeat frames are entirely ignored (see heartbeats).
-        this.notifier.startPeriodic(0.02);
+        this.notifier.startPeriodic(0.05);
     }
 
     // This method will be called once per scheduler run
@@ -109,28 +112,27 @@ public class VisionSubsystem extends SubsystemBase {
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
     private synchronized void notifierLoop() {
-        // TODO DRIVETRAIN
         fetchLimelightData();
-        /* 
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
             if (data.canTrustRotation) {
                 // Only trust rotational data when adding this pose.
-                CommandSwerveDrivetrain.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
+                SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
                     recentVisionData() ? 1 : 0.5
                 ));
-                CommandSwerveDrivetrain.getInstance().addVisionMeasurement(
+                SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
-                    data.MegaTag.timestampSeconds
+                    Utils.getCurrentTimeSeconds() // TODO : Fix timestamp
+                    //data.MegaTag.timestampSeconds
                 );
             }
 
             if (data.canTrustPosition) {
-                if (CommandSwerveDrivetrain.getInstance().getState().Pose.getTranslation()
+                if (SwerveSubsystem.getInstance().getState().Pose.getTranslation()
                         .getDistance(data.MegaTag2.pose.getTranslation())
                         <= 0.5
                 ) {
@@ -138,18 +140,18 @@ public class VisionSubsystem extends SubsystemBase {
                 }
 
                 // Only trust positional data when adding this pose.
-                CommandSwerveDrivetrain.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
+                SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     recentVisionData() ? 0.7 : 0.1,
                     recentVisionData() ? 0.7 : 0.1,
                     9999999
                 ));
-                CommandSwerveDrivetrain.getInstance().addVisionMeasurement(
+                SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag2.pose,
-                    data.MegaTag2.timestampSeconds
+                    Utils.getCurrentTimeSeconds() // TODO : Fix timestamp
+                    // data.MegaTag2.timestampSeconds
                 );
             }
         }
-        */
         // This method is suprprisingly efficient, generally below 1 ms.
         optimizeLimelights();
     }
@@ -165,8 +167,7 @@ public class VisionSubsystem extends SubsystemBase {
         long heartbeatRightLL = -1;
 
         // Periodic logic
-        // TODO DRIVETRAIN
-        double rotationDegrees = 0; //CommandSwerveDrivetrain.getInstance().getState().Pose.getRotation().getDegrees();
+        double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
         LimelightHelpers.SetRobotOrientation(LimelightConstants.LEFT_LL,
             rotationDegrees, 0, 0, 0, 0, 0
         );

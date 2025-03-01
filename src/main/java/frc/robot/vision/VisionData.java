@@ -61,9 +61,11 @@ public class VisionData {
      */
     private boolean canTrustRotation() {
         return this.MegaTag2 != null
-            && this.MegaTag2.avgTagDist <= 3 // 3 Meters
             && this.MegaTag != null
-            && this.MegaTag.tagCount >= 2;
+            && ((this.MegaTag.tagCount >= 2
+                    && this.MegaTag2.avgTagDist <= 3) || 
+                (this.MegaTag.tagCount >= 1
+                    && this.MegaTag2.avgTagDist <= 1));
     }
 
     /**
