@@ -11,10 +11,10 @@ public final class LimelightConstants {
     /** Enables publishing of the CameraFeeds to Shuffleboard on startup. */
     public static final boolean PUBLISH_CAMERA_FEEDS = true;
     
-    /** Front left Limelight (April Tags). */
-    public static final String LEFT_LL = "limelight-stheno";
-    /** Front right Limelight (April Tags). */
-    public static final String RIGHT_LL = "limelight-euryale";
+    /** Bottom Limelight (Reef). */
+    public static final String BOTTOM_LL = "limelight-stheno";
+    /** Top Limelight (Processor/Barge). */
+    public static final String TOP_LL = "limelight-euryale";
 
     /** The distance within which to use Limelight data in meters. This is measured from tag to camera.*/
     public static final int TRUST_TAG_DISTANCE = 10;

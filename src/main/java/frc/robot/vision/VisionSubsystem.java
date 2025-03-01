@@ -13,6 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
@@ -70,26 +73,26 @@ public class VisionSubsystem extends SubsystemBase {
         if (LimelightConstants.PUBLISH_CAMERA_FEEDS) {
             // Shuffleboard camera feeds.
             HttpCamera leftLLCamera = new HttpCamera(
-                LimelightConstants.LEFT_LL,
-                "http://" + LimelightConstants.LEFT_LL + ".local:5800/stream.mjpg"
+                LimelightConstants.BOTTOM_LL,
+                "http://" + LimelightConstants.BOTTOM_LL + ".local:5800/stream.mjpg"
             );
             HttpCamera rightLLCamera = new HttpCamera(
-                LimelightConstants.RIGHT_LL,
-                "http://" + LimelightConstants.RIGHT_LL + ".local:5800/stream.mjpg"
+                LimelightConstants.TOP_LL,
+                "http://" + LimelightConstants.TOP_LL + ".local:5800/stream.mjpg"
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.LEFT_LL, leftLLCamera)
+                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.RIGHT_LL, rightLLCamera)
+                .add(LimelightConstants.TOP_LL, rightLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
         }
 
-        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.LEFT_LL, LimelightConstants.ALL_TAG_IDS);
-        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.RIGHT_LL, LimelightConstants.ALL_TAG_IDS);
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.TOP_LL, LimelightConstants.ALL_TAG_IDS);
 
         this.lastDataTimer = new Timer();
         this.lastDataTimer.start();
@@ -99,7 +102,7 @@ public class VisionSubsystem extends SubsystemBase {
         // The processing takes no longer than a regular robot cycle.
         // FPS will never be high enough to take advantage of every cycle,
         // but it's fine because repeat frames are entirely ignored (see heartbeats).
-        this.notifier.startPeriodic(0.05);
+        this.notifier.startPeriodic(0.02);
     }
 
     // This method will be called once per scheduler run
@@ -126,19 +129,11 @@ public class VisionSubsystem extends SubsystemBase {
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
-                    Utils.getCurrentTimeSeconds() // TODO : Fix timestamp
-                    //data.MegaTag.timestampSeconds
+                    Utils.fpgaToCurrentTime(data.MegaTag.timestampSeconds)
                 );
             }
 
             if (data.canTrustPosition) {
-                if (SwerveSubsystem.getInstance().getState().Pose.getTranslation()
-                        .getDistance(data.MegaTag2.pose.getTranslation())
-                        <= 0.5
-                ) {
-                    this.lastDataTimer.restart();
-                }
-
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     recentVisionData() ? 0.7 : 0.1,
@@ -147,10 +142,14 @@ public class VisionSubsystem extends SubsystemBase {
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag2.pose,
-                    Utils.getCurrentTimeSeconds() // TODO : Fix timestamp
-                    // data.MegaTag2.timestampSeconds
+                    Utils.fpgaToCurrentTime(data.MegaTag2.timestampSeconds)
                 );
             }
+
+            hasRecentVisionData(
+                data.canTrustPosition ? data.MegaTag2.pose.getTranslation() : null,
+                data.canTrustRotation ? data.MegaTag.pose.getRotation() : null
+            );
         }
         // This method is suprprisingly efficient, generally below 1 ms.
         optimizeLimelights();
@@ -168,23 +167,23 @@ public class VisionSubsystem extends SubsystemBase {
 
         // Periodic logic
         double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.LEFT_LL,
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.BOTTOM_LL,
             rotationDegrees, 0, 0, 0, 0, 0
         );
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.RIGHT_LL,
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.TOP_LL,
             rotationDegrees, 0, 0, 0, 0, 0
         );
         
-        heartbeatLeftLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.LEFT_LL, "hb").getInteger(-1);
-        heartbeatRightLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.RIGHT_LL, "hb").getInteger(-1);
+        heartbeatLeftLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
+        heartbeatRightLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
 
         if (heartbeatLeftLL == -1 || this.lastHeartbeatLeftLL < heartbeatLeftLL) {
-            this.limelightDatas[0] = getVisionData(LimelightConstants.LEFT_LL);
+            this.limelightDatas[0] = getVisionData(LimelightConstants.BOTTOM_LL);
             this.lastHeartbeatLeftLL = heartbeatLeftLL == -1 ? this.lastHeartbeatLeftLL : heartbeatLeftLL;
         }
         
         if (heartbeatRightLL == -1 || this.lastHeartbeatRightLL < heartbeatRightLL) {
-            this.limelightDatas[1] = getVisionData(LimelightConstants.RIGHT_LL);
+            this.limelightDatas[1] = getVisionData(LimelightConstants.TOP_LL);
             this.lastHeartbeatRightLL = heartbeatRightLL == -1 ? this.lastHeartbeatRightLL : heartbeatRightLL;
         }
 
@@ -344,5 +343,52 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public boolean recentVisionData() {
         return !this.lastDataTimer.hasElapsed(LimelightConstants.RECENT_DATA_CUTOFF);
+    }
+
+    /**
+     * A method that restarts the timer if there is recent data.
+     * @param translation - The estimated translation.
+     * @param rotation - The estimated rotation.
+     * @apiNote If either is {@code null}, it will be ignored.
+     */
+    private void hasRecentVisionData(Translation2d translation, Rotation2d rotation) {
+        Pose2d odometryPose = SwerveSubsystem.getInstance().getState().Pose;
+
+        boolean validTranslation = translation == null ? false
+            : odometryPose.getTranslation().getDistance(translation) <= 0.3;
+        
+        boolean validRotation = rotation != null;
+        if (validRotation) {
+            double oAngle = odometryPose.getRotation().getDegrees();
+            double lAngle = rotation.getDegrees();
+            double minAngle = Math.min(360 - Math.abs(oAngle - lAngle), Math.abs(oAngle - lAngle));
+            validRotation = minAngle < 13;
+        }
+
+        if (validTranslation && validRotation) {
+            this.lastDataTimer.restart();
+        }
+    }
+
+    /**
+     * Gets the robot position according to the Limelight in target-space (the target is at the origin);
+     * @return The robot position.
+     * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom one.
+     * Returns {@code null} if there is no tags in view for either Limelight.
+     */
+    public Pose2d getEstimatedPositionInTargetSpace() {
+        Pose2d botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL));
+        
+        if (botPose != null && !botPose.equals(new Pose2d())) {
+            return botPose;
+        }
+
+        botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL));
+
+        if (botPose != null && !botPose.equals(new Pose2d())) {
+            return botPose;
+        }
+
+        return null;
     }
 }
