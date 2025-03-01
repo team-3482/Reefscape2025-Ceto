@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
 
@@ -58,6 +59,7 @@ public class Robot extends LoggedRobot {
             Logger.start();
         }
 
+        FollowPathCommand.warmupCommand().schedule();
         LEDSubsystem.getInstance().blinkColor(Color.kOrange);
     }
 

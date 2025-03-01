@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.AlignToReefCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.swerve.SwerveSubsystem;
@@ -202,6 +203,9 @@ public class RobotContainer {
         this.driverController.x().whileTrue(
             SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
         );
+
+        this.driverController.leftBumper().whileTrue(new AlignToReefCommand(false));
+        this.driverController.rightBumper().whileTrue(new AlignToReefCommand(true));
     }
 
     /** Configures the button bindings of the operator controller. */
