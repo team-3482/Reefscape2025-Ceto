@@ -376,8 +376,17 @@ public class VisionSubsystem extends SubsystemBase {
      * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom one.
      * Returns {@code null} if there is no tags in view for either Limelight.
      */
-    public Pose2d getEstimatedPositionInTargetSpace() {
-        Pose2d botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL));
+    public Pose2d getEstimatedPosition_TargetSpace() {
+        /* [ x, y, z, pitch, yaw, roll ] (meters, degrees) */
+        double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
+        Pose2d botPose = new Pose2d();
+
+        if (poseArray.length != 0) {
+            botPose = new Pose2d(
+                new Translation2d(poseArray[0], poseArray[1]),
+                Rotation2d.fromDegrees(poseArray[4])
+            );
+        }
         
         if (botPose != null && !botPose.equals(new Pose2d())) {
             return botPose;
