@@ -111,7 +111,7 @@ public class PIDAlignCommand extends Command {
                 this.thetaController.calculate(currentPose.getRotation().minus(this.targetPose.getRotation()).getRadians(), 0),
                 currentPose.getRotation()
             ))
-        );
+        ); // TODO : Feedforward default speed to overcome friction ?
     }
 
     // Called once the command ends or is interrupted.
