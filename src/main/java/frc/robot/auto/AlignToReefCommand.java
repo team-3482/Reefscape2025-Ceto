@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,9 +26,9 @@ public class AlignToReefCommand extends Command {
 
     private Pose2d targetPose;
 
-    private final PIDController xController = new PIDController(1, 0, 0);
-    private final PIDController yController = new PIDController(1, 0, 0);
-    private final PIDController thetaController = new PIDController(1, 0, 0);
+    private final PIDController xController = new PIDController(2.5, 0, 0);
+    private final PIDController yController = new PIDController(2.5, 0, 0);
+    private final PIDController thetaController = new PIDController(3.5, 0, 0);
 
     private SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
 
@@ -65,19 +66,20 @@ public class AlignToReefCommand extends Command {
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
-            double perpendicularChange = botPose_TargetSpace.getY() - AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG;
+            double perpendicularChange = -(botPose_TargetSpace.getY() + AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG);
             /** Right (from tag perspective, left) is positive. */
-            double parallelChange =
-                botPose_TargetSpace.getX() + AligningConstants.Reef.PARALLEL_DIST_TO_TAG * (this.right ? 1 : -1);
-            
+            double parallelChange = (this.right ? 1 : -1) * AligningConstants.Reef.PARALLEL_DIST_TO_TAG
+                - botPose_TargetSpace.getX();
             Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
+
+            Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.getRotation());
             
-            double xChange = botPose.getRotation().getCos() * (perpendicularChange + parallelChange);
-            double yChange = -botPose.getRotation().getSin() * (perpendicularChange + parallelChange);
-    
+            double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
+            double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
+
             this.targetPose = new Pose2d(
                 botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
-                botPose.getRotation().plus(botPose_TargetSpace.getRotation())
+                targetRotation
             );
 
             this.xController.setSetpoint(this.targetPose.getX());

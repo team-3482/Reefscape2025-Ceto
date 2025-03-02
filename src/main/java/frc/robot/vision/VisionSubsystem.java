@@ -362,7 +362,7 @@ public class VisionSubsystem extends SubsystemBase {
             double oAngle = odometryPose.getRotation().getDegrees();
             double lAngle = rotation.getDegrees();
             double minAngle = Math.min(360 - Math.abs(oAngle - lAngle), Math.abs(oAngle - lAngle));
-            validRotation = minAngle < 13;
+            validRotation = minAngle < 10;
         }
 
         if (validTranslation && validRotation) {
@@ -383,7 +383,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (poseArray.length != 0) {
             botPose = new Pose2d(
-                new Translation2d(poseArray[0], poseArray[1]),
+                new Translation2d(poseArray[0], poseArray[2]),
                 Rotation2d.fromDegrees(poseArray[4])
             );
         }
