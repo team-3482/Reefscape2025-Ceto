@@ -141,12 +141,12 @@ public class VisionSubsystem extends SubsystemBase {
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
-            // TODO : Linger data for multiple frames so it stops flickering so much
+            
             if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
                 this.shuffleboardProcessorInView.setBoolean(data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16);
                 this.shuffleboardReefInView.setBoolean(17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11));
             }
-            else {
+            else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
             }
