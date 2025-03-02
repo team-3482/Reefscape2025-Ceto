@@ -54,7 +54,7 @@ public final class Constants {
 
         public static final class Processor {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG = 0.0;
+            public static final double PERPENDICULAR_DIST_TO_TAG = 0.0; // TODO : Find this value in testing
             /** How far (in meters) the robot should be parallel to the tag to score. */
             public static final double PARALLEL_DIST_TO_TAG = 0.0;
         }

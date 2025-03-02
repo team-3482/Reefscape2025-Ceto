@@ -19,27 +19,36 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.VisionSubsystem;
 
 /**
- * A command that wraps a PathPlanner command that paths to the reef for scoring.
+ * A command that wraps PID controllers to align to a position relative to a tag.
  */
-public class AlignToReefCommand extends Command {
-    private final boolean right;
-
+public class PIDAlignCommand extends Command {
     private Pose2d targetPose;
 
     private final PIDController xController = new PIDController(2.5, 0, 0);
     private final PIDController yController = new PIDController(2.5, 0, 0);
     private final PIDController thetaController = new PIDController(3.5, 0, 0);
 
-    private SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
+    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
+
+    private final boolean right;
+    private final double PERPENDICULAR_DIST_TO_TAG;
+    private final double PARALLEL_DIST_TO_TAG;
 
     /**
-     * Creates a new AlignToReefCommand.
-     * @param right - Whether to align with the left or right.
+     * Creates a new PIDAlignCommand.
+     * @param name - The name of the sub-command.
+     * @param right - Whether to line up a parallel distance to the left or right of the tag (robot perspective).
+     * @param perpendicularDistanceToTag - The perpendicular distance from the tag to line up.
+     * @param parallelDistanceToTag  - The parallel distance from the tag to line up.
      */
-    public AlignToReefCommand(boolean right) {
-        setName("DriveToNoteCommand");
+    private PIDAlignCommand(String name, boolean right, double perpendicularDistanceToTag, double parallelDistanceToTag) {
+        setName(name);
 
         this.right = right;
+        this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
+        this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
+
+
         this.xController.setTolerance(0.05);
         this.yController.setTolerance(0.05);
         this.thetaController.setTolerance(Math.toRadians(0.5));
@@ -66,9 +75,9 @@ public class AlignToReefCommand extends Command {
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
-            double perpendicularChange = -(botPose_TargetSpace.getY() + AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG);
+            double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
             /** Right (from tag perspective, left) is positive. */
-            double parallelChange = (this.right ? 1 : -1) * AligningConstants.Reef.PARALLEL_DIST_TO_TAG
+            double parallelChange = (this.right ? 1 : -1) * this.PARALLEL_DIST_TO_TAG
                 - botPose_TargetSpace.getX();
             Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
@@ -119,5 +128,40 @@ public class AlignToReefCommand extends Command {
     @Override
     public boolean isFinished() {
         return this.targetPose.equals(new Pose2d()) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
+    }
+    
+    /**
+     * A command that extends a PIDAlignCommand to align to the reef.
+     */
+    public static class Reef extends PIDAlignCommand {
+        /**
+         * Creates a new AlignToReefCommand.
+         * @param right - Whether to align to the left or right of the tag (robot perspective).
+         */
+        public Reef(boolean right) {
+            super(
+                "AlignToReefCommand",
+                right,
+                AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
+                AligningConstants.Reef.PARALLEL_DIST_TO_TAG
+            );
+        }
+    }
+
+    /**
+     * A command that extends a PIDAlignCommand to align to the processor.
+     */
+    public static class Processor extends PIDAlignCommand {
+        /**
+         * Creates a new AlignToProcessorCommand.
+         */
+        public Processor() {
+            super(
+                "AlignToProcessorCommand",
+                true, // Doesn't matter, because the parallel distance is 0.
+                AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
+                AligningConstants.Reef.PARALLEL_DIST_TO_TAG
+            );
+        }
     }
 }

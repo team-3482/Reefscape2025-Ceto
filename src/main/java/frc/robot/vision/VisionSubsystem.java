@@ -17,10 +17,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.swerve.SwerveSubsystem;
@@ -65,6 +68,24 @@ public class VisionSubsystem extends SubsystemBase {
      * but this was the quickest solution.
      */
     private volatile Timer lastDataTimer;
+
+    /* Shuffleboard */
+    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
+        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
+        .withSize(2, 3);
+    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
+        .add("Processor Align", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withSize(2, 1)
+        .withPosition(0, 1)
+        .getEntry();
+    private GenericEntry shuffleboardReefInView = shuffleboardLayout
+        .add("Reef Align", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withSize(2, 1)
+        .withPosition(0, 2)
+        .getEntry();
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -120,6 +141,16 @@ public class VisionSubsystem extends SubsystemBase {
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
+            // TODO : Linger data for multiple frames so it stops flickering so much
+            if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
+                this.shuffleboardProcessorInView.setBoolean(data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16);
+                this.shuffleboardReefInView.setBoolean(17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11));
+            }
+            else {
+                this.shuffleboardProcessorInView.setBoolean(false);
+                this.shuffleboardReefInView.setBoolean(false);
+            }
+            
             if (data.canTrustRotation) {
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
