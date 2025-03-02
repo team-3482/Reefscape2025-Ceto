@@ -217,8 +217,9 @@ public class RobotContainer {
             SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
         );
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(false));
-        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(true));
+        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1));
+        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1));
+        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 
