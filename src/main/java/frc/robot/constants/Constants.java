@@ -42,7 +42,25 @@ public final class Constants {
         public static final Color CORAL = Color.kWhite;
         public static final Color ALGAE = Color.kBlue;
     }
+  
+    /** Constants used for auto-aligning the robot when scoring. */
+    public static final class AligningConstants {
+        public static final class Reef {
+            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
+            public static final double PERPENDICULAR_DIST_TO_TAG = 0.44;
+            /** How far (in meters) the robot should be parallel to the tag to score. */
+            public static final double PARALLEL_DIST_TO_TAG = 0.2;
+        }
 
+        public static final class Processor {
+            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
+            public static final double PERPENDICULAR_DIST_TO_TAG = 0.0; // TODO : Find this value in testing
+            /** How far (in meters) the robot should be parallel to the tag to score. */
+            public static final double PARALLEL_DIST_TO_TAG = 0.0;
+        }
+    }
+
+    /** Constants for elevator heights */
     public static final class ScoringConstants {
         /* Heights in elevator meters for scoring at these heights. */
         public static final double L1_CORAL = 0.21;
