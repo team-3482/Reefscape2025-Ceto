@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.swerve.SwerveSubsystem;
@@ -24,6 +25,7 @@ import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
+import frc.robot.vision.VisionSubsystem;
 
 public class RobotContainer {
     // Thread-safe singleton design pattern.
@@ -78,8 +80,6 @@ public class RobotContainer {
         final double FastAngularSpeed = TunerConstants.kAngularSpeedFast.in(Units.RadiansPerSecond);
 
         final SwerveRequest.FieldCentric fieldCentricDrive_withDeadband = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * ControllerConstants.DEADBAND)
-            .withRotationalDeadband(FastAngularSpeed * ControllerConstants.DEADBAND) // Add a deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         
         final SwerveTelemetry logger = new SwerveTelemetry(MaxSpeed);
@@ -111,7 +111,9 @@ public class RobotContainer {
                         -driverController.getRightX()
                         * (topSpeed ? NormalAngularSpeed : FastAngularSpeed)
                         * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    );
+                    )
+                    .withDeadband(ControllerConstants.DEADBAND * (fineControl ? LesserMaxSpeed : MaxSpeed))
+                    .withRotationalDeadband(ControllerConstants.DEADBAND * (fineControl ? NormalAngularSpeed : FastAngularSpeed));
             }).ignoringDisable(true)
         );
         
@@ -168,6 +170,7 @@ public class RobotContainer {
     /** Creates instances of each subsystem so periodic always runs. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
+        VisionSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
@@ -200,6 +203,10 @@ public class RobotContainer {
         this.driverController.x().whileTrue(
             SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
         );
+
+        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(false));
+        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(true));
+        this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 
     /** Configures the button bindings of the operator controller. */
