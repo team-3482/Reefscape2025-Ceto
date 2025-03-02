@@ -99,7 +99,9 @@ public class LEDSubsystem extends SubsystemBase {
      * @see {@link LEDSubsystem#periodic()}
      */
     private void setColor(StatusColors newColor, boolean forBlink) {
-        if (newColor.priority != -1 && newColor.priority < getLEDColor().priority) return;
+        if (newColor.priority != -1 && 
+            newColor.priority < (this.shouldBlink ? this.blinkColor.priority : getLEDColor().priority)
+        ) return;
 
         this.shouldBlink = forBlink;
 

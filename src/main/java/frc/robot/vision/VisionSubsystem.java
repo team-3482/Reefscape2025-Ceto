@@ -152,12 +152,13 @@ public class VisionSubsystem extends SubsystemBase {
                 this.shuffleboardProcessorInView.setBoolean(processor);
                 this.shuffleboardReefInView.setBoolean(reef);
                 
-                LEDSubsystem.getInstance().setColor(canAlign ? StatusColors.CAN_ALIGN : StatusColors.OFF);
+                if (canAlign) {
+                    LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
+                }
             }
             else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
-                LEDSubsystem.getInstance().setColor(StatusColors.OFF);
             }
             
             if (data.canTrustRotation) {
@@ -433,7 +434,7 @@ public class VisionSubsystem extends SubsystemBase {
     public Pose2d getEstimatedPosition_TargetSpace() {
         /* [ x, y, z, pitch, yaw, roll ] (meters, degrees) */
         double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
-        Pose2d botPose = new Pose2d();
+        Pose2d botPose = Pose2d.kZero;
 
         if (poseArray.length != 0) {
             botPose = new Pose2d(
@@ -442,13 +443,13 @@ public class VisionSubsystem extends SubsystemBase {
             );
         }
         
-        if (botPose != null && !botPose.equals(new Pose2d())) {
+        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
             return botPose;
         }
 
         botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL));
 
-        if (botPose != null && !botPose.equals(new Pose2d())) {
+        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
             return botPose;
         }
 

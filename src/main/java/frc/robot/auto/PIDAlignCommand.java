@@ -66,7 +66,7 @@ public class PIDAlignCommand extends Command {
     public void initialize() {
         Pose2d botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
         if (botPose_TargetSpace == null) {
-            this.targetPose = new Pose2d();
+            this.targetPose = Pose2d.kZero;
             
             this.xController.setSetpoint(0);
             this.yController.setSetpoint(0);
@@ -105,7 +105,7 @@ public class PIDAlignCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (this.targetPose.equals(new Pose2d())) return;
+        if (this.targetPose.equals(Pose2d.kZero)) return;
 
         Pose2d currentPose = SwerveSubsystem.getInstance().getState().Pose;
 
@@ -127,7 +127,14 @@ public class PIDAlignCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(new ChassisSpeeds()));
-        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
+
+        // The latter doesn't interrupt the Command even though it's an early end
+        if (interrupted || this.targetPose.equals(Pose2d.kZero)) {
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
+        }
+        else {
+            LEDSubsystem.getInstance().setColor(StatusColors.OK);
+        }
 
         this.xController.reset();
         this.yController.reset();
@@ -137,7 +144,7 @@ public class PIDAlignCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.targetPose.equals(new Pose2d()) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
+        return this.targetPose.equals(Pose2d.kZero) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
     }
     
     /**

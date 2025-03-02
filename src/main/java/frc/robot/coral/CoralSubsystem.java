@@ -153,6 +153,6 @@ public class CoralSubsystem extends SubsystemBase {
      * @return whether it has coral
      */
     public boolean hasCoral() {
-        return hasCoral_backLaser() && hasCoral_frontLaser();
+        return hasCoral_backLaser() || hasCoral_frontLaser();
     }
 }

@@ -51,7 +51,7 @@ public final class CommandGenerators {
     @Deprecated
     public static Command ResetPoseUsingLimelightCommand() {
         return Commands.runOnce(() -> {
-            Pose2d estimatedPose = new Pose2d();
+            Pose2d estimatedPose = Pose2d.kZero;
             SwerveSubsystem.getInstance().resetPose(estimatedPose);
         });
     }
