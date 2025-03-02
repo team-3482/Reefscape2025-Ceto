@@ -6,13 +6,14 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -34,18 +35,21 @@ public class LEDSubsystem extends SubsystemBase {
         return instance;
     }
 
-    private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
-    private AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
+    /** Used to run timer processing on a separate thread. */
+    private final Notifier notifier;
 
-    private StatusColors blinkColor = StatusColors.OFF;
-    private boolean shouldBlink = false;
-    private Timer blinkTimer = new Timer();
-    private Timer stickyTimer = new Timer();
-    private double stickyTime = -1;
+    private volatile AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
+    private volatile AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
 
-    private SimpleWidget shuffleboard_widget = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+    private volatile StatusColors blinkColor = StatusColors.OFF;
+    private volatile boolean shouldBlink = false;
+    private volatile Timer blinkTimer = new Timer();
+    private volatile Timer stickyTimer = new Timer();
+    private volatile double stickyTime = -1;
+
+    private volatile SimpleWidget shuffleboard_widget = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .add("LED", false);
-    private GenericEntry shuffleboard_entry = shuffleboard_widget
+    private volatile GenericEntry shuffleboard_entry = shuffleboard_widget
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of("colorWhenFalse", StatusColors.OFF.color.toHexString()))
         .withSize(2, 2)
@@ -59,13 +63,23 @@ public class LEDSubsystem extends SubsystemBase {
         this.LEDStrip.setData(this.LEDStripBuffer);
         this.LEDStrip.start();
 
+        this.notifier = new Notifier(this::notifierLoop);
+        this.notifier.setName("LED Notifier");
+        this.notifier.startPeriodic(0.05);
+
         this.blinkTimer.start();
     }
 
+    // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        // Uses a Notifier for separate-thread timer processing
+    }
 
+    /**
+     * This method is used in conjunction with a Notifier to run timer processing on a separate thread.
+     */
+    private synchronized void notifierLoop() {
         if (this.shouldBlink && this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN)) {
             if (this.getLEDColor().equals(StatusColors.OFF)) {
                 this.setColor(this.blinkColor, true);
@@ -88,7 +102,7 @@ public class LEDSubsystem extends SubsystemBase {
      * but this should not be a problem because we always set the whole strip to a solid color.
      * @apiNote Returns null if the color doesn't exist in StatusColors.
      */
-    public StatusColors getLEDColor() {
+    public synchronized StatusColors getLEDColor() {
         return StatusColors.getColor(this.LEDStripBuffer.getLED(0));
     }
 
@@ -98,7 +112,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param forBlink - Whether the color should be blinked.
      * @see {@link LEDSubsystem#periodic()}
      */
-    private void setColor(StatusColors newColor, boolean forBlink) {
+    private synchronized void setColor(StatusColors newColor, boolean forBlink) {
         if (newColor.priority != -1 && 
             newColor.priority < (this.shouldBlink ? this.blinkColor.priority : getLEDColor().priority)
         ) return;
@@ -125,7 +139,7 @@ public class LEDSubsystem extends SubsystemBase {
      * Forcefully sets the current color of led strip
      * @param newColor - The color to set.
      */
-    public void setColor(StatusColors newColor) {
+    public synchronized void setColor(StatusColors newColor) {
         setColor(newColor, false);
     }
 
@@ -133,7 +147,7 @@ public class LEDSubsystem extends SubsystemBase {
      * Blinks the color every LEDConsants.BLINK_COOLDOWN
      * @param newColor - The color to blink.
      */
-    public void blinkColor(StatusColors newColor) {
+    public synchronized void blinkColor(StatusColors newColor) {
         this.blinkColor = newColor;
         setColor(newColor, true);
     }
