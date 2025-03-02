@@ -64,7 +64,7 @@ public final class Constants {
     public static enum StatusColors {
         OFF(Color.kBlack, -1, -1),
         CORAL(Color.kWhite, 0, -1),
-        CAN_ALIGN(Color.kBlue, 1, 0.5),
+        CAN_ALIGN(Color.kBlue, 1, 0.2),
         ERROR(Color.kRed, 2, 1),
         OK(Color.kGreen, 2, 3),
         RSL(Color.kOrange, 5, -1),
