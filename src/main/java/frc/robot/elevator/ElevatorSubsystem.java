@@ -246,8 +246,8 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param position - The position in meters.
      */
     public void setPosition(double position) {
-        this.rightMotor.setPosition(this.metersToRotation(position));
-        // this.leftMotor.setPosition(position);
+        this.rightMotor.setPosition(metersToRotation(position));
+        this.leftMotor.setPosition(metersToRotation(position));
     }
 
     /**
