@@ -116,7 +116,7 @@ public class PIDAlignCommand extends Command {
                 thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 24 : 0),
                 currentPose.getRotation()
             ))
-        ); // TODO : Feedforward default speed to overcome friction ?
+        );
     }
 
     // Called once the command ends or is interrupted.
