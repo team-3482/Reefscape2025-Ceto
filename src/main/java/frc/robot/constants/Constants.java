@@ -31,17 +31,6 @@ public final class Constants {
         /** Speed multiplier when using fine-control movement. */
         public static final double FINE_CONTROL_MULT = 0.15;
     }
-
-    /** Colors used with the LEDSubsystem, these are named for readability. */
-    public static final class NamedColors {
-        public static final Color OFF = Color.kBlack;
-        public static final Color ERROR = Color.kRed;
-        public static final Color WARNING = Color.kOrange;
-        public static final Color OK = Color.kGreen;
-        
-        public static final Color CORAL = Color.kWhite;
-        public static final Color ALGAE = Color.kBlue;
-    }
   
     /** Constants used for auto-aligning the robot when scoring. */
     public static final class AligningConstants {
@@ -69,5 +58,50 @@ public final class Constants {
         public static final double L3_CORAL = 0.74;
         public static final double BOTTOM_HEIGHT = 0;
         public static final double MAX_HEIGHT = 0.75;
+    }
+
+    /** Colors used with the LEDSubsystem, these are named for readability and priority. */
+    public static enum StatusColors {
+        OFF(Color.kBlack, -1, -1),
+        CORAL(Color.kWhite, 0, -1),
+        ERROR(Color.kRed, 1, 3),
+        OK(Color.kGreen, 2, 5),
+        CAN_ALIGN(Color.kBlue, 3, -1),
+        RSL(Color.kOrange, 4, 3),
+        ;
+        
+        /** The Color. */
+        public final Color color;
+        /** The priority of this color over other colors (higher = higher priority). */
+        public final int priority;
+        /** How long this color should stay. -1 is infinitely long. */
+        public final double stickyTime;
+
+        /**
+         * Creates a new StatusColors.
+         * @param color - The Color.
+         * @param priority - The priority of this color over other colors (higher = higher priority).
+         * -1 will always be overriden and will always override.
+         * @param stickyTime - How long this color should stay. -1 is infinitely long.
+         */
+        private StatusColors(Color color, int priority, double stickyTime) {
+            this.color = color;
+            this.priority = priority;
+            this.stickyTime = stickyTime;
+        }
+
+        /**
+         * Get the StatuColors associated with this color.
+         * @param color - The color to fetch.
+         * @return The StatusColors. If none, returns null.
+         */
+        public static StatusColors getColor(Color color) {
+            for (StatusColors statusColor : StatusColors.values()) {
+                if (statusColor.color.equals(color)) {
+                    return statusColor;
+                }
+            }
+            return null;
+        }
     }
 }

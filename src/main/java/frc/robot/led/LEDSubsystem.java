@@ -10,9 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.NamedColors;
+import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
@@ -38,15 +37,17 @@ public class LEDSubsystem extends SubsystemBase {
     private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
     private AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
 
-    private Color blinkColor = Color.kBlack;
+    private StatusColors blinkColor = StatusColors.OFF;
     private boolean shouldBlink = false;
     private Timer blinkTimer = new Timer();
+    private Timer stickyTimer = new Timer();
+    private double stickyTime = -1;
 
     private SimpleWidget shuffleboard_widget = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .add("LED", false);
     private GenericEntry shuffleboard_entry = shuffleboard_widget
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", NamedColors.OFF.toHexString()))
+        .withProperties(Map.of("colorWhenFalse", StatusColors.OFF.color.toHexString()))
         .withSize(2, 2)
         .getEntry();
 
@@ -66,58 +67,63 @@ public class LEDSubsystem extends SubsystemBase {
         // This method will be called once per scheduler run
 
         if (this.shouldBlink && this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN)) {
-            Color color = this.getColor(); // store so we dont unnesscary call it
-
-            if (color.equals(NamedColors.OFF)) {
+            if (this.getLEDColor().equals(StatusColors.OFF)) {
                 this.setColor(this.blinkColor, true);
             }
             else {
-                this.setColor(NamedColors.OFF, true);
+                this.setColor(StatusColors.OFF, true);
             }
             
             this.blinkTimer.reset();
         }
-
-        // TODO : Must give priority to some states in a certain order (warnings higher than coral, for example).
+        else if (this.stickyTime >= 0 && this.stickyTimer.hasElapsed(this.stickyTime)) {
+            setColor(StatusColors.OFF);
+        }
     }
 
     /** 
      * Gets color of the current strip.
      * @return The color of the strip.
-     * @apiNote This uses the FIRST index of the led strip (first note),
+     * @apiNote This uses the FIRST index of the led strip (first node),
      * but this should not be a problem because we always set the whole strip to a solid color.
+     * @apiNote Returns null if the color doesn't exist in StatusColors.
      */
-    public Color getColor() {
-        return this.LEDStripBuffer.getLED(0);
+    public StatusColors getLEDColor() {
+        return StatusColors.getColor(this.LEDStripBuffer.getLED(0));
     }
 
     /**
      * Forcefully sets the current color of led strip.
-     * @param newColor - The color to set.
+     * @param newColor - The color to set. Will only be set if the priority is higher than the current one.
      * @param forBlink - Whether the color should be blinked.
      * @see {@link LEDSubsystem#periodic()}
      */
-    private void setColor(Color newColor, boolean forBlink) {
+    private void setColor(StatusColors newColor, boolean forBlink) {
+        if (newColor.priority != -1 && newColor.priority <= getLEDColor().priority) return;
+
         this.shouldBlink = forBlink;
 
-        LEDPattern color = LEDPattern.solid(newColor);
-        color.applyTo(this.LEDStripBuffer);
+        LEDPattern pattern = LEDPattern.solid(newColor.color);
+        pattern.applyTo(this.LEDStripBuffer);
         this.LEDStrip.setData(this.LEDStripBuffer);
 
-        if (newColor.equals(NamedColors.OFF)) {
+        if (newColor.equals(StatusColors.OFF)) {
             this.shuffleboard_entry.setBoolean(false);
         }
         else {
-            this.shuffleboard_widget.withProperties(Map.of("colorWhenTrue", newColor.toHexString()));
+            this.shuffleboard_widget.withProperties(Map.of("colorWhenTrue", newColor.color.toHexString()));
             this.shuffleboard_entry.setBoolean(true);
         }
+
+        this.stickyTime = newColor.stickyTime;
+        this.stickyTimer.restart();
     }
 
     /**
      * Forcefully sets the current color of led strip
      * @param newColor - The color to set.
      */
-    public void setColor(Color newColor) {
+    public void setColor(StatusColors newColor) {
         setColor(newColor, false);
     }
 
@@ -125,7 +131,7 @@ public class LEDSubsystem extends SubsystemBase {
      * Blinks the color every LEDConsants.BLINK_COOLDOWN
      * @param newColor - The color to blink.
      */
-    public void blinkColor(Color newColor) {
+    public void blinkColor(StatusColors newColor) {
         this.blinkColor = newColor;
         setColor(newColor, true);
     }
