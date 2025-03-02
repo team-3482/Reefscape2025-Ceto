@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -17,9 +18,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
+import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.coral.CoralSubsystem;
+import frc.robot.coral.IntakeCoralCommand;
+import frc.robot.coral.OuttakeCoralCommand;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.MoveElevatorCommand;
+import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
@@ -58,7 +67,7 @@ public class RobotContainer {
 
         configureDrivetrain(); // This is done separately because it works differently from other Subsystems
         initializeSubsystems();
-        
+
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
@@ -171,6 +180,10 @@ public class RobotContainer {
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
         VisionSubsystem.getInstance();
+        
+        ElevatorSubsystem.getInstance();
+        CoralSubsystem.getInstance();
+        AlgaeSubsystem.getInstance();
     }
 
     /** Register all NamedCommands for PathPlanner use */
@@ -211,7 +224,37 @@ public class RobotContainer {
 
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
-        // this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+        this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+
+        Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController.rightTrigger().getAsBoolean();
+
+        // Elevator
+        this.operatorController.povDown()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_CORAL, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.povRight()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_CORAL, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.povUp()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.x()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier))
+            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+        this.operatorController.povLeft()
+            .onTrue(new ZeroElevatorCommand());
+
+        // Algae
+        this.operatorController.a()
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+        this.operatorController.y()
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+
+        // Coral
+        this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
+        this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
     }
 
     /**
