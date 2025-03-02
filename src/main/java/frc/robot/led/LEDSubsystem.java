@@ -77,6 +77,8 @@ public class LEDSubsystem extends SubsystemBase {
             
             this.blinkTimer.reset();
         }
+
+        // TODO : Must give priority to some states in a certain order (warnings higher than coral, for example).
     }
 
     /** 
