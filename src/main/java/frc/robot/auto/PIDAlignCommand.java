@@ -13,8 +13,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AligningConstants;
+import frc.robot.constants.Constants.StatusColors;
+import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.VisionSubsystem;
 
@@ -26,32 +29,32 @@ public class PIDAlignCommand extends Command {
 
     private final PIDController xController = new PIDController(2.5, 0, 0);
     private final PIDController yController = new PIDController(2.5, 0, 0);
-    private final PIDController thetaController = new PIDController(3.5, 0, 0);
+    private final PIDController thetaController = new PIDController(4, 0, 0);
 
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
 
-    private final boolean right;
+    private final int direction;
     private final double PERPENDICULAR_DIST_TO_TAG;
     private final double PARALLEL_DIST_TO_TAG;
 
     /**
      * Creates a new PIDAlignCommand.
      * @param name - The name of the sub-command.
-     * @param right - Whether to line up a parallel distance to the left or right of the tag (robot perspective).
+     * @param direction - Line up to the left (-1), right (1), or center of the tag.
      * @param perpendicularDistanceToTag - The perpendicular distance from the tag to line up.
      * @param parallelDistanceToTag  - The parallel distance from the tag to line up.
      */
-    private PIDAlignCommand(String name, boolean right, double perpendicularDistanceToTag, double parallelDistanceToTag) {
+    private PIDAlignCommand(String name, int direction, double perpendicularDistanceToTag, double parallelDistanceToTag) {
         setName(name);
 
-        this.right = right;
+        this.direction = (int) Math.signum(direction);
         this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
 
 
-        this.xController.setTolerance(0.05);
-        this.yController.setTolerance(0.05);
-        this.thetaController.setTolerance(Math.toRadians(0.5));
+        this.xController.setTolerance(0.02);
+        this.yController.setTolerance(0.02);
+        this.thetaController.setTolerance(Units.degreesToRadians(0.5));
         this.thetaController.enableContinuousInput(0, 2 * Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -63,7 +66,7 @@ public class PIDAlignCommand extends Command {
     public void initialize() {
         Pose2d botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
         if (botPose_TargetSpace == null) {
-            this.targetPose = new Pose2d();
+            this.targetPose = Pose2d.kZero;
             
             this.xController.setSetpoint(0);
             this.yController.setSetpoint(0);
@@ -72,12 +75,14 @@ public class PIDAlignCommand extends Command {
             this.xController.calculate(0);
             this.yController.calculate(0);
             this.thetaController.calculate(0);
+
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
             double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
             /** Right (from tag perspective, left) is positive. */
-            double parallelChange = (this.right ? 1 : -1) * this.PARALLEL_DIST_TO_TAG
+            double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
                 - botPose_TargetSpace.getX();
             Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
@@ -100,15 +105,19 @@ public class PIDAlignCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (this.targetPose.equals(new Pose2d())) return;
+        if (this.targetPose.equals(Pose2d.kZero)) return;
 
         Pose2d currentPose = SwerveSubsystem.getInstance().getState().Pose;
+
+        double xSpeed = this.xController.calculate(currentPose.getX());
+        double ySpeed = this.yController.calculate(currentPose.getY());
+        double thetaSpeed = this.thetaController.calculate(currentPose.getRotation().getRadians());
         
         SwerveSubsystem.getInstance().setControl(
             this.drive.withSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
-                this.xController.calculate(currentPose.getX()),
-                this.yController.calculate(currentPose.getY()),
-                this.thetaController.calculate(currentPose.getRotation().minus(this.targetPose.getRotation()).getRadians(), 0),
+                xSpeed + Math.signum(xSpeed) * (0.075),
+                ySpeed + Math.signum(ySpeed) * (0.075),
+                thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 24 : 0),
                 currentPose.getRotation()
             ))
         );
@@ -119,6 +128,14 @@ public class PIDAlignCommand extends Command {
     public void end(boolean interrupted) {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(new ChassisSpeeds()));
 
+        // The latter doesn't interrupt the Command even though it's an early end
+        if (interrupted || this.targetPose.equals(Pose2d.kZero)) {
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
+        }
+        else {
+            LEDSubsystem.getInstance().setColor(StatusColors.OK);
+        }
+
         this.xController.reset();
         this.yController.reset();
         this.thetaController.reset();
@@ -127,7 +144,7 @@ public class PIDAlignCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.targetPose.equals(new Pose2d()) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
+        return this.targetPose.equals(Pose2d.kZero) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
     }
     
     /**
@@ -136,12 +153,12 @@ public class PIDAlignCommand extends Command {
     public static class Reef extends PIDAlignCommand {
         /**
          * Creates a new AlignToReefCommand.
-         * @param right - Whether to align to the left or right of the tag (robot perspective).
+         * @param direction - Line up to the left (-1), right (1), or center of the tag.
          */
-        public Reef(boolean right) {
+        public Reef(int direction) {
             super(
                 "AlignToReefCommand",
-                right,
+                direction,
                 AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
             );
@@ -158,7 +175,7 @@ public class PIDAlignCommand extends Command {
         public Processor() {
             super(
                 "AlignToProcessorCommand",
-                true, // Doesn't matter, because the parallel distance is 0.
+                0, // Doesn't matter, because the parallel distance is 0.
                 AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
             );

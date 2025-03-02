@@ -74,7 +74,9 @@ public class RobotContainer {
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
         Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
             .add("Auto Chooser", autoChooser)
-            .withWidget(BuiltInWidgets.kComboBoxChooser);
+            .withWidget(BuiltInWidgets.kComboBoxChooser)
+            .withSize(5, 2)
+            .withPosition(1, 0);
     }
 
     /**
@@ -217,8 +219,9 @@ public class RobotContainer {
             SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
         );
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(false));
-        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(true));
+        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1));
+        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1));
+        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 

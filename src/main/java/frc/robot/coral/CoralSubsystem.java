@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 //import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
+import frc.robot.led.LEDSubsystem;
 
 public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -51,19 +53,20 @@ public class CoralSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(2, 3);
+        .withSize(5, 3)
+        .withPosition(1, 5);
     private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
         .add("Front Laser", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(2, 1)
+        .withSize(5, 1)
         .withPosition(0, 0)
         .getEntry();
     private GenericEntry shuffleboard_entry_backLaser = shuffleboardLayout
         .add("Back Laser", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(2, 1)
+        .withSize(5, 1)
         .withPosition(0, 1)
         .getEntry();
 
@@ -81,6 +84,10 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
         this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
+        
+        if (hasCoral()) {
+            LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
+        }
     }
 
     /**
@@ -147,6 +154,6 @@ public class CoralSubsystem extends SubsystemBase {
      * @return whether it has coral
      */
     public boolean hasCoral() {
-        return hasCoral_backLaser() && hasCoral_frontLaser();
+        return hasCoral_backLaser() || hasCoral_frontLaser();
     }
 }

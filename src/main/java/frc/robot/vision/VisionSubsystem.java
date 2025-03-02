@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
+import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
 
@@ -73,17 +75,26 @@ public class VisionSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(2, 3);
+        .withSize(5, 3)
+        .withPosition(1, 2);
     private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
         .add("Processor Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(2, 1)
+        .withProperties(Map.of(
+            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+        ))
+        .withSize(3, 1)
         .withPosition(0, 1)
         .getEntry();
     private GenericEntry shuffleboardReefInView = shuffleboardLayout
         .add("Reef Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(2, 1)
+        .withProperties(Map.of(
+            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+        ))
+        .withSize(3, 1)
         .withPosition(0, 2)
         .getEntry();
 
@@ -103,13 +114,17 @@ public class VisionSubsystem extends SubsystemBase {
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.TOP_LL, rightLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+                .withSize(7, 4)
+                .withPosition(6, 0);
+                Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
+                .withWidget(BuiltInWidgets.kCameraStream)
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+                .withSize(7, 4)
+                .withPosition(6, 4);
         }
 
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
@@ -143,10 +158,19 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.optimized) continue;
             
             if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
-                this.shuffleboardProcessorInView.setBoolean(data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16);
-                this.shuffleboardReefInView.setBoolean(17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11));
+                boolean processor = data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16;
+                boolean reef = 17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11);
+                boolean canAlign = processor || reef;
+
+                this.shuffleboardProcessorInView.setBoolean(processor);
+                this.shuffleboardReefInView.setBoolean(reef);
+                
+                if (canAlign) {
+                    LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
+                }
             }
-            else if (!recentVisionData()) {
+            else {
+            // else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
             }
@@ -424,7 +448,7 @@ public class VisionSubsystem extends SubsystemBase {
     public Pose2d getEstimatedPosition_TargetSpace() {
         /* [ x, y, z, pitch, yaw, roll ] (meters, degrees) */
         double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
-        Pose2d botPose = new Pose2d();
+        Pose2d botPose = Pose2d.kZero;
 
         if (poseArray.length != 0) {
             botPose = new Pose2d(
@@ -433,13 +457,13 @@ public class VisionSubsystem extends SubsystemBase {
             );
         }
         
-        if (botPose != null && !botPose.equals(new Pose2d())) {
+        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
             return botPose;
         }
 
         botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL));
 
-        if (botPose != null && !botPose.equals(new Pose2d())) {
+        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
             return botPose;
         }
 
