@@ -275,13 +275,7 @@ public class VisionSubsystem extends SubsystemBase {
             // reset any optimization that might have been done previously.
             if (limelightData.MegaTag2 == null || limelightData.MegaTag2.tagCount == 0) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
-                LimelightHelpers.setCropWindow(
-                    limelightData.name,
-                    LimelightConstants.DEFAULT_CROPS[0],
-                    LimelightConstants.DEFAULT_CROPS[1],
-                    LimelightConstants.DEFAULT_CROPS[2],
-                    LimelightConstants.DEFAULT_CROPS[3]
-                );
+                setDefaultCrops(limelightData.name);
                 continue;
             }
 
@@ -301,13 +295,7 @@ public class VisionSubsystem extends SubsystemBase {
 
             // Smart cropping around on-screen AprilTags
             if (limelightData.leftX == -1) {
-                LimelightHelpers.setCropWindow(
-                    limelightData.name,
-                    LimelightConstants.DEFAULT_CROPS[0],
-                    LimelightConstants.DEFAULT_CROPS[1],
-                    LimelightConstants.DEFAULT_CROPS[2],
-                    LimelightConstants.DEFAULT_CROPS[3]
-                );
+                setDefaultCrops(limelightData.name);
             }
             else {
                 double leftCrop = limelightData.leftX / (LimelightConstants.RES_X / 2) - 1;
@@ -315,25 +303,51 @@ public class VisionSubsystem extends SubsystemBase {
                 double bottomCrop = limelightData.bottomY / (LimelightConstants.RES_Y / 2) - 1;
                 double topCrop = limelightData.topY / (LimelightConstants.RES_Y / 2) - 1;
                 
-                if (
-                    limelightData.MegaTag2.tagCount == 1
-                    && (17 <= limelightData.MegaTag2.rawFiducials[0].id
-                        || (6 <= limelightData.MegaTag2.rawFiducials[0].id
-                            && limelightData.MegaTag2.rawFiducials[0].id <= 11))
-                ) {
-                    leftCrop -= 1.4 / limelightData.MegaTag2.avgTagDist;
-                    rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
-                }
-                else {
-                    leftCrop -= LimelightConstants.BOUNDING_BOX;
-                    rightCrop += LimelightConstants.BOUNDING_BOX;
-                }
+                // Commented out because we will not be seeing more than one tag at once with the bottom LL this season
+                // if (
+                //     limelightData.MegaTag2.tagCount == 1
+                //     && (17 <= limelightData.MegaTag2.rawFiducials[0].id
+                //         || (6 <= limelightData.MegaTag2.rawFiducials[0].id
+                //             && limelightData.MegaTag2.rawFiducials[0].id <= 11))
+                // ) {
+                //     leftCrop -= 1.4 / limelightData.MegaTag2.avgTagDist;
+                //     rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
+                // }
+                // else {
+                leftCrop -= LimelightConstants.BOUNDING_BOX * 2;
+                rightCrop += LimelightConstants.BOUNDING_BOX * 2;
+                // }
                 
                 bottomCrop -= LimelightConstants.BOUNDING_BOX;
                 topCrop += LimelightConstants.BOUNDING_BOX;
 
                 LimelightHelpers.setCropWindow(limelightData.name, leftCrop, rightCrop, bottomCrop, topCrop);
             }
+        }
+    }
+
+    /**
+     * Helper that sets the default crops for a limelight.
+     * @param limelight - The limelight to set the crops for.
+     */
+    private void setDefaultCrops(String limelight) {
+        if (limelight.equals(LimelightConstants.TOP_LL)) {
+            LimelightHelpers.setCropWindow(
+                limelight,
+                LimelightConstants.DEFAULT_TOP_CROP[0],
+                LimelightConstants.DEFAULT_TOP_CROP[1],
+                LimelightConstants.DEFAULT_TOP_CROP[2],
+                LimelightConstants.DEFAULT_TOP_CROP[3]
+            );
+        }
+        else if (limelight.equals(LimelightConstants.BOTTOM_LL)) {
+            LimelightHelpers.setCropWindow(
+                limelight,
+                LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
+                LimelightConstants.DEFAULT_BOTTTOM_CROP[1],
+                LimelightConstants.DEFAULT_BOTTTOM_CROP[2],
+                LimelightConstants.DEFAULT_BOTTTOM_CROP[3]
+            );
         }
     }
 
