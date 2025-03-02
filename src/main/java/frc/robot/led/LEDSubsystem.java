@@ -47,12 +47,21 @@ public class LEDSubsystem extends SubsystemBase {
     private volatile Timer stickyTimer = new Timer();
     private volatile double stickyTime = -1;
 
-    private volatile SimpleWidget shuffleboard_widget = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .add("LED", false);
-    private volatile GenericEntry shuffleboard_entry = shuffleboard_widget
+    private volatile SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .add("LED 1", false);
+    private volatile SimpleWidget shuffleboard_widget2 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+        .add("LED 2", false);
+    private volatile GenericEntry shuffleboard_entry1 = shuffleboard_widget1
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of("colorWhenFalse", StatusColors.OFF.color.toHexString()))
-        .withSize(2, 2)
+        .withSize(1, 8)
+        .withPosition(0, 0)
+        .getEntry();
+    private volatile GenericEntry shuffleboard_entry2 = shuffleboard_widget2
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withProperties(Map.of("colorWhenFalse", StatusColors.OFF.color.toHexString()))
+        .withSize(1, 8)
+        .withPosition(18, 0)
         .getEntry();
 
     /** Creates a new LEDSubsystem. */
@@ -124,11 +133,15 @@ public class LEDSubsystem extends SubsystemBase {
         this.LEDStrip.setData(this.LEDStripBuffer);
 
         if (newColor.equals(StatusColors.OFF)) {
-            this.shuffleboard_entry.setBoolean(false);
+            this.shuffleboard_entry1.setBoolean(false);
+            this.shuffleboard_entry2.setBoolean(false);
         }
         else {
-            this.shuffleboard_widget.withProperties(Map.of("colorWhenTrue", newColor.color.toHexString()));
-            this.shuffleboard_entry.setBoolean(true);
+            Map<String, Object> properties = Map.of("colorWhenTrue", newColor.color.toHexString());
+            this.shuffleboard_widget1.withProperties(properties);
+            this.shuffleboard_widget2.withProperties(properties);
+            this.shuffleboard_entry1.setBoolean(true);
+            this.shuffleboard_entry2.setBoolean(true);
         }
 
         this.stickyTime = newColor.stickyTime;

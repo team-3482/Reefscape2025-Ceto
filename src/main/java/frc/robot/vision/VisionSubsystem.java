@@ -75,17 +75,26 @@ public class VisionSubsystem extends SubsystemBase {
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(2, 3);
+        .withSize(5, 3)
+        .withPosition(1, 2);
     private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
         .add("Processor Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(2, 1)
+        .withProperties(Map.of(
+            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+        ))
+        .withSize(3, 1)
         .withPosition(0, 1)
         .getEntry();
     private GenericEntry shuffleboardReefInView = shuffleboardLayout
         .add("Reef Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(2, 1)
+        .withProperties(Map.of(
+            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+        ))
+        .withSize(3, 1)
         .withPosition(0, 2)
         .getEntry();
 
@@ -105,13 +114,17 @@ public class VisionSubsystem extends SubsystemBase {
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.TOP_LL, rightLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false));
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+                .withSize(7, 4)
+                .withPosition(6, 0);
+                Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
+                .withWidget(BuiltInWidgets.kCameraStream)
+                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+                .withSize(7, 4)
+                .withPosition(6, 4);
         }
 
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
@@ -156,7 +169,8 @@ public class VisionSubsystem extends SubsystemBase {
                     LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
                 }
             }
-            else if (!recentVisionData()) {
+            else {
+            // else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
             }
