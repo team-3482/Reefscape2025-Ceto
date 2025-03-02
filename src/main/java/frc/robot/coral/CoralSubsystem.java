@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 //import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
+import frc.robot.led.LEDSubsystem;
 
 public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -81,6 +83,10 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
         this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
+        
+        if (hasCoral()) {
+            LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
+        }
     }
 
     /**

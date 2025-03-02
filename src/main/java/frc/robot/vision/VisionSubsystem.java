@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
+import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
 
@@ -143,12 +145,19 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.optimized) continue;
             
             if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
-                this.shuffleboardProcessorInView.setBoolean(data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16);
-                this.shuffleboardReefInView.setBoolean(17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11));
+                boolean processor = data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16;
+                boolean reef = 17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11);
+                boolean canAlign = processor || reef;
+
+                this.shuffleboardProcessorInView.setBoolean(processor);
+                this.shuffleboardReefInView.setBoolean(reef);
+                
+                LEDSubsystem.getInstance().setColor(canAlign ? StatusColors.CAN_ALIGN : StatusColors.OFF);
             }
             else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
+                LEDSubsystem.getInstance().setColor(StatusColors.OFF);
             }
             
             if (data.canTrustRotation) {

@@ -16,6 +16,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AligningConstants;
+import frc.robot.constants.Constants.StatusColors;
+import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.VisionSubsystem;
 
@@ -73,6 +75,8 @@ public class PIDAlignCommand extends Command {
             this.xController.calculate(0);
             this.yController.calculate(0);
             this.thetaController.calculate(0);
+
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
@@ -123,6 +127,7 @@ public class PIDAlignCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(new ChassisSpeeds()));
+        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
 
         this.xController.reset();
         this.yController.reset();

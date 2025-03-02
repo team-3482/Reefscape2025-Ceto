@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledExit() {
         SignalLogger.start();
-        LEDSubsystem.getInstance().setColor(StatusColors.RSL);
+        LEDSubsystem.getInstance().setColor(StatusColors.OFF);
     }
 
     @Override

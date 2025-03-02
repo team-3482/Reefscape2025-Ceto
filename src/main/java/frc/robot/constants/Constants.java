@@ -62,12 +62,12 @@ public final class Constants {
 
     /** Colors used with the LEDSubsystem, these are named for readability and priority. */
     public static enum StatusColors {
+        RSL(Color.kOrange, -1, -1),
         OFF(Color.kBlack, -1, -1),
         CORAL(Color.kWhite, 0, -1),
-        ERROR(Color.kRed, 1, 3),
+        CAN_ALIGN(Color.kBlue, 1, -1),
+        ERROR(Color.kRed, 2, 3),
         OK(Color.kGreen, 2, 5),
-        CAN_ALIGN(Color.kBlue, 3, -1),
-        RSL(Color.kOrange, 4, 3),
         ;
         
         /** The Color. */
