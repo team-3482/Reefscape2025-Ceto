@@ -98,7 +98,8 @@ public class LEDSubsystem extends SubsystemBase {
                 this.setColor(StatusColors.OFF, true);
             }
 
-            Logger.recordOutput("LED Color", this.getLEDColor());
+            Logger.recordOutput("LED/Status", this.getLEDColor());
+            Logger.recordOutput("LED/Color", this.getLEDColor().color.toHexString());
 
             this.blinkTimer.reset();
         }
