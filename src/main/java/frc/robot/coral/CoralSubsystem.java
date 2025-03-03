@@ -25,6 +25,8 @@ import frc.robot.constants.PhysicalConstants.CoralConstants;
 //import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -70,6 +72,9 @@ public class CoralSubsystem extends SubsystemBase {
         .withPosition(0, 1)
         .getEntry();
 
+    @AutoLogOutput (key = "Coral/State")
+    private String state = "stopped";
+
     /** Creates a new OuttakeSubsystem. */
     private CoralSubsystem() {
         super("CoralSubsystem");
@@ -84,7 +89,11 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
         this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
-        
+
+        Logger.recordOutput("Coral/FrontLaserHasCoral", hasCoral_frontLaser());
+        Logger.recordOutput("Coral/BackLaserHasCoral", hasCoral_backLaser());
+        Logger.recordOutput("Coral/HasCoral", hasCoral());
+
         if (hasCoral()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
@@ -110,6 +119,7 @@ public class CoralSubsystem extends SubsystemBase {
      */
     public void intake() {
         rightMotor.setVoltage(CoralConstants.INTAKE_VOLTAGE);
+        state = "intaking";
     }
 
     /**
@@ -117,6 +127,7 @@ public class CoralSubsystem extends SubsystemBase {
      */
     public void slowIntake() {
         this.rightMotor.setVoltage(CoralConstants.SLOW_INTAKE_VOLTAGE);
+        state = "slow intaking";
     }
 
     /**
@@ -124,6 +135,7 @@ public class CoralSubsystem extends SubsystemBase {
      */
     public void outtake() {
         rightMotor.setVoltage(CoralConstants.OUTTAKE_VOLTAGE);
+        state = "outtaking";
     }
 
     /**
@@ -131,6 +143,7 @@ public class CoralSubsystem extends SubsystemBase {
      */
     public void stop() {
         rightMotor.setVoltage(0);
+        state = "stopped";
     }
 
     /**
