@@ -24,7 +24,7 @@ public final class PhysicalConstants {
         /** Id for PWM */
         public static final int PWM_HEADER = 0;
         /** This is how many nodes are on the strip */
-        public static final int LED_LENGTH = 70;
+        public static final int LED_LENGTH = 72;
         /** Blink cooldown; time that the selected blink color will stay for, then blink */
         public static final double BLINK_COOLDOWN = 0.2;
     }
