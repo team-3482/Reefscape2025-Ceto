@@ -22,10 +22,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
-//import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralSubsystem extends SubsystemBase {
@@ -72,7 +70,6 @@ public class CoralSubsystem extends SubsystemBase {
         .withPosition(0, 1)
         .getEntry();
 
-    @AutoLogOutput (key = "Coral/State")
     private String state = "stopped";
 
     /** Creates a new OuttakeSubsystem. */
@@ -93,6 +90,7 @@ public class CoralSubsystem extends SubsystemBase {
         Logger.recordOutput("Coral/FrontLaserHasCoral", hasCoral_frontLaser());
         Logger.recordOutput("Coral/BackLaserHasCoral", hasCoral_backLaser());
         Logger.recordOutput("Coral/HasCoral", hasCoral());
+        Logger.recordOutput("Coral/State", state);
 
         if (hasCoral()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
