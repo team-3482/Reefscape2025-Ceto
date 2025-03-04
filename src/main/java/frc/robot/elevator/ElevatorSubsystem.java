@@ -32,6 +32,7 @@ import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants.ElevatorSlot0Gains;
+import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -198,6 +199,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             this.shuffleboardToggleInput.setBoolean(false);
             setVoltage(0);
         }
+
+        Logger.recordOutput("Elevator/Position", this.getPosition());
+        Logger.recordOutput("Elevator/RotorVelocity", this.getRotorVelocity());
     }
 
     /**

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class LEDSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -102,6 +103,9 @@ public class LEDSubsystem extends SubsystemBase {
         else if (this.stickyTime >= 0 && this.stickyTimer.hasElapsed(this.stickyTime)) {
             setColor(StatusColors.OFF);
         }
+        
+        Logger.recordOutput("LED/Status", this.getLEDColor());
+        Logger.recordOutput("LED/Color", this.getLEDColor().color.toHexString());
     }
 
     /** 
