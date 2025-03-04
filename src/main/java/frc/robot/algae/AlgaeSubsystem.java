@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.PhysicalConstants.AlgaeConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class AlgaeSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
@@ -36,6 +37,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
+    private String state = "stopped";
+
     /** Creates a new AlgaeSubsystem. */
     private AlgaeSubsystem() {
         super("AlgaeSubsystem");
@@ -53,6 +56,8 @@ public class AlgaeSubsystem extends SubsystemBase {
         // if (currentCommand == null) {
         //     hold();
         // }
+
+        Logger.recordOutput("Algae/State", state);
     }
 
     /**
@@ -75,6 +80,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void intake() {
         rightMotor.setVoltage(AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
+        state = "intaking";
     }
 
     /**
@@ -82,6 +88,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void outtake() {
         rightMotor.setVoltage(-AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
+        state = "outtaking";
     }
 
     /**
@@ -89,6 +96,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void hold() {
         this.rightMotor.setVoltage(AlgaeConstants.HOLDING_VOLTAGE);
+        state = "holding";
     }
 
     /**
@@ -96,5 +104,6 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void stop() {
         rightMotor.setVoltage(0);
+        state = "stopped";
     }
 }

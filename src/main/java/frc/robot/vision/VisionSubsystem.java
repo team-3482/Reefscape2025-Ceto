@@ -30,6 +30,7 @@ import frc.robot.constants.Constants.StatusColors;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
+import org.littletonrobotics.junction.Logger;
 
 /** 
  * A class that manages AprilTag Limelights for vision.
@@ -164,7 +165,11 @@ public class VisionSubsystem extends SubsystemBase {
 
                 this.shuffleboardProcessorInView.setBoolean(processor);
                 this.shuffleboardReefInView.setBoolean(reef);
-                
+
+                Logger.recordOutput("Vision/ProcessorInView", processor);
+                Logger.recordOutput("Vision/ReefInView", reef);
+                Logger.recordOutput("Vision/canAlign", canAlign);
+
                 if (canAlign) {
                     LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
                 }
@@ -173,6 +178,10 @@ public class VisionSubsystem extends SubsystemBase {
             // else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
+
+                Logger.recordOutput("Vision/ProcessorInView", false);
+                Logger.recordOutput("Vision/ReefInView", false);
+                Logger.recordOutput("Vision/canAlign", false);
             }
             
             if (data.canTrustRotation) {
