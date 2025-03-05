@@ -164,7 +164,7 @@ public class VisionSubsystem extends SubsystemBase {
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
             
-            if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
+            if (recentVisionData() && data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
                 boolean processor = data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16;
                 boolean reef = 17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11);
                 boolean canAlign = processor || reef;
