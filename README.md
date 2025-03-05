@@ -14,6 +14,8 @@
 ![WPILib Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fteam-3482%2FReefscape2025%2Fmain%2F.wpilib%2Fwpilib_preferences.json&query=%24.projectYear&style=flat-square&label=WPILib&color=%23AC2B37)
 ![Phoenix 6 Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fteam-3482%2FReefscape2025%2Fmain%2Fvendordeps%2FPhoenix6-frc2025-latest.json&query=%24.version&style=flat-square&label=Phoenix%206&color=%2396C93D)
 ![PathplannerLib Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fteam-3482%2FReefscape2025%2Fmain%2Fvendordeps%2FPathplannerLib.json&query=%24.version&style=flat-square&label=PathplannerLib&color=%233A51BB)
+![AdvantageKit Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fteam-3482%2FReefscape2025%2Frefs%2Fheads%2Fmain%2Fvendordeps%2FAdvantageKit.json&query=version&style=flat-square&label=AdvantageKit&color=%23fbc404)
+
 
 This code is for team 3482's on-season robot (name TBD).
 
