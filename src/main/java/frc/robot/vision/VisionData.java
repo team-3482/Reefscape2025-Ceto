@@ -1,6 +1,8 @@
 package frc.robot.vision;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.LimelightConstants;
+import frc.robot.vision.LimelightHelpers.RawFiducial;
 
 /**
  * <p>A helper class used for storing MegaTag and MegaTag2 data from a Limelight
@@ -65,7 +67,10 @@ public class VisionData {
             && ((this.MegaTag.tagCount >= 2
                     && this.MegaTag2.avgTagDist <= 3) || 
                 (this.MegaTag.tagCount >= 1
-                    && this.MegaTag2.avgTagDist <= 1.5)); // TODO : Needs to grab rotation data from barge at the start of the match
+                    && this.MegaTag2.avgTagDist <= 1.5) ||
+                (DriverStation.isDisabled() 
+                    && bargeMegaTag()) // Important for pre-match positioning updates
+            );
     }
 
     /**
@@ -76,5 +81,21 @@ public class VisionData {
         return this.MegaTag2 != null
             && this.MegaTag2.tagCount > 0
             && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE;
+    }
+
+    /**
+     * Checks if {@link VisionData#MegaTag} sees a barge tag. (4, 5, 14, or 15).
+     */
+    private boolean bargeMegaTag() {
+        for (RawFiducial fiducial : this.MegaTag.rawFiducials) {
+            switch (fiducial.id) {
+                case 4:
+                case 5:
+                case 14:
+                case 15: 
+                    return true;
+            }
+        }
+        return false;
     }
 }

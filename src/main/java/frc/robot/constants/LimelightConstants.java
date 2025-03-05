@@ -38,7 +38,7 @@ public final class LimelightConstants {
      * Crop window size when no tags are in view (used for smart cropping).
      * {@code xMin, xMax, yMin, yMax}.
      */
-    // TODO TOP LL : When on final mount, configure default crops to be optimal
+    // TODO TOP LL : Find optimal crops
     public static final double[] DEFAULT_TOP_CROP = new double[]{ -0.75, 0.75, -0.85, 0.85 }; // Doubles FPS from 4 to 10 in busy scenes.
     public static final double[] DEFAULT_BOTTTOM_CROP = new double[]{ -0.85, 0.85, -0.7, 0.8 };
     

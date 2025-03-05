@@ -206,7 +206,7 @@ public class RobotContainer {
         // Burger
         this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
         // Double Rectangle
-        this.driverController.back().onTrue(CommandGenerators.ResetPoseUsingLimelightCommand());
+        this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
 
         /*
          * Triggers are also used in configureDrivetrain()

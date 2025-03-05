@@ -43,17 +43,11 @@ public final class CommandGenerators {
     }
 
     /**
-     * A command that resets the odometry using data from the Limelights.
+     * A command that resets the odometry to an empty Pose2d.
      * @return The command.
-     * @apiNote If the Limelight returns an empty Pose2d, this command is a no-op.
-     * @deprecated Vision code keeps up fast enough for this to not be necessary. This method will set the robot to an empty Pose2d.
      */
-    @Deprecated
-    public static Command ResetPoseUsingLimelightCommand() {
-        return Commands.runOnce(() -> {
-            Pose2d estimatedPose = Pose2d.kZero;
-            SwerveSubsystem.getInstance().resetPose(estimatedPose);
-        });
+    public static Command ResetOdometryToOriginCommand() {
+        return Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero));
     }
 
     // OPERATOR

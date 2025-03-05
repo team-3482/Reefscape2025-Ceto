@@ -6,6 +6,8 @@
 
 package frc.robot.auto;
 
+import java.util.function.Function;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -33,6 +35,7 @@ public class PIDAlignCommand extends Command {
 
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
 
+    private final Function<Integer, Boolean> tags;
     private final int direction;
     private final double PERPENDICULAR_DIST_TO_TAG;
     private final double PARALLEL_DIST_TO_TAG;
@@ -40,13 +43,18 @@ public class PIDAlignCommand extends Command {
     /**
      * Creates a new PIDAlignCommand.
      * @param name - The name of the sub-command.
+     * @param tags - A function that checks if a tag can be aligned to.
      * @param direction - Line up to the left (-1), right (1), or center of the tag.
      * @param perpendicularDistanceToTag - The perpendicular distance from the tag to line up.
      * @param parallelDistanceToTag  - The parallel distance from the tag to line up.
      */
-    private PIDAlignCommand(String name, int direction, double perpendicularDistanceToTag, double parallelDistanceToTag) {
+    private PIDAlignCommand(
+        String name, Function<Integer, Boolean> tags, int direction,
+        double perpendicularDistanceToTag, double parallelDistanceToTag
+    ) {
         setName(name);
 
+        this.tags = tags;
         this.direction = (int) Math.signum(direction);
         this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
@@ -65,7 +73,11 @@ public class PIDAlignCommand extends Command {
     @Override
     public void initialize() {
         Pose2d botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
-        if (botPose_TargetSpace == null) {
+
+        if (
+            botPose_TargetSpace == null || 
+            !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
+        ) {
             this.targetPose = Pose2d.kZero;
             
             this.xController.setSetpoint(0);
@@ -124,7 +136,7 @@ public class PIDAlignCommand extends Command {
                 currentPose.getRotation()
             ))
         );
-    } // TODO : Don't line up to tags it isn't targeting
+    }
 
     // Called once the command ends or is interrupted.
     @Override
@@ -161,6 +173,7 @@ public class PIDAlignCommand extends Command {
         public Reef(int direction) {
             super(
                 "AlignToReefCommand",
+                (Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22),
                 direction,
                 AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
@@ -178,6 +191,7 @@ public class PIDAlignCommand extends Command {
         public Processor() {
             super(
                 "AlignToProcessorCommand",
+                (Integer id) -> id == 3 || id == 16,
                 0, // Doesn't matter, because the parallel distance is 0.
                 AligningConstants.Processor.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Processor.PARALLEL_DIST_TO_TAG

@@ -4,6 +4,7 @@
 
 package frc.robot.vision;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -62,9 +63,9 @@ public class VisionSubsystem extends SubsystemBase {
     /** Latest Limelight data. May contain faulty data unsuitable for odometry. */
     private volatile VisionData[] limelightDatas = new VisionData[2];
     /** Last heartbeat of the front LL (updated every frame) */
-    private volatile long lastHeartbeatLeftLL = 0;
+    private volatile long lastHeartbeatBottomLL = 0;
     /** Last heartbeat of the back LL (updated every frame) */
-    private volatile long lastHeartbeatRightLL = 0;
+    private volatile long lastHeartbeatToptLL = 0;
     /**
      * Timer used to track when the cameras last got data.
      * @apiNote It would probably be better to track distance traveled instead,
@@ -152,7 +153,6 @@ public class VisionSubsystem extends SubsystemBase {
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
     private synchronized void notifierLoop() {
-        fetchLimelightData();
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
@@ -226,8 +226,8 @@ public class VisionSubsystem extends SubsystemBase {
      * However, this happens at 2e9 frames, which would take consecutive 96 days at a consistent 240 fps.
      */
     private VisionData[] fetchLimelightData() {
-        long heartbeatLeftLL = -1;
-        long heartbeatRightLL = -1;
+        long heartbeatBottomLL = -1;
+        long heartbeatTopLL = -1;
 
         // Periodic logic
         double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
@@ -238,17 +238,17 @@ public class VisionSubsystem extends SubsystemBase {
             rotationDegrees, 0, 0, 0, 0, 0
         );
         
-        heartbeatLeftLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
-        heartbeatRightLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
+        heartbeatBottomLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
+        heartbeatTopLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
 
-        if (heartbeatLeftLL == -1 || this.lastHeartbeatLeftLL < heartbeatLeftLL) {
+        if (heartbeatBottomLL == -1 || this.lastHeartbeatBottomLL < heartbeatBottomLL) {
             this.limelightDatas[0] = getVisionData(LimelightConstants.BOTTOM_LL);
-            this.lastHeartbeatLeftLL = heartbeatLeftLL == -1 ? this.lastHeartbeatLeftLL : heartbeatLeftLL;
+            this.lastHeartbeatBottomLL = heartbeatBottomLL == -1 ? this.lastHeartbeatBottomLL : heartbeatBottomLL;
         }
         
-        if (heartbeatRightLL == -1 || this.lastHeartbeatRightLL < heartbeatRightLL) {
+        if (heartbeatTopLL == -1 || this.lastHeartbeatToptLL < heartbeatTopLL) {
             this.limelightDatas[1] = getVisionData(LimelightConstants.TOP_LL);
-            this.lastHeartbeatRightLL = heartbeatRightLL == -1 ? this.lastHeartbeatRightLL : heartbeatRightLL;
+            this.lastHeartbeatToptLL = heartbeatTopLL == -1 ? this.lastHeartbeatToptLL : heartbeatTopLL;
         }
 
         // There is no point actually filtering out nonexistent or null data,
@@ -485,5 +485,26 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         return null;
+    }
+
+    /**
+     * Get all of the tag IDs in view of MegaTag (not MegaTag2) from the latest vision data.
+     * @return The tag IDs.
+     * @apiNote Gets it for both limelights, combined.
+     */
+    public ArrayList<Integer> getTagsInView_MegaTag() {
+        ArrayList<Integer> tags = new ArrayList<Integer>();
+
+        for (int i = 0; i < this.limelightDatas.length; i++) {
+            if (this.limelightDatas[i] != null && this.limelightDatas[i].MegaTag != null) {
+                for (LimelightHelpers.RawFiducial fiducial :
+                    this.limelightDatas[i].MegaTag.rawFiducials
+                ) {
+                    tags.add(fiducial.id);
+                }
+            }
+        }
+
+        return tags;
     }
 }
