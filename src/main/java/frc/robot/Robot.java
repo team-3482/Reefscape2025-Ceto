@@ -64,6 +64,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotPeriodic() {
+        // TODO : Find out what is causing Shuffleboard.update() to take so long
         CommandScheduler.getInstance().run();
     }
 
@@ -123,7 +124,10 @@ public class Robot extends LoggedRobot {
     public void testInit() {}
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+        // TODO : Current limits
+        // https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html
+    }
 
     @Override
     public void testExit() {}
