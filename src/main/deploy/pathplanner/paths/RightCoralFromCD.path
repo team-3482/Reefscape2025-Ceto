@@ -20,7 +20,7 @@
         "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 2.4378695421467556,
+        "x": 2.437869542146756,
         "y": 2.4822493035551854
       },
       "nextControl": null,
@@ -28,7 +28,12 @@
       "linkedName": "Right Coral"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.0614186087570621,
+      "rotationDegrees": 59.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
