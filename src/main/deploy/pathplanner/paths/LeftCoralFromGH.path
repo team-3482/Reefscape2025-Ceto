@@ -12,7 +12,7 @@
         "y": 6.483988875833838
       },
       "isLocked": false,
-      "linkedName": "ReefGH"
+      "linkedName": "Reef GH"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Coral"
+      "linkedName": "Coral Left"
     }
   ],
   "rotationTargets": [],

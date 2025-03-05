@@ -12,7 +12,7 @@
         "y": 2.036048087939637
       },
       "isLocked": false,
-      "linkedName": "ReefCD"
+      "linkedName": "Reef CD"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Coral"
+      "linkedName": "Coral Right"
     }
   ],
   "rotationTargets": [
