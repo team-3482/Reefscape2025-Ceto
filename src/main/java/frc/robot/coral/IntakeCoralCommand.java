@@ -7,12 +7,10 @@ package frc.robot.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-/** An example command that does nothing. */
+/** A command that intakes coral and stops when it reaches the end of the intake. */
 public class IntakeCoralCommand extends Command {
 
-    /**
-     * Creates a new ExampleCommand.
-     */
+    /** Creates a new IntakeCoralCommand. */
     public IntakeCoralCommand() {
         setName("IntakeCoralCommand");
         // Use addRequirements() here to declare subsystem dependencies.
@@ -20,21 +18,15 @@ public class IntakeCoralCommand extends Command {
     }
 
     // Called when the command is initially scheduled.
-
-    /**
-     * Sets the motors to the intake speed
-     */
     @Override
     public void initialize() {
         CoralSubsystem.getInstance().intake();
     }
 
-    /**
-     * Checks whether the system has a note and stops if it does
-     */
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        // Checks whether the system has a note and stops if it does
         if (CoralSubsystem.getInstance().hasCoral_frontLaser()) {
             CoralSubsystem.getInstance().slowIntake();
         }

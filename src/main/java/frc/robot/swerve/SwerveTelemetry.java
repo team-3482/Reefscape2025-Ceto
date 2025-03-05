@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import org.littletonrobotics.junction.Logger;
 
+/** Phoenix-generated telemetry class for swerve. */
 public class SwerveTelemetry {
     private final double MaxSpeed;
 
@@ -108,6 +109,7 @@ public class SwerveTelemetry {
         SignalLogger.writeDoubleArray("DriveState/ModuleTargets", m_moduleTargetsArray);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
+        // This could cause problems because it is not thread-safe
         Logger.recordOutput("DriveState/Pose", m_poseArray);
         Logger.recordOutput("DriveState/ModuleStates", m_moduleStatesArray);
         Logger.recordOutput("DriveState/ModuleTargets", m_moduleTargetsArray);

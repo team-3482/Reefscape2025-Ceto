@@ -84,6 +84,9 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Uses a Notifier for separate-thread timer processing
+        // These methods are here because they are NOT thread-safe
+        Logger.recordOutput("LED/Status", this.getLEDColor());
+        Logger.recordOutput("LED/Color", this.getLEDColor().color.toHexString());
     }
 
     /**
@@ -103,9 +106,6 @@ public class LEDSubsystem extends SubsystemBase {
         else if (this.stickyTime >= 0 && this.stickyTimer.hasElapsed(this.stickyTime)) {
             setColor(StatusColors.OFF);
         }
-        
-        Logger.recordOutput("LED/Status", this.getLEDColor());
-        Logger.recordOutput("LED/Color", this.getLEDColor().color.toHexString());
     }
 
     /** 

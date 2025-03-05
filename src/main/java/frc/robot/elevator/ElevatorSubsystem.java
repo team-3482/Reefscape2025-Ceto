@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
@@ -34,6 +35,7 @@ import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants.ElevatorSlot0Gains;
 import org.littletonrobotics.junction.Logger;
 
+/** A subsystem that moves the elevator up and down using MotionMagic. */
 public class ElevatorSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile ElevatorSubsystem instance;
@@ -121,6 +123,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.leftMotor.setControl(this.FOLLOW_RIGHT);
 
         if (atLowerLimit()) {
+            // If starting at the bottom (beginning of a match, etc.) reset the position
+            // We do not do this every time because sometimes we deploy code while the elevator
+            // is being worked on by mech, etc. and in that case the position is correct
+            // because it is using the last reset
             setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
     }
@@ -132,6 +138,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
         this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
         this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+
+        Logger.recordOutput("Elevator/Position", this.getPosition());
+        Logger.recordOutput("Elevator/RotorVelocity", this.getRotorVelocity());
 
         boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
 
@@ -186,6 +195,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             Command currentCommand = getCurrentCommand();
 
             if (atUpperLimit()) {
+                if (currentCommand != null) {
+                    CommandScheduler.getInstance().cancel(currentCommand);
+                }
                 motionMagicPosition(getPosition() - 0.01, false, true);
             }
             else if (currentCommand != null) {
@@ -199,9 +211,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             this.shuffleboardToggleInput.setBoolean(false);
             setVoltage(0);
         }
-
-        Logger.recordOutput("Elevator/Position", this.getPosition());
-        Logger.recordOutput("Elevator/RotorVelocity", this.getRotorVelocity());
     }
 
     /**

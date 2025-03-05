@@ -10,7 +10,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -254,18 +253,5 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
-    }
-
-    /**
-     * This class exists because for some reason Java refuses to let the code in RobotContainer
-     * modify the HeadingController variable of FieldCentricFacingAngle
-     * (despite it being public).
-     */
-    public static class FieldCentricFacingAngle_PID_Workaround extends SwerveRequest.FieldCentricFacingAngle {
-        public FieldCentricFacingAngle_PID_Workaround() {
-            super();
-            this.HeadingController = new PhoenixPIDController(0, 0, 0);
-            this.HeadingController.enableContinuousInput(0, 2 * Math.PI);
-        }
     }
 }

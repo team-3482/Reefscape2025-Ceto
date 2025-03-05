@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** An example command that does nothing. */
 public class ExampleCommand extends Command {
-    /**
-     * Creates a new ExampleCommand.
-     */
+    /** Creates a new ExampleCommand. */
     public ExampleCommand() {
         setName("ExampleCommand");
         // Use addRequirements() here to declare subsystem dependencies.

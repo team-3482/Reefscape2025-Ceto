@@ -6,6 +6,7 @@ package frc.robot.templates;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** An example subsystem that does nothing. */
 public class ExampleSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile ExampleSubsystem instance;

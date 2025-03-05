@@ -23,7 +23,7 @@ public final class LimelightConstants {
      * The time limit for considering data to be recent in seconds.
      * @see {@link VisionSubsystem#recentVisionData()}
      */
-    public static final double RECENT_DATA_CUTOFF = 3.0;
+    public static final double RECENT_DATA_CUTOFF = 2.5;
 
     /** All valid tag IDs (used for tag filtering) */
     public static final int[] ALL_TAG_IDS = new int[]{

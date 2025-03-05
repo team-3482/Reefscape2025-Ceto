@@ -26,6 +26,7 @@ import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
 import org.littletonrobotics.junction.Logger;
 
+/** A subsystem that manipulates the coral game piece. */
 public class CoralSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile CoralSubsystem instance;
@@ -84,15 +85,20 @@ public class CoralSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
-        this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
-
-        Logger.recordOutput("Coral/FrontLaserHasCoral", hasCoral_frontLaser());
-        Logger.recordOutput("Coral/BackLaserHasCoral", hasCoral_backLaser());
-        Logger.recordOutput("Coral/HasCoral", hasCoral());
+        boolean coralFront = hasCoral_frontLaser();
+        boolean coralBack = hasCoral_backLaser();
+        
+        this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
+        this.shuffleboard_entry_backLaser.setBoolean(coralBack);
+        
+        boolean coral = coralFront || coralBack;
+        
+        Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
+        Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
+        Logger.recordOutput("Coral/HasCoral", coral);
         Logger.recordOutput("Coral/State", state);
 
-        if (hasCoral()) {
+        if (coral) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
     }

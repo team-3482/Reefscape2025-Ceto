@@ -95,7 +95,7 @@ public class Robot extends LoggedRobot {
         }
         else {
             System.err.println("No auton command found.");
-            LEDSubsystem.getInstance().blinkColor(StatusColors.ERROR);
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
     }
 
@@ -109,6 +109,7 @@ public class Robot extends LoggedRobot {
     public void teleopInit() {
         if (auton != null) {
             this.auton.cancel();
+            LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
     } 
 

@@ -15,6 +15,7 @@ import frc.robot.constants.PhysicalConstants.AlgaeConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
 
+/** A subsystem that manipulates the Algae game piece. */
 public class AlgaeSubsystem extends SubsystemBase {
     // Thread-safe singleton design pattern.
     private static volatile AlgaeSubsystem instance;
@@ -51,12 +52,6 @@ public class AlgaeSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        // Command currentCommand = getCurrentCommand();
-
-        // if (currentCommand == null) {
-        //     hold();
-        // }
-
         Logger.recordOutput("Algae/State", state);
     }
 

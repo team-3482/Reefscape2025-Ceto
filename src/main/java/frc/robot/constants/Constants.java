@@ -6,13 +6,9 @@ package frc.robot.constants;
 
 import edu.wpi.first.wpilibj.util.Color;
 
-/**
- * Constants used throughout the code that are not categorized in other constants files.
- */
+/** Constants used throughout the code that are not categorized in other constants files. */
 public final class Constants {
-    /**
-     * Tab names in Shuffleboard.
-     */
+    /** Tab names in Shuffleboard. */
     public static final class ShuffleboardTabNames {
         public static final String DEFAULT = "Competition";
         public static final String UTILITIES = "Utilities";

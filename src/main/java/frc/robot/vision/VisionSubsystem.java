@@ -79,7 +79,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(5, 3)
         .withPosition(1, 2);
-    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
+    private volatile GenericEntry shuffleboardProcessorInView = shuffleboardLayout
         .add("Processor Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of(
@@ -89,7 +89,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(3, 1)
         .withPosition(0, 1)
         .getEntry();
-    private GenericEntry shuffleboardReefInView = shuffleboardLayout
+    private volatile GenericEntry shuffleboardReefInView = shuffleboardLayout
         .add("Reef Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of(
@@ -147,6 +147,12 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
+        // These methods are here because they are NOT thread-safe
+        boolean processor = this.shuffleboardProcessorInView.getBoolean(false);
+        boolean reef = this.shuffleboardReefInView.getBoolean(false);
+        Logger.recordOutput("Vision/ProcessorInView", processor);
+        Logger.recordOutput("Vision/ReefInView", reef);
+        Logger.recordOutput("Vision/canAlign", processor || reef);
     }
 
     /**
@@ -166,22 +172,13 @@ public class VisionSubsystem extends SubsystemBase {
                 this.shuffleboardProcessorInView.setBoolean(processor);
                 this.shuffleboardReefInView.setBoolean(reef);
 
-                Logger.recordOutput("Vision/ProcessorInView", processor);
-                Logger.recordOutput("Vision/ReefInView", reef);
-                Logger.recordOutput("Vision/canAlign", canAlign);
-
                 if (canAlign) {
                     LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
                 }
             }
             else {
-            // else if (!recentVisionData()) {
                 this.shuffleboardProcessorInView.setBoolean(false);
                 this.shuffleboardReefInView.setBoolean(false);
-
-                Logger.recordOutput("Vision/ProcessorInView", false);
-                Logger.recordOutput("Vision/ReefInView", false);
-                Logger.recordOutput("Vision/canAlign", false);
             }
             
             if (data.canTrustRotation) {
