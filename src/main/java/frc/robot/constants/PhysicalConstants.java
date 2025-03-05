@@ -24,7 +24,7 @@ public final class PhysicalConstants {
         /** Id for PWM */
         public static final int PWM_HEADER = 0;
         /** This is how many nodes are on the strip */
-        public static final int LED_LENGTH = 72;
+        public static final int LED_LENGTH = 30;
         /** Blink cooldown; time that the selected blink color will stay for, then blink */
         public static final double BLINK_COOLDOWN = 0.2;
     }
@@ -92,8 +92,8 @@ public final class PhysicalConstants {
         public static final int FRONT_LASER_ID = 3;
         public static final int BACK_LASER_ID = 4;
 
-        public static final double INTAKE_VOLTAGE = 3;
-        public static final double SLOW_INTAKE_VOLTAGE = 1.5;
+        public static final double INTAKE_VOLTAGE = 2.5;
+        public static final double SLOW_INTAKE_VOLTAGE = 1;
         public static final double OUTTAKE_VOLTAGE = 2;
         
         public static final double MECHANISM_RATIO = 1;

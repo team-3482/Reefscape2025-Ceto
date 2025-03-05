@@ -65,7 +65,7 @@ public class VisionData {
             && ((this.MegaTag.tagCount >= 2
                     && this.MegaTag2.avgTagDist <= 3) || 
                 (this.MegaTag.tagCount >= 1
-                    && this.MegaTag2.avgTagDist <= 1));
+                    && this.MegaTag2.avgTagDist <= 1.5)); // TODO : Needs to grab rotation data from barge at the start of the match
     }
 
     /**

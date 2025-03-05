@@ -455,8 +455,9 @@ public class VisionSubsystem extends SubsystemBase {
      * Returns {@code null} if there is no tags in view for either Limelight.
      */
     public Pose2d getEstimatedPosition_TargetSpace() {
-        /* [ x, y, z, pitch, yaw, roll ] (meters, degrees) */
+        /* [ x, z, y, pitch, yaw, roll ] (meters, degrees) */
         double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
+
         Pose2d botPose = Pose2d.kZero;
 
         if (poseArray.length != 0) {
@@ -470,7 +471,14 @@ public class VisionSubsystem extends SubsystemBase {
             return botPose;
         }
 
-        botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL));
+        poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL);
+
+        if (poseArray.length != 0) {
+            botPose = new Pose2d(
+                new Translation2d(poseArray[0], poseArray[2]),
+                Rotation2d.fromDegrees(poseArray[4])
+            );
+        }
 
         if (botPose != null && !botPose.equals(Pose2d.kZero)) {
             return botPose;

@@ -27,9 +27,9 @@ import frc.robot.vision.VisionSubsystem;
 public class PIDAlignCommand extends Command {
     private Pose2d targetPose;
 
-    private final PIDController xController = new PIDController(2.5, 0, 0);
-    private final PIDController yController = new PIDController(2.5, 0, 0);
-    private final PIDController thetaController = new PIDController(4, 0, 0);
+    private final PIDController xController = new PIDController(2.3, 0, 0);
+    private final PIDController yController = new PIDController(2.3, 0, 0);
+    private final PIDController thetaController = new PIDController(2.7, 0, 0);
 
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
 
@@ -75,21 +75,24 @@ public class PIDAlignCommand extends Command {
             this.xController.calculate(0);
             this.yController.calculate(0);
             this.thetaController.calculate(0);
-
-            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
             double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
             /** Right (from tag perspective, left) is positive. */
             double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
-                - botPose_TargetSpace.getX();
+            - botPose_TargetSpace.getX();
             Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
             Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.getRotation());
             
             double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
             double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
+
+            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 0.75) {
+                this.targetPose = Pose2d.kZero; // Don't try this command farther than 0.75 meters from the goal.
+                return;
+            }
 
             this.targetPose = new Pose2d(
                 botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
@@ -121,7 +124,7 @@ public class PIDAlignCommand extends Command {
                 currentPose.getRotation()
             ))
         );
-    }
+    } // TODO : Don't line up to tags it isn't targeting
 
     // Called once the command ends or is interrupted.
     @Override
@@ -176,8 +179,8 @@ public class PIDAlignCommand extends Command {
             super(
                 "AlignToProcessorCommand",
                 0, // Doesn't matter, because the parallel distance is 0.
-                AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
-                AligningConstants.Reef.PARALLEL_DIST_TO_TAG
+                AligningConstants.Processor.PERPENDICULAR_DIST_TO_TAG,
+                AligningConstants.Processor.PARALLEL_DIST_TO_TAG
             );
         }
     }
