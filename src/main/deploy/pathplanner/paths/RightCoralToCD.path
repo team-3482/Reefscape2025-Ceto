@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5958902229194627,
-        "y": 0.8166826992487752
+        "x": 2.653635963083687,
+        "y": 2.747363458914494
       },
       "isLocked": false,
       "linkedName": "Right Coral"
@@ -20,8 +20,8 @@
         "y": 2.6864167203608247
       },
       "prevControl": {
-        "x": 3.5135883364936165,
-        "y": 2.5654702251562043
+        "x": 3.542851372991207,
+        "y": 2.0440231295482114
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.04231219103107345,
+      "waypointRelativePos": 0.03739627471751413,
       "rotationDegrees": -125.00000000000001
     }
   ],

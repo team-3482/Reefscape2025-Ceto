@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5875388062606732,
-        "y": 2.0126264874037756
+        "x": 3.551703870415912,
+        "y": 2.036048087939637
       },
       "isLocked": false,
       "linkedName": "ReefCD"
@@ -20,8 +20,8 @@
         "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 2.437869542146756,
-        "y": 2.4822493035551854
+        "x": 2.842387208660325,
+        "y": 2.9549759854446065
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.0614186087570621,
+      "waypointRelativePos": 0.03141551906779661,
       "rotationDegrees": 59.99999999999999
     }
   ],
