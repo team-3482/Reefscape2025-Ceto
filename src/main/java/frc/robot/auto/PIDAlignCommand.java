@@ -76,6 +76,7 @@ public class PIDAlignCommand extends Command {
 
         if (
             botPose_TargetSpace == null || 
+            !VisionSubsystem.getInstance().recentVisionData() ||
             !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
         ) {
             this.targetPose = Pose2d.kZero;
