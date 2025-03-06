@@ -4,6 +4,7 @@
 
 package frc.robot.algae;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -63,6 +64,15 @@ public class AlgaeSubsystem extends SubsystemBase {
         configuration.Feedback.SensorToMechanismRatio = AlgaeConstants.MECHANISM_RATIO;
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        // TODO : Wait for final Algae plates
+        CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
+        // currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        // currentLimitsConfigs.StatorCurrentLimit = 120;
+        // currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        // currentLimitsConfigs.SupplyCurrentLimit = 70;
+        // currentLimitsConfigs.SupplyCurrentLowerTime = 2;
+        // currentLimitsConfigs.SupplyCurrentLowerLimit = 1;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);

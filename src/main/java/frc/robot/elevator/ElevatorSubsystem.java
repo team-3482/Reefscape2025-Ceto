@@ -248,11 +248,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 50;
+        currentLimitsConfigs.StatorCurrentLimit = 80;
         currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitsConfigs.SupplyCurrentLimit = 30;
-        currentLimitsConfigs.SupplyCurrentLowerTime = 1;
-        currentLimitsConfigs.SupplyCurrentLowerLimit = 25;
+        currentLimitsConfigs.SupplyCurrentLimit = 15;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 0.5;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 7.5;
 
         // Motor-specific configurations.
         motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Right motor not inverted.

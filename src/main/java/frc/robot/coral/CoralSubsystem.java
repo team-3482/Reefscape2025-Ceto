@@ -115,11 +115,11 @@ public class CoralSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 40;
+        currentLimitsConfigs.StatorCurrentLimit = 60;
         currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitsConfigs.SupplyCurrentLimit = 40;
-        currentLimitsConfigs.SupplyCurrentLowerTime = 0.75;
-        currentLimitsConfigs.SupplyCurrentLowerLimit = 30;
+        currentLimitsConfigs.SupplyCurrentLimit = 10;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 1;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 5;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);

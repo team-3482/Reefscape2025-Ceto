@@ -124,10 +124,7 @@ public class Robot extends LoggedRobot {
     public void testInit() {}
 
     @Override
-    public void testPeriodic() {
-        // TODO : Current limits
-        // https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/talonfx/improving-performance-with-current-limits.html
-    }
+    public void testPeriodic() {}
 
     @Override
     public void testExit() {}
