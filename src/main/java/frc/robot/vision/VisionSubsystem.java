@@ -122,7 +122,7 @@ public class VisionSubsystem extends SubsystemBase {
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
                 .withSize(7, 4)
                 .withPosition(6, 0);
-                Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
