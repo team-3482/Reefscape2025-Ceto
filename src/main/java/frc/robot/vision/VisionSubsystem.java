@@ -375,8 +375,8 @@ public class VisionSubsystem extends SubsystemBase {
                 //     rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
                 // }
                 // else {
-                leftCrop -= LimelightConstants.BOUNDING_BOX * 2;
-                rightCrop += LimelightConstants.BOUNDING_BOX * 2;
+                leftCrop -= LimelightConstants.BOUNDING_BOX;
+                rightCrop += LimelightConstants.BOUNDING_BOX;
                 // }
                 
                 bottomCrop -= LimelightConstants.BOUNDING_BOX;

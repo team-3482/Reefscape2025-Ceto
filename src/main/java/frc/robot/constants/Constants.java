@@ -62,7 +62,7 @@ public final class Constants {
         CORAL(Color.kWhite, 0, -1),
         CAN_ALIGN(Color.kBlue, 1, 0.2),
         ERROR(Color.kRed, 2, 1),
-        OK(Color.kGreen, 2, 3),
+        OK(Color.kGreen, 2, 2.5),
         RSL(Color.kOrange, 5, -1),
         ;
         

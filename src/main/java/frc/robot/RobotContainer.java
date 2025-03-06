@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.algae.AlgaeSubsystem;
@@ -23,6 +24,7 @@ import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.StatusColors;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;
 import frc.robot.coral.OuttakeCoralCommand;
@@ -250,9 +252,11 @@ public class RobotContainer {
         // Algae
         this.operatorController.a()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
+            .whileTrue(Commands.run(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)))
             .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
         this.operatorController.y()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .whileTrue(Commands.run(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)))
             .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
 
         // Coral

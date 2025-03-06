@@ -4,8 +4,9 @@
 
 package frc.robot.coral;
 
-
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.Constants.StatusColors;
+import frc.robot.led.LEDSubsystem;
 
 /** A command that intakes coral and stops when it reaches the end of the intake. */
 public class IntakeCoralCommand extends Command {
@@ -36,6 +37,7 @@ public class IntakeCoralCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         CoralSubsystem.getInstance().stop();
+        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
     }
 
     // Returns true when the command should end.

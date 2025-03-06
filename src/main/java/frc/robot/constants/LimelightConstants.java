@@ -38,8 +38,7 @@ public final class LimelightConstants {
      * Crop window size when no tags are in view (used for smart cropping).
      * {@code xMin, xMax, yMin, yMax}.
      */
-    // TODO TOP LL : Find optimal crops
-    public static final double[] DEFAULT_TOP_CROP = new double[]{ -0.75, 0.75, -0.85, 0.85 }; // Doubles FPS from 4 to 10 in busy scenes.
+    public static final double[] DEFAULT_TOP_CROP = new double[]{ -0.75, 0.75, -0.8, 0.9 };
     public static final double[] DEFAULT_BOTTTOM_CROP = new double[]{ -0.85, 0.85, -0.7, 0.8 };
     
     /** Horizontal resolution of limelight in pixels. */
@@ -48,5 +47,5 @@ public final class LimelightConstants {
     public static final double RES_Y = 800;
 
     /** Increase any crop by this value around a pixel extremity. */
-    public static final double BOUNDING_BOX = 0.2;
+    public static final double BOUNDING_BOX = 0.3;
 }
