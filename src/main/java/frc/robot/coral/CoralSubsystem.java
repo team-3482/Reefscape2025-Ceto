@@ -6,6 +6,7 @@ package frc.robot.coral;
 
 import java.util.Map;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -111,6 +112,14 @@ public class CoralSubsystem extends SubsystemBase {
         configuration.Feedback.SensorToMechanismRatio = CoralConstants.MECHANISM_RATIO;
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
+        currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        currentLimitsConfigs.StatorCurrentLimit = 40;
+        currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        currentLimitsConfigs.SupplyCurrentLimit = 40;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 0.75;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 30;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);
