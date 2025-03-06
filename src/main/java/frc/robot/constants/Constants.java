@@ -4,6 +4,9 @@
 
 package frc.robot.constants;
 
+import static edu.wpi.first.units.Units.Percent;
+
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.util.Color;
 
 /** Constants used throughout the code that are not categorized in other constants files. */
@@ -58,12 +61,13 @@ public final class Constants {
 
     /** Colors used with the LEDSubsystem, these are named for readability and priority. */
     public static enum StatusColors {
-        OFF(Color.kBlack, -1, -1),
-        CORAL(Color.kWhite, 0, -1),
-        CAN_ALIGN(Color.kBlue, 1, 0.2),
-        ERROR(Color.kRed, 2, 1),
-        OK(Color.kGreen, 2, 2.5),
-        RSL(Color.kOrange, 5, -1),
+        // Default percent is 50
+        OFF(Color.kBlack, null, -1, -1),
+        CORAL(Color.kWhite, null, 0, -1),
+        CAN_ALIGN(Color.kBlue, null, 1, 0.2),
+        ERROR(Color.kRed, null, 2, 1),
+        OK(Color.kGreen, null, 2, 2.5),
+        RSL(new Color(200, 50, 0), Percent.of(25), 5, -1),
         ;
         
         /** The Color. */
@@ -72,16 +76,20 @@ public final class Constants {
         public final int priority;
         /** How long this color should stay. -1 is infinitely long. */
         public final double stickyTime;
+        /** The brightness to run this color at. */
+        public final Dimensionless brightness;
 
         /**
          * Creates a new StatusColors.
          * @param color - The Color.
+         * @param brightness - How bright this color should be. If null, it will be 50%.
          * @param priority - The priority of this color over other colors (higher = higher priority).
          * -1 will always be overriden and will always override.
          * @param stickyTime - How long this color should stay. -1 is infinitely long.
          */
-        private StatusColors(Color color, int priority, double stickyTime) {
+        private StatusColors(Color color, Dimensionless brightness, int priority, double stickyTime) {
             this.color = color;
+            this.brightness = brightness == null ? Percent.of(50) : brightness;
             this.priority = priority;
             this.stickyTime = stickyTime;
         }
