@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import java.util.Map;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -244,6 +245,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_SPEED;
         motionMagicConfigs.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
         // motionMagicConfigs.MotionMagicJerk = PivotConstants.MOTION_MAGIC_JERK;
+
+        CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
+        currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        currentLimitsConfigs.StatorCurrentLimit = 50;
+        currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        currentLimitsConfigs.SupplyCurrentLimit = 30;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 1;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 25;
 
         // Motor-specific configurations.
         motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Right motor not inverted.
