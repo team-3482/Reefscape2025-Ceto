@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 import org.littletonrobotics.junction.Logger;
 
@@ -159,7 +158,9 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The color to set.
      */
     public void setColor(StatusColors newColor) {
-        setColor(newColor, false);
+        // if (DriverStation.isEnabled() || newColor.equals(StatusColors.RSL) || newColor.equals(StatusColors.OFF)) {
+            setColor(newColor, false);
+        // }
     }
 
     /**
@@ -167,7 +168,17 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The color to blink.
      */
     public void blinkColor(StatusColors newColor) {
-        setColor(newColor, true);
+        // if (DriverStation.isEnabled() || newColor.equals(StatusColors.RSL)) {
+            setColor(newColor, true);
+        // }
+    }
+
+    /**
+     * Gets the currently blinking color.
+     * @return The color.
+     */
+    public StatusColors getBlinkColor() {
+        return this.blinkColor;
     }
 
     /** 

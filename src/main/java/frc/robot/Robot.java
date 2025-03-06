@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -59,6 +59,7 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
+        // Blink like the RSL when disabled
         LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
     }
 

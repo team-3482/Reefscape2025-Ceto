@@ -15,16 +15,18 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
+
 import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that manipulates the coral game piece. */
@@ -99,7 +101,7 @@ public class CoralSubsystem extends SubsystemBase {
         Logger.recordOutput("Coral/HasCoral", coral);
         Logger.recordOutput("Coral/State", state);
 
-        if (coral) {
+        if (coral && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
     }
