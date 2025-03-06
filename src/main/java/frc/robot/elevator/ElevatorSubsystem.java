@@ -135,18 +135,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     // This method will be called once per scheduler run
     public void periodic() {
-        this.shuffleboardPositionNumberBar.setDouble(getPosition());
+        double position = getPosition();
+
+        this.shuffleboardPositionNumberBar.setDouble(position);
         this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
         this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
         this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
 
-        Logger.recordOutput("Elevator/Position", this.getPosition());
-        Logger.recordOutput("Elevator/RotorVelocity", this.getRotorVelocity());
+        Logger.recordOutput("Elevator/Position", position);
+        Logger.recordOutput("Elevator/RotorVelocity", getRotorVelocity());
 
         boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
 
         if (!inputToggled) {
-            this.shuffleboardSliderInput.setDouble(getPosition());
+            this.shuffleboardSliderInput.setDouble(position);
         }
         
         if (DriverStation.isEnabled()) {
@@ -199,13 +201,13 @@ public class ElevatorSubsystem extends SubsystemBase {
                 if (currentCommand != null) {
                     CommandScheduler.getInstance().cancel(currentCommand);
                 }
-                motionMagicPosition(getPosition() - 0.01, false, true);
+                motionMagicPosition(position - 0.01, false, true);
             }
             else if (currentCommand != null) {
                 this.shuffleboardToggleInput.setBoolean(false);
             }
             else if (inputToggled && currentCommand == null) {
-                motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true, false);
+                motionMagicPosition(this.shuffleboardSliderInput.getDouble(position), true, false);
             }
         }
         else {

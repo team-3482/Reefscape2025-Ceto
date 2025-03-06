@@ -13,13 +13,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
@@ -61,12 +61,16 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
     
     // Instance of the controllers used to drive the robot
-    private CommandXboxController driverController;
-    private CommandXboxController operatorController;
+    private final CommandXboxController driverController;
+    private final CommandXboxController operatorController;
+    private final XboxController driverController_HID;
+    private final XboxController operatorController_HID;
 
     public RobotContainer() {
         this.driverController = new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_ID);
         this.operatorController = new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
+        this.driverController_HID = this.driverController.getHID();
+        this.operatorController_HID = this.operatorController.getHID();
 
         configureDrivetrain(); // This is done separately because it works differently from other Subsystems
         initializeSubsystems();
@@ -98,14 +102,14 @@ public class RobotContainer {
         
         final SwerveTelemetry logger = new SwerveTelemetry(MaxSpeed);
 
-        Trigger leftTrigger = this.driverController.leftTrigger();
-        Trigger rightTrigger = this.driverController.rightTrigger();
+        Supplier<Boolean> leftTrigger = () -> this.driverController_HID.getLeftTriggerAxis() >= 0.5;
+        Supplier<Boolean> rightTrigger = () -> this.driverController_HID.getRightTriggerAxis() >= 0.5;
 
         // Drivetrain will execute this command periodically
         Drivetrain.setDefaultCommand(
             Drivetrain.applyRequest(() -> {
-                boolean topSpeed = leftTrigger.getAsBoolean();
-                boolean fineControl = rightTrigger.getAsBoolean();
+                boolean topSpeed = leftTrigger.get();
+                boolean fineControl = rightTrigger.get();
                 
                 return fieldCentricDrive_withDeadband
                     // Drive forward with negative Y (forward)
@@ -163,8 +167,8 @@ public class RobotContainer {
             povSpeeds.forEach(
                 (Integer angle, Integer[] speeds) -> this.driverController.pov(angle).whileTrue(
                     Drivetrain.applyRequest(() -> {
-                        boolean faster = leftTrigger.getAsBoolean();
-                        boolean robotCentric = rightTrigger.getAsBoolean();
+                        boolean faster = leftTrigger.get();
+                        boolean robotCentric = rightTrigger.get();
                         
                         return robotCentric
                             ? robotCentricDrive
@@ -273,7 +277,7 @@ public class RobotContainer {
     public void configureOperatorBindings() {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController.rightTrigger().getAsBoolean();
+        Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController_HID.getRightTriggerAxis() >= 0.5;
 
         // Elevator
         this.operatorController.povDown()

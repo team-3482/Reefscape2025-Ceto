@@ -80,14 +80,6 @@ public class PIDAlignCommand extends Command {
             !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
         ) {
             this.targetPose = Pose2d.kZero;
-            
-            this.xController.setSetpoint(0);
-            this.yController.setSetpoint(0);
-            this.thetaController.setSetpoint(0);
-            
-            this.xController.calculate(0);
-            this.yController.calculate(0);
-            this.thetaController.calculate(0);
         }
         else {
             /** Forwards (from tag perspective, closer) is positive. */
@@ -102,8 +94,8 @@ public class PIDAlignCommand extends Command {
             double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
             double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
 
-            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 0.75) {
-                this.targetPose = Pose2d.kZero; // Don't try this command farther than 0.75 meters from the goal.
+            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 1) {
+                this.targetPose = Pose2d.kZero; // Don't try this command farther than 1 meter from the goal.
                 return;
             }
 
