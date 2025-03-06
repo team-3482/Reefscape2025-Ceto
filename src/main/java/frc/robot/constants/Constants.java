@@ -52,7 +52,7 @@ public final class Constants {
         public static final double L2_CORAL = 0.33;
         public static final double L2_ALGAE = 0.63;
         public static final double L3_CORAL = 0.74;
-        public static final double BOTTOM_HEIGHT = 0;
+        public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
         public static final double MAX_HEIGHT = 0.75;
     }
 
