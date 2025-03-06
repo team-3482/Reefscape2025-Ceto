@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -192,7 +193,48 @@ public class RobotContainer {
 
     /** Register all NamedCommands for PathPlanner use */
     private void registerNamedCommands() {
+        NamedCommands.registerCommand("MoveElevatorToBottom",
+            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false));
+        NamedCommands.registerCommand("MoveElevatorToL1Coral",
+            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false));
+        NamedCommands.registerCommand("MoveElevatorToL2Coral",
+            new MoveElevatorCommand(ScoringConstants.L2_CORAL, false));
+        NamedCommands.registerCommand("MoveElevatorToL3Coral",
+            new MoveElevatorCommand(ScoringConstants.L3_CORAL, false));
+        NamedCommands.registerCommand("MoveElevatorToL2Algae",
+            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false));
         
+        NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
+            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
+        NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
+            new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
+        NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
+            new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
+        NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
+            new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
+        NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
+            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
+        
+        NamedCommands.registerCommand("IntakeCoral",
+            new IntakeCoralCommand());
+        NamedCommands.registerCommand("OuttakeCoral",
+            new OuttakeCoralCommand());
+        NamedCommands.registerCommand("IntakeAlgaeAndHold",
+            CommandGenerators.IntakeAlgaeAndHoldCommand());
+        NamedCommands.registerCommand("OuttakeAlgaeAndStop",
+            CommandGenerators.OuttakeAlgaeAndStopCommand());
+        
+        NamedCommands.registerCommand("PIDAlignRightReef",
+            new PIDAlignCommand.Reef(1));
+        NamedCommands.registerCommand("PIDAlignLeftReef",
+            new PIDAlignCommand.Reef(-1));
+        NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
+            new PIDAlignCommand.Reef(0));
+        NamedCommands.registerCommand("PIDAlignProcessor",
+            new PIDAlignCommand.Processor());
+        
+        NamedCommands.registerCommand("ReleaseAlgaeAndZeroElevator",
+            CommandGenerators.InitialElevatorLiftAndZeroCommand());
     }
 
     /** Configures the button bindings of the driver controller. */

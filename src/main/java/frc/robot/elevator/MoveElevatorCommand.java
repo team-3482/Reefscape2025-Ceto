@@ -24,6 +24,14 @@ public class MoveElevatorCommand extends Command {
         addRequirements(ElevatorSubsystem.getInstance());
     }
 
+    /**
+     * Creates a new ElevatorCommand.
+     * @param position - The position the elevator will move to in meters.
+     * @param slow - Whether to move the elevator slower.
+     */
+    public MoveElevatorCommand(double position, boolean slow) {
+        this(position, () -> slow); // Still creates a supplier that supplies just the boolean
+    }
 
     // Called when the command is initially scheduled.
     @Override
