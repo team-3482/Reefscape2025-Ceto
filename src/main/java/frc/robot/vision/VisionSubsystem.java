@@ -7,6 +7,7 @@ package frc.robot.vision;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -148,11 +149,33 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
         // These methods are here because they are NOT thread-safe
-        boolean processor = this.shuffleboardProcessorInView.getBoolean(false);
-        boolean reef = this.shuffleboardReefInView.getBoolean(false);
+        boolean processor, reef, canAlign;
+        processor = reef = canAlign = false;
+
+        if (recentVisionData()) {
+            Stream<Integer> tagsInView = getTagsInView_MegaTag().stream();
+            
+            if (tagsInView.anyMatch((Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22))) {
+                reef = true;
+            }
+            if (tagsInView.anyMatch((Integer id) -> id == 3 || id == 16)) {
+                processor = true;
+            }
+            canAlign = reef || processor;
+
+            
+        }
+        
+        this.shuffleboardProcessorInView.setBoolean(processor);
+        this.shuffleboardReefInView.setBoolean(reef);
+
         Logger.recordOutput("Vision/ProcessorInView", processor);
         Logger.recordOutput("Vision/ReefInView", reef);
         Logger.recordOutput("Vision/canAlign", processor || reef);
+        
+        if (canAlign) {
+            LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
+        }
     }
 
     /**
@@ -163,23 +186,6 @@ public class VisionSubsystem extends SubsystemBase {
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized) continue;
-            
-            if (recentVisionData() && data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
-                boolean processor = data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16;
-                boolean reef = 17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11);
-                boolean canAlign = processor || reef;
-
-                this.shuffleboardProcessorInView.setBoolean(processor);
-                this.shuffleboardReefInView.setBoolean(reef);
-
-                if (canAlign) {
-                    LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
-                }
-            }
-            else {
-                this.shuffleboardProcessorInView.setBoolean(false);
-                this.shuffleboardReefInView.setBoolean(false);
-            }
             
             if (data.canTrustRotation) {
                 // Only trust rotational data when adding this pose.
