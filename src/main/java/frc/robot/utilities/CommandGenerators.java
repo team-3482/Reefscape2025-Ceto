@@ -76,7 +76,7 @@ public final class CommandGenerators {
      */
     public static Command IntakeAlgaeAndHoldCommand() {
         return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
-            .andThen(Commands.waitSeconds(2)) // TODO AUTO : See if this time is too long or short
+            .andThen(Commands.waitSeconds(1))
             .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
     }
 
@@ -86,7 +86,7 @@ public final class CommandGenerators {
      */
     public static Command OuttakeAlgaeAndStopCommand() {
         return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake())
-            .andThen(Commands.waitSeconds(2)) // TODO AUTO : See if this time is too long or short
+            .andThen(Commands.waitSeconds(1))
             .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
     }
 

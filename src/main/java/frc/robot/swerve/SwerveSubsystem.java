@@ -238,7 +238,16 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        // double v = -Double.parseDouble(SBVoltage.getString("0"));
+        // for (int i = 0; i < this.getModules().length; ++i) {
+        //     this.getModule(i).getDriveMotor().setVoltage(-v);
+        // }
     }
+    // private GenericEntry SBVoltage = Shuffleboard.getTab("swerve")
+    //     .add("voltage", "0")
+    //     .withWidget(BuiltInWidgets.kTextView)
+    //     .getEntry();
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();

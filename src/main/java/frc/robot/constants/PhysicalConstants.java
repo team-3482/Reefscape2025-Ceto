@@ -54,13 +54,13 @@ public final class PhysicalConstants {
          * Tolerance used for elevator command in meters.
          * @see {@link MoveElevatorCommand}
          */
-        public static final double HEIGHT_TOLERANCE = 0.01;
+        public static final double HEIGHT_TOLERANCE = 0.05;
 
         /* Motion Magic Config */
         public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
-        public static final double CRUISE_SPEED = 35;
+        public static final double CRUISE_SPEED = 30;
         public static final double SLOW_CRUISE_SPEED = 10;
-        public static final double ACCELERATION = 70;
+        public static final double ACCELERATION = 60;
         public static final double SLOW_ACCELERATION = 30;
 
         /** Gains used for MotionMagic slot 0. */

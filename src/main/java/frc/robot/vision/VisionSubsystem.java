@@ -7,7 +7,6 @@ package frc.robot.vision;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -153,12 +153,12 @@ public class VisionSubsystem extends SubsystemBase {
         processor = reef = canAlign = false;
 
         if (recentVisionData()) {
-            Stream<Integer> tagsInView = getTagsInView_MegaTag().stream();
+            ArrayList<Integer> tagsInView = getTagsInView_MegaTag();
             
-            if (tagsInView.anyMatch((Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22))) {
+            if (tagsInView.stream().anyMatch((Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22))) {
                 reef = true;
             }
-            if (tagsInView.anyMatch((Integer id) -> id == 3 || id == 16)) {
+            if (tagsInView.stream().anyMatch((Integer id) -> id == 3 || id == 16)) {
                 processor = true;
             }
             canAlign = reef || processor;
@@ -173,7 +173,7 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.recordOutput("Vision/ReefInView", reef);
         Logger.recordOutput("Vision/canAlign", processor || reef);
         
-        if (canAlign) {
+        if (canAlign && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
         }
     }
