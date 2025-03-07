@@ -5,9 +5,40 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "StartMiddleToReef"
+            "name": "ReleaseAlgaeAndZeroElevator"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "StartMiddleToReef"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "MoveElevatorToL3Coral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignLeftReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
           }
         },
         {
@@ -17,15 +48,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RightCoralToCD"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightCoralFromCD"
+            "name": "IntakeCoral"
           }
         },
         {
@@ -35,21 +60,45 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignRightReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "RightCoralFromCD"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "RightCoralToAB"
+            "name": "IntakeCoral"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "RightCoralFromAB"
+            "pathName": "RightCoralToCD"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignLeftReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
           }
         }
       ]
