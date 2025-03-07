@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartLeftToReef"
+                  "pathName": "StartRightToEF"
                 }
               },
               {
@@ -39,6 +39,36 @@
         {
           "type": "named",
           "data": {
+            "name": "PIDAlignLeftReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightCoralFromEF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "RightCoralToCD"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "PIDAlignRightReef"
           }
         },
@@ -51,7 +81,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCoralFromIJ"
+            "pathName": "RightCoralFromCD"
           }
         },
         {
@@ -63,7 +93,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCoralToKL"
+            "pathName": "RightCoralToCD"
           }
         },
         {
@@ -77,41 +107,11 @@
           "data": {
             "name": "OuttakeCoral"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftCoralFromKL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftCoralToKL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PIDAlignRightReef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
-          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "All L3",
   "choreoAuto": false
 }

@@ -5,9 +5,13 @@
   "pathFolders": [
     "CoralToReef",
     "ReefToCoral",
+    "End",
     "Start"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "All L3",
+    "L3 & Algae"
+  ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
