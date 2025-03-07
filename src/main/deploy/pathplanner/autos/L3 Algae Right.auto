@@ -87,6 +87,12 @@
         {
           "type": "named",
           "data": {
+            "name": "MoveElevatorToL2Algae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeAlgaeAndHold"
           }
         },
@@ -100,6 +106,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "L3 & Algae",
+  "folder": "2 L3 & 1 Algae",
   "choreoAuto": false
 }

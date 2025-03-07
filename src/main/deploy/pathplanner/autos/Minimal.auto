@@ -50,6 +50,12 @@
         {
           "type": "named",
           "data": {
+            "name": "MoveElevatorToL2Algae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "IntakeAlgaeAndHold"
           }
         },
