@@ -208,16 +208,16 @@ public class RobotContainer {
         NamedCommands.registerCommand("MoveElevatorToL2Algae",
             new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false));
         
-        NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
-        NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
-            new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
-        NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
-            new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
-        NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
-            new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
-        NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
-            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
+//        NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
+//            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
+//        NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
+//            new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
+//        NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
+//            new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
+//        NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
+//            new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
+//        NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
+//            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
         
         NamedCommands.registerCommand("IntakeCoral",
             new IntakeCoralCommand());
