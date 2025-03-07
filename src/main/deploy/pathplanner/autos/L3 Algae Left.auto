@@ -1,0 +1,105 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "StartLeftToKL"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ReleaseAlgaeAndZeroElevator"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "MoveElevatorToL3Coral"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignLeftReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCoralFromKL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCoralToKL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignRightReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignCenterReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeAlgaeAndHold"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EndLeftKL"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "L3 & Algae",
+  "choreoAuto": false
+}

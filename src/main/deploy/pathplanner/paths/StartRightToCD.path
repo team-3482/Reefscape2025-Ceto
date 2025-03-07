@@ -3,52 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 7.0,
+        "y": 2.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2473612493436432,
-        "y": 4.950350948882153
+        "x": 7.6298102531766405,
+        "y": 1.9347051184797437
       },
       "isLocked": false,
-      "linkedName": "Reef AB"
+      "linkedName": "Start Right"
     },
     {
       "anchor": {
-        "x": 1.166,
-        "y": 7.093
+        "x": 3.732384920785325,
+        "y": 2.6864167203608247
       },
       "prevControl": {
-        "x": 1.344736156382656,
-        "y": 6.888498948226197
+        "x": 4.414617491662788,
+        "y": 2.2419132144228366
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral Left"
+      "linkedName": "Reef CD"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.06,
+      "waypointRelativePos": 0.22618806670984457,
       "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.09782021604938286,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "MoveElevatorToBottom"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
@@ -59,12 +47,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "ReefToCoral",
+  "folder": "Start",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": 0.0
   },
   "useDefaultConstraints": true
