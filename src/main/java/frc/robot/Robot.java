@@ -65,7 +65,6 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void robotPeriodic() {
-        // TODO : Find out what is causing Shuffleboard.update() to take so long
         CommandScheduler.getInstance().run();
     }
 

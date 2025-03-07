@@ -65,14 +65,13 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        // TODO : Wait for final Algae plates
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
-        // currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        // currentLimitsConfigs.StatorCurrentLimit = 120;
-        // currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        // currentLimitsConfigs.SupplyCurrentLimit = 70;
-        // currentLimitsConfigs.SupplyCurrentLowerTime = 2;
-        // currentLimitsConfigs.SupplyCurrentLowerLimit = 1;
+        currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        currentLimitsConfigs.StatorCurrentLimit = 100;
+        currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        currentLimitsConfigs.SupplyCurrentLimit = 25;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 0.5;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 10;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);

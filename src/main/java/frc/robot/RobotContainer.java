@@ -298,12 +298,12 @@ public class RobotContainer {
         // Algae
         this.operatorController.a()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
-            .whileTrue(Commands.run(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()))
+            .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
         this.operatorController.y()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
-            .whileTrue(Commands.run(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()))
+            .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
 
         // Coral
         this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
