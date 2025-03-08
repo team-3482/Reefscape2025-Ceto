@@ -122,10 +122,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         this.leftMotor.setControl(this.FOLLOW_RIGHT);
 
-        this.lastUpperLimit_StageThree = !atUpperLimit_StageThree();
-        this.lastUpperLimit_StageTwo = !atUpperLimit_StageTwo();
-        this.lastLowerLimit = !atLowerLimit();
-
         if (atLowerLimit()) {
             // If starting at the bottom (beginning of a match, etc.) reset the position
             // We do not do this every time because sometimes we deploy code while the elevator

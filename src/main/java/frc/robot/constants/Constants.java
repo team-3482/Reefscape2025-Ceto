@@ -57,6 +57,7 @@ public final class Constants {
 
         public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
+        public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
     }
 
     /** States used with Algae and Coral subsystems, reduces overhead. */
