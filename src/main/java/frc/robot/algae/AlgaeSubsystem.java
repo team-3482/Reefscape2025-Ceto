@@ -14,26 +14,18 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.PhysicalConstants.AlgaeConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that manipulates the Algae game piece. */
 public class AlgaeSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile AlgaeSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class AlgaeSubsystemHolder {
+        private static final AlgaeSubsystem INSTANCE = new AlgaeSubsystem();
+    }
+    
     public static AlgaeSubsystem getInstance() {
-        AlgaeSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new AlgaeSubsystem();
-                }
-            }
-        }
-        return instance;
+        return AlgaeSubsystemHolder.INSTANCE;
     }
 
     private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);

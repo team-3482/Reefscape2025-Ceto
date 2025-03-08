@@ -14,25 +14,17 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 public class LEDSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile LEDSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class LEDSubsystemHolder {
+        private static final LEDSubsystem INSTANCE = new LEDSubsystem();
+    }
+    
     public static LEDSubsystem getInstance() {
-        LEDSubsystem result = instance;
-       
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new LEDSubsystem();
-                }
-            }
-        }
-        return instance;
+        return LEDSubsystemHolder.INSTANCE;
     }
 
     private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);

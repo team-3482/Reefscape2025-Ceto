@@ -33,6 +33,7 @@ import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** 
@@ -41,22 +42,13 @@ import org.littletonrobotics.junction.Logger;
  * position updates to the internal odometer.
  */
 public class VisionSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile VisionSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class VisionSubsystemHolder {
+        private static final VisionSubsystem INSTANCE = new VisionSubsystem();
+    }
+    
     public static VisionSubsystem getInstance() {
-        VisionSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new VisionSubsystem();
-                }
-            }
-        }
-        return instance;
+        return VisionSubsystemHolder.INSTANCE;
     }
 
     /** Used to run vision processing on a separate thread. */

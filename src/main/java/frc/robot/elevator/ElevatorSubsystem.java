@@ -38,22 +38,13 @@ import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that moves the elevator up and down using MotionMagic. */
 public class ElevatorSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile ElevatorSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class ElevatorSubsystemHolder {
+        private static final ElevatorSubsystem INSTANCE = new ElevatorSubsystem();
+    }
+    
     public static ElevatorSubsystem getInstance() {
-        ElevatorSubsystem result = instance;
-       
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new ElevatorSubsystem();
-                }
-            }
-        }
-        return instance;
+        return ElevatorSubsystemHolder.INSTANCE;
     }
 
     private TalonFX leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);

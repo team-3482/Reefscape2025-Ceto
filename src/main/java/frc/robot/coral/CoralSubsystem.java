@@ -6,6 +6,8 @@ package frc.robot.coral;
 
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -27,26 +29,15 @@ import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 
-import org.littletonrobotics.junction.Logger;
-
 /** A subsystem that manipulates the coral game piece. */
 public class CoralSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile CoralSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class CoralSubsystemHolder {
+        private static final CoralSubsystem INSTANCE = new CoralSubsystem();
+    }
+    
     public static CoralSubsystem getInstance() {
-        CoralSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new CoralSubsystem();
-                }
-            }
-        }
-        return instance;
+        return CoralSubsystemHolder.INSTANCE;
     }
 
     private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
