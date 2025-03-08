@@ -113,18 +113,18 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkTimer.reset();
         }
 
-        // Don't save black as a blik color on blinks
+        if (newColor != this.currentColor) {
+            LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
+            pattern.applyTo(this.LEDStripBuffer);
+            this.LEDStrip.setData(this.LEDStripBuffer);
+        }
+
+        // Don't save black as a blink color on blinks
         if (this.shouldBlink && newColor == StatusColors.OFF) {
             this.currentColor = newColor;
         }
         else {
             this.blinkColor = this.currentColor = newColor;
-        }
-
-        if (newColor != this.currentColor) {
-            LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
-            pattern.applyTo(this.LEDStripBuffer);
-            this.LEDStrip.setData(this.LEDStripBuffer);
         }
 
         updateShuffleboardsAndLogs(newColor);
