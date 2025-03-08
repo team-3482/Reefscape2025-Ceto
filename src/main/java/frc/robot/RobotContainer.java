@@ -14,9 +14,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,7 +23,6 @@ import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;
 import frc.robot.coral.OuttakeCoralCommand;
@@ -79,11 +77,7 @@ public class RobotContainer {
         registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-        Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-            .add("Auto Chooser", autoChooser)
-            .withWidget(BuiltInWidgets.kComboBoxChooser)
-            .withSize(5, 2)
-            .withPosition(1, 0);
+        SmartDashboard.putData("Auto Chooser", this.autoChooser);
     }
 
     /**

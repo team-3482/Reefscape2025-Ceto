@@ -1,0 +1,308 @@
+{
+  "version": 1.0,
+  "grid_size": 64,
+  "tabs": [
+    {
+      "name": "Teleoperated",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
+    {
+      "name": "Autonomous",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
+    {
+      "name": "Competition",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "VisionSubsystem",
+            "x": 64.0,
+            "y": 128.0,
+            "width": 320.0,
+            "height": 192.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Processor Align",
+                "x": 0.0,
+                "y": 64.0,
+                "width": 192.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/VisionSubsystem/Processor Align",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4278190335,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Reef Align",
+                "x": 0.0,
+                "y": 128.0,
+                "width": 192.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/VisionSubsystem/Reef Align",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4278190335,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "ElevatorSubsystem",
+            "x": 832.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 512.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Elevator Position (meters)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 320.0,
+                "height": 128.0,
+                "type": "Number Bar",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Elevator Position (meters)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": -1.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "inverted": false,
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "title": "Toggle Shuffleboard Input Slider",
+                "x": 0.0,
+                "y": 64.0,
+                "width": 320.0,
+                "height": 64.0,
+                "type": "Toggle Button",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Toggle Shuffleboard Input Slider",
+                  "period": 0.06,
+                  "data_type": "boolean"
+                }
+              },
+              {
+                "title": "Set Elevator Position (meters)",
+                "x": 0.0,
+                "y": 128.0,
+                "width": 320.0,
+                "height": 128.0,
+                "type": "Number Slider",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Set Elevator Position (meters)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "min_value": -1.0,
+                  "max_value": 1.0,
+                  "divisions": 5,
+                  "update_continuously": false
+                }
+              },
+              {
+                "title": "Stage Three Top Sensor",
+                "x": 0.0,
+                "y": 192.0,
+                "width": 320.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Stage Three Top Sensor",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Stage Two Top Sensor",
+                "x": 0.0,
+                "y": 256.0,
+                "width": 320.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Stage Two Top Sensor",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Bottom Sensor",
+                "x": 0.0,
+                "y": 320.0,
+                "width": 320.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/ElevatorSubsystem/Bottom Sensor",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "CoralSubsystem",
+            "x": 64.0,
+            "y": 320.0,
+            "width": 320.0,
+            "height": 192.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Front Laser",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 320.0,
+                "height": 64.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/CoralSubsystem/Front Laser",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Back Laser",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/Shuffleboard/Competition/CoralSubsystem/Back Laser",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          }
+        ],
+        "containers": [
+          {
+            "title": "LED 1",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 64.0,
+            "height": 512.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Shuffleboard/Competition/LED 1",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "LED 2",
+            "x": 1152.0,
+            "y": 0.0,
+            "width": 64.0,
+            "height": 512.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/Shuffleboard/Competition/LED 2",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4278190080,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "limelight-euryale",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 448.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-euryale",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-stheno",
+            "x": 384.0,
+            "y": 256.0,
+            "width": 448.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-stheno",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 64.0,
+            "y": 0.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/Shuffleboard/Competition/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

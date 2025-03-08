@@ -76,7 +76,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
+        .getLayout("VisionSubsystem", BuiltInLayouts.kList)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(5, 3)
         .withPosition(1, 2);

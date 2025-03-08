@@ -15,6 +15,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,6 +34,8 @@ public class Robot extends LoggedRobot {
             PortForwarder.add(port, LimelightConstants.BOTTOM_LL + ".local", port);
             PortForwarder.add(port + 10, LimelightConstants.TOP_LL + ".local", port);
         }
+
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();

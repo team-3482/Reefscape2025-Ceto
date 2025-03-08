@@ -55,7 +55,7 @@ public class CoralSubsystem extends SubsystemBase {
     private DigitalInput backLaser = new DigitalInput(CoralConstants.BACK_LASER_ID);
 
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
+        .getLayout("CoralSubsystem", BuiltInLayouts.kList)
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(5, 3)
         .withPosition(1, 5);

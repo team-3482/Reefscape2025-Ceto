@@ -67,12 +67,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final Follower FOLLOW_RIGHT = new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true);
     private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
 
-    /** Shuffleboard stuff */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 6, "Label position", "TOP"))
-        .withSize(5, 8)
-        .withPosition(13, 0);
+    /** Elastic stuff */
     private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
         .add("Elevator Position (meters)", 0)
         .withWidget(BuiltInWidgets.kNumberBar)
