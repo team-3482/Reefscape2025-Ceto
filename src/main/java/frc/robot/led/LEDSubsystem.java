@@ -27,16 +27,16 @@ public class LEDSubsystem extends SubsystemBase {
         return LEDSubsystemHolder.INSTANCE;
     }
 
-    private AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
-    private AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
+    private final AddressableLED LEDStrip = new AddressableLED(LEDConstants.PWM_HEADER);
+    private final AddressableLEDBuffer LEDStripBuffer = new AddressableLEDBuffer(LEDConstants.LED_LENGTH);
 
     private StatusColors currentColor = StatusColors.OFF;
     private StatusColors blinkColor = StatusColors.OFF;
 
     private boolean shouldBlink = false;
-    private Timer blinkTimer = new Timer();
+    private final Timer blinkTimer = new Timer();
 
-    private Timer stickyTimer = new Timer();
+    private final Timer stickyTimer = new Timer();
 
     private SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .add("LED 1", false);
@@ -72,7 +72,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (this.shouldBlink && this.blinkTimer.hasElapsed(LEDConstants.BLINK_COOLDOWN)) {
-            if (this.currentColor.equals(StatusColors.OFF)) {
+            if (this.currentColor == StatusColors.OFF) {
                 this.setColor(this.blinkColor, true);
             }
             else {
@@ -82,8 +82,9 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkTimer.reset();
         }
 
+        double stickyTime = this.blinkColor.stickyTime;
         // Blink color will always be current color, unless blinking, when it will always be the blink color
-        if (this.blinkColor.stickyTime >= 0 && this.stickyTimer.hasElapsed(this.blinkColor.stickyTime)) {
+        if (stickyTime >= 0 && this.stickyTimer.hasElapsed(stickyTime)) {
             setColor(StatusColors.OFF);
         }
     }
@@ -112,16 +113,19 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkTimer.reset();
         }
 
-        if (!this.shouldBlink || (this.shouldBlink && !newColor.equals(StatusColors.OFF))) {
-            this.blinkColor = this.currentColor = newColor; // Don't save black on blinks
-        }
-        else {
+        // Don't save black as a blik color on blinks
+        if (this.shouldBlink && newColor == StatusColors.OFF) {
             this.currentColor = newColor;
         }
+        else {
+            this.blinkColor = this.currentColor = newColor;
+        }
 
-        LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
-        pattern.applyTo(this.LEDStripBuffer);
-        this.LEDStrip.setData(this.LEDStripBuffer);
+        if (newColor != this.currentColor) {
+            LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
+            pattern.applyTo(this.LEDStripBuffer);
+            this.LEDStrip.setData(this.LEDStripBuffer);
+        }
 
         updateShuffleboardsAndLogs(newColor);
     }
@@ -131,13 +135,15 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The new color to use.
      */
     private void updateShuffleboardsAndLogs(StatusColors newColor) {
+        if (newColor == this.currentColor) return;
+        
         String hexString = newColor.color.toHexString();
         Map<String, Object> properties = Map.of("colorWhenFalse",
             // Have to do this because LEDs don't display orange properly so it is in reality
             // very dark red that our eyes perceive as orange, but in driver station it shows
             // in red, which could confuse the driver. Thus, it has to be modified to orange.
             newColor.equals(StatusColors.RSL) ? Color.kDarkOrange.toHexString() : hexString);
-        
+
         this.shuffleboard_widget1.withProperties(properties);
         this.shuffleboard_widget2.withProperties(properties);
 
