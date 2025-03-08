@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
@@ -35,7 +36,7 @@ public class CoralSubsystem extends SubsystemBase {
     private static class CoralSubsystemHolder {
         private static final CoralSubsystem INSTANCE = new CoralSubsystem();
     }
-    
+
     public static CoralSubsystem getInstance() {
         return CoralSubsystemHolder.INSTANCE;
     }
@@ -64,8 +65,9 @@ public class CoralSubsystem extends SubsystemBase {
         .withSize(5, 1)
         .withPosition(0, 1)
         .getEntry();
-
-    private String state = "stopped";
+    
+    private SubsystemStates state = SubsystemStates.STOPPED;
+    private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
 
     /** Creates a new OuttakeSubsystem. */
     private CoralSubsystem() {
@@ -90,7 +92,12 @@ public class CoralSubsystem extends SubsystemBase {
         Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
         Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
         Logger.recordOutput("Coral/HasCoral", coral);
-        Logger.recordOutput("Coral/State", state);
+
+        // Avoids logging every loop
+        if (this.state != this.lastLoggedState) {
+            Logger.recordOutput("Coral/State", this.state);
+            this.lastLoggedState = this.state;
+        }
 
         if (coral && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
@@ -124,32 +131,32 @@ public class CoralSubsystem extends SubsystemBase {
      * Sets the speed of the motors to the intake speed
      */
     public void intake() {
+        this.state = SubsystemStates.INTAKING;
         rightMotor.setVoltage(CoralConstants.INTAKE_VOLTAGE);
-        state = "intaking";
     }
 
     /**
      * Sets the speed of the motors to the slow intake speed
      */
     public void slowIntake() {
+        this.state = SubsystemStates.SLOW_INTAKING;
         this.rightMotor.setVoltage(CoralConstants.SLOW_INTAKE_VOLTAGE);
-        state = "slow intaking";
     }
 
     /**
      * Sets the speed of the motors to the outtake speed
      */
     public void outtake() {
+        this.state = SubsystemStates.OUTTAKING;
         rightMotor.setVoltage(CoralConstants.OUTTAKE_VOLTAGE);
-        state = "outtaking";
     }
 
     /**
      * Stops the motors immediately
      */
     public void stop() {
+        this.state = SubsystemStates.STOPPED;
         rightMotor.setVoltage(0);
-        state = "stopped";
     }
 
     /**

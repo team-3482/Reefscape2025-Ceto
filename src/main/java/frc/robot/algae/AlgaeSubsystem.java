@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.AlgaeConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 
@@ -31,7 +32,8 @@ public class AlgaeSubsystem extends SubsystemBase {
     private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
     private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
-    private String state = "stopped";
+    private SubsystemStates state = SubsystemStates.STOPPED;
+    private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
 
     /** Creates a new AlgaeSubsystem. */
     private AlgaeSubsystem() {
@@ -45,7 +47,10 @@ public class AlgaeSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        Logger.recordOutput("Algae/State", state);
+        if (this.state != this.lastLoggedState) {
+            Logger.recordOutput("Algae/State", this.state);
+            this.lastLoggedState = this.state;
+        }
     }
 
     /**
@@ -75,31 +80,31 @@ public class AlgaeSubsystem extends SubsystemBase {
      * Sets the speed of the motors to the intake speed
      */
     public void intake() {
+        this.state = SubsystemStates.INTAKING;
         rightMotor.setVoltage(AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
-        state = "intaking";
     }
 
     /**
      * Sets the speed of the motors to the outtake speed
      */
     public void outtake() {
+        this.state = SubsystemStates.OUTTAKING;
         rightMotor.setVoltage(-AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
-        state = "outtaking";
     }
 
     /**
      * Sets the speed of the motors to the holding voltage.
      */
     public void hold() {
+        this.state = SubsystemStates.HOLDING;
         this.rightMotor.setVoltage(AlgaeConstants.HOLDING_VOLTAGE);
-        state = "holding";
     }
 
     /**
      * Stops the motors immediately
      */
     public void stop() {
+        this.state = SubsystemStates.STOPPED;
         rightMotor.setVoltage(0);
-        state = "stopped";
     }
 }

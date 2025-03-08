@@ -58,4 +58,9 @@ public final class Constants {
         public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
     }
+
+    /** States used with Algae and Coral subsystems, reduces overhead. */
+    public static enum SubsystemStates {
+        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING
+    }
 }
