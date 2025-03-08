@@ -54,7 +54,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput stageTwoUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_TWO_UPPER_LASER_ID);
     private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+    private final VoltageOut voltageOut = new VoltageOut(0);
     private final Follower FOLLOW_RIGHT = new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true);
     private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
 
@@ -102,6 +103,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withSize(5, 1)
         .withPosition(0, 5)
         .getEntry();
+    
+    private double lastPosition = Double.NaN;
+    // Shuffleboard values are initialized at false, so these should be false
+    private boolean lastUpperLimit_StageThree = false;
+    private boolean lastUpperLimit_StageTwo = false;
+    private boolean lastLowerLimit = false;
+    private double lastRotorVelocity = Double.NaN;
 
     /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
@@ -113,6 +121,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.rightMotor.getVelocity().setUpdateFrequency(50);
 
         this.leftMotor.setControl(this.FOLLOW_RIGHT);
+
+        this.lastUpperLimit_StageThree = !atUpperLimit_StageThree();
+        this.lastUpperLimit_StageTwo = !atUpperLimit_StageTwo();
+        this.lastLowerLimit = !atLowerLimit();
 
         if (atLowerLimit()) {
             // If starting at the bottom (beginning of a match, etc.) reset the position
@@ -127,16 +139,35 @@ public class ElevatorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     public void periodic() {
         double position = getPosition();
+        boolean upperLimit_StageThree = atUpperLimit_StageThree();
+        boolean upperLimit_StageTwo = atUpperLimit_StageTwo();
+        boolean lowerLimit = atLowerLimit();
+        double rotorVelocity = getRotorVelocity();
 
-        this.shuffleboardPositionNumberBar.setDouble(position);
-        this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
-        this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
-        this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
-
-        Logger.recordOutput("Elevator/Position", position);
-        Logger.recordOutput("Elevator/RotorVelocity", getRotorVelocity());
+        if (position != this.lastPosition) {
+            this.shuffleboardPositionNumberBar.setDouble(position);
+            Logger.recordOutput("Elevator/Position", position);
+            this.lastPosition = position;
+        }
+        if (upperLimit_StageThree != this.lastUpperLimit_StageThree) {
+            this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
+            this.lastUpperLimit_StageThree = upperLimit_StageThree;
+        }
+        if (upperLimit_StageTwo != this.lastUpperLimit_StageTwo) {
+            this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
+            this.lastUpperLimit_StageTwo = upperLimit_StageTwo;
+        }
+        if (lowerLimit != this.lastLowerLimit) {
+            this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+            this.lastLowerLimit = lowerLimit;
+        }
+        if (rotorVelocity != this.lastRotorVelocity) {
+            Logger.recordOutput("Elevator/RotorVelocity", getRotorVelocity());
+            this.lastRotorVelocity = rotorVelocity;
+        }
 
         boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
+        boolean atUpperLimit = atUpperLimit();
 
         if (!inputToggled) {
             this.shuffleboardSliderInput.setDouble(position);
@@ -147,48 +178,53 @@ public class ElevatorSubsystem extends SubsystemBase {
             String controlName = appliedControl.getControlInfo().get("Name");
             boolean leftMotor = false;
 
-            if (controlName.equals("Follower")) {
-                appliedControl = this.leftMotor.getAppliedControl();
-                controlName = appliedControl.getControlInfo().get("Name");
-                leftMotor = true;
+            switch (controlName) {
+                case "Follower":
+                    appliedControl = this.leftMotor.getAppliedControl();
+                    controlName = appliedControl.getControlInfo().get("Name");
+                    leftMotor = true;
+                    break;
             }
 
-            if (controlName.equals("VoltageOut")) {
-                if (leftMotor) {
-                    this.leftMotor.setControl(((VoltageOut) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.rightMotor.setControl(this.FOLLOW_LEFT);
-                }
-                else {
-                    this.rightMotor.setControl(((VoltageOut) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
-                }
-            }
-            else if (controlName.equals("MotionMagicVoltage")) {
-                if (leftMotor) {
-                    this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.rightMotor.setControl(this.FOLLOW_LEFT);
-                }
-                else {
-                    this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
-                }
+            switch (controlName) {
+                case "VoltageOut":
+                    if (leftMotor) {
+                        this.leftMotor.setControl(((VoltageOut) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.rightMotor.setControl(this.FOLLOW_LEFT);
+                    }
+                    else {
+                        this.rightMotor.setControl(((VoltageOut) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                    }
+                    break;
+                
+                case "MotionMagicVoltage":
+                    if (leftMotor) {
+                        this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.rightMotor.setControl(this.FOLLOW_LEFT);
+                    }
+                    else {
+                        this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                    }
+                    break;
             }
 
             Command currentCommand = getCurrentCommand();
 
-            if (atUpperLimit()) {
+            if (atUpperLimit) {
                 if (currentCommand != null) {
                     CommandScheduler.getInstance().cancel(currentCommand);
                 }
@@ -262,8 +298,9 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param position - The position in meters.
      */
     public void setPosition(double position) {
-        this.rightMotor.setPosition(metersToRotation(position));
-        this.leftMotor.setPosition(metersToRotation(position));
+        double convertedPosition = metersToRotation(position);
+        this.rightMotor.setPosition(convertedPosition);
+        this.leftMotor.setPosition(convertedPosition);
     }
 
     /**
@@ -294,21 +331,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         MotionMagicVoltage control = motionMagicVoltage
-            .withSlot(0)
-            .withPosition(this.metersToRotation(position));
+            // .withSlot(0)
+            .withPosition(this.metersToRotation(position))
+            .withLimitForwardMotion(atUpperLimit())
+            .withLimitReverseMotion(atLowerLimit());
 
         if (slow) {
-            this.leftMotor.setControl(control
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
+            this.leftMotor.setControl(control);
             this.rightMotor.setControl(this.FOLLOW_LEFT);
         }
         else {
-            this.rightMotor.setControl(control
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
+            this.rightMotor.setControl(control);
             this.leftMotor.setControl(this.FOLLOW_RIGHT);
         }
     }
@@ -320,10 +353,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void setVoltage(double voltage) {
         voltage = MathUtil.clamp(voltage, -12, 12);
 
-        rightMotor.setControl(new VoltageOut(voltage)
+        VoltageOut control = this.voltageOut
+            .withOutput(voltage)
             .withLimitForwardMotion(atUpperLimit())
-            .withLimitReverseMotion(atLowerLimit())
-        );
+            .withLimitReverseMotion(atLowerLimit());
+
+        this.rightMotor.setControl(control);
     }
 
     /**
