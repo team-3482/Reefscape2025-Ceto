@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import java.util.Set;
+
 /** Constants used throughout the code that are not categorized in other constants files. */
 public final class Constants {
     /** Tab names in Shuffleboard. */
@@ -52,5 +54,8 @@ public final class Constants {
         public static final double L3_CORAL = 0.74;
         public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
         public static final double MAX_HEIGHT = 0.76;
+
+        public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+        public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
     }
 }

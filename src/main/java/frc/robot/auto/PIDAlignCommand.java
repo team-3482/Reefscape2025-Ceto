@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AligningConstants;
+import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -39,6 +40,8 @@ public class PIDAlignCommand extends Command {
     private final int direction;
     private final double PERPENDICULAR_DIST_TO_TAG;
     private final double PARALLEL_DIST_TO_TAG;
+
+    private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
 
     /**
      * Creates a new PIDAlignCommand.
@@ -80,34 +83,34 @@ public class PIDAlignCommand extends Command {
             !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
         ) {
             this.targetPose = Pose2d.kZero;
+            return;
         }
-        else {
-            /** Forwards (from tag perspective, closer) is positive. */
-            double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
-            /** Right (from tag perspective, left) is positive. */
-            double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
-            - botPose_TargetSpace.getX();
-            Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
+    
+        /** Forwards (from tag perspective, closer) is positive. */
+        double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
+        /** Right (from tag perspective, left) is positive. */
+        double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
+        - botPose_TargetSpace.getX();
+        Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
-            Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.getRotation());
-            
-            double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
-            double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
+        Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.getRotation());
+        
+        double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
+        double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
 
-            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 1.2) {
-                this.targetPose = Pose2d.kZero; // Don't try this command farther than 1 meter from the goal.
-                return;
-            }
-
-            this.targetPose = new Pose2d(
-                botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
-                targetRotation
-            );
-
-            this.xController.setSetpoint(this.targetPose.getX());
-            this.yController.setSetpoint(this.targetPose.getY());
-            this.thetaController.setSetpoint(this.targetPose.getRotation().getRadians());
+        if (Math.hypot(xChange, yChange) > 1) {
+            this.targetPose = Pose2d.kZero; // Don't try this command farther than 1 meter from the goal.
+            return;
         }
+
+        this.targetPose = new Pose2d(
+            botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
+            targetRotation
+        );
+
+        this.xController.setSetpoint(this.targetPose.getX());
+        this.yController.setSetpoint(this.targetPose.getY());
+        this.thetaController.setSetpoint(this.targetPose.getRotation().getRadians());
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -120,21 +123,21 @@ public class PIDAlignCommand extends Command {
         double xSpeed = this.xController.calculate(currentPose.getX());
         double ySpeed = this.yController.calculate(currentPose.getY());
         double thetaSpeed = this.thetaController.calculate(currentPose.getRotation().getRadians());
-        
-        SwerveSubsystem.getInstance().setControl(
-            this.drive.withSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed + Math.signum(xSpeed) * (0.075),
-                ySpeed + Math.signum(ySpeed) * (0.075),
-                thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 24 : 0),
-                currentPose.getRotation()
-            ))
+
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            xSpeed + Math.signum(xSpeed) * (0.075),
+            ySpeed + Math.signum(ySpeed) * (0.075),
+            thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 24 : 0),
+            currentPose.getRotation()
         );
+        
+        SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(speeds));
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(new ChassisSpeeds()));
+        SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(PIDAlignCommand.ZERO_SPEEDS));
 
         // The latter doesn't interrupt the Command even though it's an early end
         if (interrupted || this.targetPose.equals(Pose2d.kZero)) {
@@ -166,7 +169,7 @@ public class PIDAlignCommand extends Command {
         public Reef(int direction) {
             super(
                 "AlignToReefCommand",
-                (Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22),
+                ScoringConstants.REEF_TAGS::contains,
                 direction,
                 AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
@@ -184,7 +187,7 @@ public class PIDAlignCommand extends Command {
         public Processor() {
             super(
                 "AlignToProcessorCommand",
-                (Integer id) -> id == 3 || id == 16,
+                ScoringConstants.PROCESSOR_TAGS::contains,
                 0, // Doesn't matter, because the parallel distance is 0.
                 AligningConstants.Processor.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Processor.PARALLEL_DIST_TO_TAG
