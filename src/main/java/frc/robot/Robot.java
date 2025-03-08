@@ -92,7 +92,6 @@ public class Robot extends LoggedRobot {
 
         if (this.auton != null) {
             this.auton.schedule();
-            LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
         else {
             System.err.println("No auton command found.");

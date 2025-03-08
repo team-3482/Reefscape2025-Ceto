@@ -29,8 +29,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
@@ -153,8 +153,8 @@ public class VisionSubsystem extends SubsystemBase {
         if (recentVisionData()) {
             List<Integer> tagsInView = getTagsInView_MegaTag();
             
-            reef = tagsInView.stream().anyMatch(ScoringConstants.REEF_TAGS::contains);
-            processor = tagsInView.stream().anyMatch(ScoringConstants.PROCESSOR_TAGS::contains);
+            reef = tagsInView.stream().anyMatch(TagSets.REEF_TAGS::contains);
+            processor = tagsInView.stream().anyMatch(TagSets.PROCESSOR_TAGS::contains);
             canAlign = reef || processor;
         }
         

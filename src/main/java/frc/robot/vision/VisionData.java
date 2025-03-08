@@ -2,7 +2,7 @@ package frc.robot.vision;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.LimelightConstants;
-import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.vision.LimelightHelpers.RawFiducial;
 
 /**
@@ -90,7 +90,7 @@ public class VisionData {
         if (this.MegaTag == null) return false;
 
         for (RawFiducial fiducial : this.MegaTag.rawFiducials) {
-            if (ScoringConstants.BARGE_TAGS.contains(fiducial.id)) {
+            if (TagSets.BARGE_TAGS.contains(fiducial.id)) {
                 return true;
             }
         }

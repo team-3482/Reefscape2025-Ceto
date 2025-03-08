@@ -6,6 +6,7 @@
 
 package frc.robot.auto;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -18,7 +19,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AligningConstants;
-import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -75,10 +76,10 @@ public class PIDAlignCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Pose2d botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
+        Optional<Pose2d> botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
 
         if (
-            botPose_TargetSpace == null || 
+            botPose_TargetSpace.isEmpty() || 
             !VisionSubsystem.getInstance().recentVisionData() ||
             !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
         ) {
@@ -87,13 +88,13 @@ public class PIDAlignCommand extends Command {
         }
     
         /** Forwards (from tag perspective, closer) is positive. */
-        double perpendicularChange = -(botPose_TargetSpace.getY() + this.PERPENDICULAR_DIST_TO_TAG);
+        double perpendicularChange = -(botPose_TargetSpace.get().getY() + this.PERPENDICULAR_DIST_TO_TAG);
         /** Right (from tag perspective, left) is positive. */
         double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
-        - botPose_TargetSpace.getX();
+        - botPose_TargetSpace.get().getX();
         Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
-        Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.getRotation());
+        Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.get().getRotation());
         
         double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
         double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
@@ -169,7 +170,7 @@ public class PIDAlignCommand extends Command {
         public Reef(int direction) {
             super(
                 "AlignToReefCommand",
-                ScoringConstants.REEF_TAGS::contains,
+                TagSets.REEF_TAGS::contains,
                 direction,
                 AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
@@ -187,7 +188,7 @@ public class PIDAlignCommand extends Command {
         public Processor() {
             super(
                 "AlignToProcessorCommand",
-                ScoringConstants.PROCESSOR_TAGS::contains,
+                TagSets.PROCESSOR_TAGS::contains,
                 0, // Doesn't matter, because the parallel distance is 0.
                 AligningConstants.Processor.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Processor.PARALLEL_DIST_TO_TAG
