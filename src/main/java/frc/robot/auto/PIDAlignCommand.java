@@ -60,9 +60,9 @@ public class PIDAlignCommand extends Command {
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
 
 
-        this.xController.setTolerance(0.02);
-        this.yController.setTolerance(0.02);
-        this.thetaController.setTolerance(Units.degreesToRadians(0.5));
+        this.xController.setTolerance(0.025);
+        this.yController.setTolerance(0.025);
+        this.thetaController.setTolerance(Units.degreesToRadians(0.7));
         this.thetaController.enableContinuousInput(0, 2 * Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -94,7 +94,7 @@ public class PIDAlignCommand extends Command {
             double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
             double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
 
-            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 1) {
+            if (new Translation2d(xChange, yChange).getDistance(Translation2d.kZero) > 1.2) {
                 this.targetPose = Pose2d.kZero; // Don't try this command farther than 1 meter from the goal.
                 return;
             }
