@@ -36,7 +36,7 @@ public final class Constants {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
             public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
             /** How far (in meters) the robot should be parallel to the tag to score. */
-            public static final double PARALLEL_DIST_TO_TAG = 0.2;
+            public static final double PARALLEL_DIST_TO_TAG = 0.17;
         }
 
         public static final class Processor {

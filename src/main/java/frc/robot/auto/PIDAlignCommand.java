@@ -44,8 +44,8 @@ public class PIDAlignCommand extends Command {
     private final PIDController xController = new PIDController(2.3, 0, 0);
     private final PIDController yController = new PIDController(2.3, 0, 0);
     private final PIDController thetaController = new PIDController(2.7, 0, 0);
-    private final double kS_linear = 0.075;
-    private final double kS_theta = Math.PI / 24;
+    private final double kF_linear = 0.075;
+    private final double kF_angular = Math.PI / 20;
 
     private double perpendicularError = 0;
     private double parallelError = 0;
@@ -71,9 +71,9 @@ public class PIDAlignCommand extends Command {
         this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag * Math.signum(direction);
 
-        // this.xController.setTolerance(0.02);
-        // this.yController.setTolerance(0.02);
-        // this.thetaController.setTolerance(Units.degreesToRadians(2));
+        this.xController.setTolerance(0.015);
+        this.yController.setTolerance(0.015);
+        this.thetaController.setTolerance(Units.degreesToRadians(2));
         this.thetaController.enableContinuousInput(0, 2 * Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -124,9 +124,9 @@ public class PIDAlignCommand extends Command {
         );
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed + Math.signum(xSpeed) * (this.kS_linear), // TODO : Find these static friction feedforwards
-            ySpeed + Math.signum(ySpeed) * (this.kS_linear),
-            thetaSpeed + Math.signum(thetaSpeed) * (this.kS_theta),
+            xSpeed + Math.signum(xSpeed) * (this.kF_linear),
+            ySpeed + Math.signum(ySpeed) * (this.kF_linear),
+            thetaSpeed + Math.signum(thetaSpeed) * (this.kF_angular),
             currentPose.getRotation()
         );
         
@@ -158,11 +158,10 @@ public class PIDAlignCommand extends Command {
         );
 
         System.out.println("parallel " + this.parallelError + " perpe " + this.perpendicularError);
-        
         return (this.targetPose == Pose2d.kZero && this.timer.hasElapsed(0.25))
-            || (Math.abs(this.parallelError) <= 0.02
-                && Math.abs(this.perpendicularError) <= 0.02
-                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2));
+            || (Math.abs(this.parallelError) <= 0.025
+                && Math.abs(this.perpendicularError) <= 0.025
+                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2.5));
     }
 
     /**
@@ -190,6 +189,7 @@ public class PIDAlignCommand extends Command {
         Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
         Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.get().getRotation());
+        targetRotation = Rotation2d.fromDegrees(roundToHexagonalNormal(targetRotation.getDegrees()));
         
         double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
         double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
@@ -203,6 +203,17 @@ public class PIDAlignCommand extends Command {
             botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
             targetRotation
         ));
+    }
+
+    /**
+     * Rounds the input angle to the closest normal to a hexagon's face.
+     * @param angle - The angle to round.
+     * @return The rounded angle.
+     * @implSpec Use degrees.
+     */
+    private int roundToHexagonalNormal(double angle) {
+        angle = angle % 360;
+        return (int) ((Math.round(angle / 60.0) * 60) % 360);
     }
     
     /**
