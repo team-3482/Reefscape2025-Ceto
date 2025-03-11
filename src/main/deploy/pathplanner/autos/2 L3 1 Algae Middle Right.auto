@@ -105,7 +105,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": "2 L3 & 1 Algae",
   "choreoAuto": false
 }

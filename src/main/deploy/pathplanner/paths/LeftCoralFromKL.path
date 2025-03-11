@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.7928707725165505,
-        "y": 5.1969318590682985
+        "x": 3.7641393442622952,
+        "y": 5.2897028688524586
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.6184969765075903,
-        "y": 5.875613624622576
+        "x": 3.2090994024134414,
+        "y": 5.672753851224023
       },
       "isLocked": false,
       "linkedName": "Reef KL"
@@ -20,8 +20,8 @@
         "y": 7.093
       },
       "prevControl": {
-        "x": 2.853003626934613,
-        "y": 5.013295374969161
+        "x": 3.2571820164647236,
+        "y": 5.6373689756536365
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,12 @@
       "name": "MoveElevatorToBottom",
       "waypointRelativePos": 0.09934714988425926,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveElevatorToBottom"
+        }
+      }
     }
   ],
   "globalConstraints": {

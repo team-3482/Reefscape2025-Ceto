@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.7928707725165505,
-        "y": 5.1969318590682985
+        "x": 3.7641393442622952,
+        "y": 5.2897028688524586
       },
       "prevControl": {
-        "x": 3.614683675395737,
-        "y": 5.860239851796559
+        "x": 3.5859522471414818,
+        "y": 5.953010861580719
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "MoveElevatorToL3Coral",
-      "waypointRelativePos": 0.6488444010416664,
+      "waypointRelativePos": 0.5474833808167165,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
