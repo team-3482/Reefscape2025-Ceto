@@ -137,10 +137,11 @@ public class CoralSubsystem extends SubsystemBase {
 
     /**
      * Sets the speed of the motors to the slow intake speed
+     * @param direction - The direction of the slow intake (- is backwards)
      */
-    public void slowIntake() {
+    public void slowIntake(int direction) {
         this.state = SubsystemStates.SLOW_INTAKING;
-        this.rightMotor.setVoltage(CoralConstants.SLOW_INTAKE_VOLTAGE);
+        this.rightMotor.setVoltage(Math.signum(direction) * CoralConstants.SLOW_INTAKE_VOLTAGE);
     }
 
     /**

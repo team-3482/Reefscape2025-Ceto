@@ -25,6 +25,7 @@ import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.coral.AdjustCoralCommand;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;
 import frc.robot.coral.OuttakeCoralCommand;
@@ -211,21 +212,23 @@ public class RobotContainer {
         NamedCommands.registerCommand("MoveElevatorToL2Algae",
             new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false));
         
-//        NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
-//            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
-//        NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
-//            new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
-//        NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
-//            new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
-//        NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
-//            new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
-//        NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
-//            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
+        // NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
+        //     new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
+        // NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
+        //     new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
+        // NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
+        //     new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
+        // NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
+        //     new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
+        // NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
+        //     new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
         
         NamedCommands.registerCommand("IntakeCoral",
             new IntakeCoralCommand());
         NamedCommands.registerCommand("OuttakeCoral",
             new OuttakeCoralCommand());
+        NamedCommands.registerCommand("AdjustCoral",
+            new AdjustCoralCommand());
         NamedCommands.registerCommand("IntakeAlgaeAndHold",
             CommandGenerators.IntakeAlgaeAndHoldCommand());
         NamedCommands.registerCommand("OuttakeAlgaeAndStop",
@@ -311,7 +314,7 @@ public class RobotContainer {
         // Coral
         this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
         this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
-        // TODO : Fix coral alignment button (if it has gone too far past the laser, adjust it back to normal position)
+        this.operatorController.rightStick().onTrue(new AdjustCoralCommand());
     }
 
     /**

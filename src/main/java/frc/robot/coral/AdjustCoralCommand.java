@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
 
-/** A command that intakes coral and stops when it reaches the end of the intake. */
-public class IntakeCoralCommand extends Command {
+/** A command that adjusts the coral in case it has been intook too far. */
+public class AdjustCoralCommand extends Command {
+    private boolean atBackOnce = false;
 
-    /** Creates a new IntakeCoralCommand. */
-    public IntakeCoralCommand() {
-        setName("IntakeCoralCommand");
+    /** Creates a new AdjustCoralCommand. */
+    public AdjustCoralCommand() {
+        setName("AdjustCoralCommand");
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(CoralSubsystem.getInstance());
     }
@@ -21,14 +22,15 @@ public class IntakeCoralCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        CoralSubsystem.getInstance().intake();
+        this.atBackOnce = false;
+        CoralSubsystem.getInstance().slowIntake(-1);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // Checks whether the system has a note and stops if it does
-        if (CoralSubsystem.getInstance().hasCoral_frontLaser()) {
+        if (!this.atBackOnce && CoralSubsystem.getInstance().hasCoral_backLaser()) {
+            this.atBackOnce = true;
             CoralSubsystem.getInstance().slowIntake(1);
         }
     }
