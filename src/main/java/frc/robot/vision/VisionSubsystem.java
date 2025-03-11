@@ -4,9 +4,7 @@
 
 package frc.robot.vision;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
@@ -151,10 +150,10 @@ public class VisionSubsystem extends SubsystemBase {
         processor = reef = canAlign = false;
 
         if (recentVisionData()) {
-            List<Integer> tagsInView = getTagsInView_MegaTag();
+            int primaryTag = getPrimaryTagInView_Bottom_MegaTag();
             
-            reef = tagsInView.stream().anyMatch(TagSets.REEF_TAGS::contains);
-            processor = tagsInView.stream().anyMatch(TagSets.PROCESSOR_TAGS::contains);
+            reef = TagSets.REEF_TAGS.contains(primaryTag);
+            processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
             canAlign = reef || processor;
         }
         
@@ -192,7 +191,7 @@ public class VisionSubsystem extends SubsystemBase {
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? 1 : 0.5
+                    recentVisionData() ? 1 : 0.4
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -472,23 +471,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Get all of the tag IDs in view of MegaTag (not MegaTag2) from the latest vision data.
+     * Gets the primary tag in view of the bottom limelight.
      * @return The tag IDs.
      * @apiNote Gets it for both limelights, combined.
      */
-    public List<Integer> getTagsInView_MegaTag() {
-        List<Integer> tags = new ArrayList<Integer>();
-
-        for (int i = 0; i < this.limelightDatas.length; i++) {
-            if (this.limelightDatas[i] != null && this.limelightDatas[i].MegaTag != null) {
-                for (LimelightHelpers.RawFiducial fiducial :
-                    this.limelightDatas[i].MegaTag.rawFiducials
-                ) {
-                    tags.add(fiducial.id);
-                }
-            }
-        }
-
-        return tags;
+    public int getPrimaryTagInView_Bottom_MegaTag() {
+        return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
+            .getEntry("tid").getInteger(0);
     }
 }

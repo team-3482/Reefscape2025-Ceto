@@ -31,21 +31,22 @@ import frc.robot.vision.VisionSubsystem;
  * A command that wraps PID controllers to align to a position relative to a tag.
  */
 public class PIDAlignCommand extends Command {
+    private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
+    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
+
+    private final Function<Integer, Boolean> TAGS;
+    private final double PERPENDICULAR_DIST_TO_TAG;
+    private final double PARALLEL_DIST_TO_TAG;
+
     private Pose2d targetPose;
     private FilteredTranslation targetTranslation;
 
     private final PIDController xController = new PIDController(2.3, 0, 0);
     private final PIDController yController = new PIDController(2.3, 0, 0);
     private final PIDController thetaController = new PIDController(2.7, 0, 0);
+    private final double kS_linear = 0.075;
+    private final double kS_theta = Math.PI / 24;
 
-    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
-
-    private final Function<Integer, Boolean> tags;
-    private final int direction;
-    private final double PERPENDICULAR_DIST_TO_TAG;
-    private final double PARALLEL_DIST_TO_TAG;
-
-    private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
     private double perpendicularError = 0;
     private double parallelError = 0;
     private boolean firstPose = false;
@@ -66,15 +67,13 @@ public class PIDAlignCommand extends Command {
     ) {
         setName(name);
 
-        this.tags = tags;
-        this.direction = (int) Math.signum(direction);
+        this.TAGS = tags;
         this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
-        this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
+        this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag * Math.signum(direction);
 
-
-        this.xController.setTolerance(0.02);
-        this.yController.setTolerance(0.02);
-        this.thetaController.setTolerance(Units.degreesToRadians(2));
+        // this.xController.setTolerance(0.02);
+        // this.yController.setTolerance(0.02);
+        // this.thetaController.setTolerance(Units.degreesToRadians(2));
         this.thetaController.enableContinuousInput(0, 2 * Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -85,9 +84,15 @@ public class PIDAlignCommand extends Command {
     @Override
     public void initialize() {
         this.targetPose = Pose2d.kZero;
-        this.perpendicularError = Double.MAX_VALUE;
-        this.parallelError = Double.MAX_VALUE;
         this.firstPose = true;
+        
+        this.parallelError = Double.NaN;
+        this.perpendicularError = Double.NaN;
+
+        this.xController.reset();
+        this.yController.reset();
+        this.thetaController.reset();
+
         this.timer.restart();
     }
 
@@ -98,8 +103,8 @@ public class PIDAlignCommand extends Command {
         if (this.targetPose == Pose2d.kZero && newPose == Pose2d.kZero) return;
         
         if (this.firstPose) {
-            this.targetTranslation = new FilteredTranslation(newPose.getTranslation());
             this.targetPose = newPose;
+            this.targetTranslation = new FilteredTranslation(newPose.getTranslation());
             this.firstPose = false;
         }
         else if (newPose != Pose2d.kZero) {
@@ -109,20 +114,19 @@ public class PIDAlignCommand extends Command {
             );
         }
 
-        this.xController.setSetpoint(this.targetPose.getX());
-        this.yController.setSetpoint(this.targetPose.getY());
-        this.thetaController.setSetpoint(this.targetPose.getRotation().getRadians());
-
         Pose2d currentPose = SwerveSubsystem.getInstance().getState().Pose;
 
-        double xSpeed = this.xController.calculate(currentPose.getX());
-        double ySpeed = this.yController.calculate(currentPose.getY());
-        double thetaSpeed = this.thetaController.calculate(currentPose.getRotation().getRadians());
+        double xSpeed = this.xController.calculate(currentPose.getX(), this.targetPose.getX());
+        double ySpeed = this.yController.calculate(currentPose.getY(), this.targetPose.getY());
+        double thetaSpeed = this.thetaController.calculate(
+            currentPose.getRotation().getRadians(),
+            this.targetPose.getRotation().getRadians()
+        );
 
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed + Math.signum(xSpeed) * (0.075),
-            ySpeed + Math.signum(ySpeed) * (0.075),
-            thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 32 : 0),
+            xSpeed + Math.signum(xSpeed) * (this.kS_linear), // TODO : Find these static friction feedforwards
+            ySpeed + Math.signum(ySpeed) * (this.kS_linear),
+            thetaSpeed + Math.signum(thetaSpeed) * (this.kS_theta),
             currentPose.getRotation()
         );
         
@@ -135,16 +139,12 @@ public class PIDAlignCommand extends Command {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(PIDAlignCommand.ZERO_SPEEDS));
 
         // The latter doesn't interrupt the Command even though it's an early end
-        if (interrupted || this.targetPose.equals(Pose2d.kZero)) {
+        if (interrupted || this.targetPose == Pose2d.kZero) {
             LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
         else {
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
-
-        this.xController.reset();
-        this.yController.reset();
-        this.thetaController.reset();
     }
 
     // Returns true when the command should end.
@@ -154,15 +154,15 @@ public class PIDAlignCommand extends Command {
             this.targetPose.equals(Pose2d.kZero) + " && " + this.timer.hasElapsed(0.25)
             + " || " + (Math.abs(this.parallelError) <= 0.02) 
             + " && " + (Math.abs(this.perpendicularError) <= 0.02)
-            + " && " + this.thetaController.atSetpoint()
+            + " && " + (Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2))
         );
 
         System.out.println("parallel " + this.parallelError + " perpe " + this.perpendicularError);
         
-        return (this.targetPose.equals(Pose2d.kZero) && this.timer.hasElapsed(0.25))
+        return (this.targetPose == Pose2d.kZero && this.timer.hasElapsed(0.25))
             || (Math.abs(this.parallelError) <= 0.02
                 && Math.abs(this.perpendicularError) <= 0.02
-                && this.thetaController.atSetpoint());
+                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2));
     }
 
     /**
@@ -175,7 +175,7 @@ public class PIDAlignCommand extends Command {
         if (
             botPose_TargetSpace.isEmpty() ||
             !VisionSubsystem.getInstance().recentVisionData() ||
-            !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
+            !this.TAGS.apply(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
         ) {
             return Optional.empty();
         }
@@ -184,9 +184,9 @@ public class PIDAlignCommand extends Command {
         double perpendicularChange = -(botPose_TargetSpace.get().getY() + this.PERPENDICULAR_DIST_TO_TAG);
         this.perpendicularError = perpendicularChange;
         /** Right (from tag perspective, left) is positive. */
-        double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
-            - botPose_TargetSpace.get().getX();
+        double parallelChange = this.PARALLEL_DIST_TO_TAG - botPose_TargetSpace.get().getX();
         this.parallelError = parallelChange;
+
         Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
 
         Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.get().getRotation());
