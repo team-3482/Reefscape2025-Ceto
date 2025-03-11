@@ -69,7 +69,7 @@ public final class PhysicalConstants {
             public static final double kS = 0.1;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 32;
+            public static final double kP = 28;
             public static final double kI = 0;
             public static final double kD = 0;
         }

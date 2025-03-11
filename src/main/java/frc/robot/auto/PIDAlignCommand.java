@@ -17,12 +17,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AligningConstants;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.utilities.FilteredTranslation;
 import frc.robot.vision.VisionSubsystem;
 
 /**
@@ -30,6 +32,7 @@ import frc.robot.vision.VisionSubsystem;
  */
 public class PIDAlignCommand extends Command {
     private Pose2d targetPose;
+    private FilteredTranslation targetTranslation;
 
     private final PIDController xController = new PIDController(2.3, 0, 0);
     private final PIDController yController = new PIDController(2.3, 0, 0);
@@ -43,6 +46,11 @@ public class PIDAlignCommand extends Command {
     private final double PARALLEL_DIST_TO_TAG;
 
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
+    private double perpendicularError = 0;
+    private double parallelError = 0;
+    private boolean firstPose = false;
+
+    private final Timer timer = new Timer();
 
     /**
      * Creates a new PIDAlignCommand.
@@ -64,9 +72,9 @@ public class PIDAlignCommand extends Command {
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag;
 
 
-        this.xController.setTolerance(0.025);
-        this.yController.setTolerance(0.025);
-        this.thetaController.setTolerance(Units.degreesToRadians(0.7));
+        this.xController.setTolerance(0.02);
+        this.yController.setTolerance(0.02);
+        this.thetaController.setTolerance(Units.degreesToRadians(2));
         this.thetaController.enableContinuousInput(0, 2 * Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -76,48 +84,34 @@ public class PIDAlignCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Optional<Pose2d> botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
-
-        if (
-            botPose_TargetSpace.isEmpty() || 
-            !VisionSubsystem.getInstance().recentVisionData() ||
-            !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
-        ) {
-            this.targetPose = Pose2d.kZero;
-            return;
-        }
-    
-        /** Forwards (from tag perspective, closer) is positive. */
-        double perpendicularChange = -(botPose_TargetSpace.get().getY() + this.PERPENDICULAR_DIST_TO_TAG);
-        /** Right (from tag perspective, left) is positive. */
-        double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
-        - botPose_TargetSpace.get().getX();
-        Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
-
-        Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.get().getRotation());
-        
-        double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
-        double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
-
-        if (Math.hypot(xChange, yChange) > 1) {
-            this.targetPose = Pose2d.kZero; // Don't try this command farther than 1 meter from the goal.
-            return;
-        }
-
-        this.targetPose = new Pose2d(
-            botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
-            targetRotation
-        );
-
-        this.xController.setSetpoint(this.targetPose.getX());
-        this.yController.setSetpoint(this.targetPose.getY());
-        this.thetaController.setSetpoint(this.targetPose.getRotation().getRadians());
+        this.targetPose = Pose2d.kZero;
+        this.perpendicularError = Double.MAX_VALUE;
+        this.parallelError = Double.MAX_VALUE;
+        this.firstPose = true;
+        this.timer.restart();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (this.targetPose.equals(Pose2d.kZero)) return;
+        Pose2d newPose = getTargetPose().orElse(Pose2d.kZero);
+        if (this.targetPose == Pose2d.kZero && newPose == Pose2d.kZero) return;
+        
+        if (this.firstPose) {
+            this.targetTranslation = new FilteredTranslation(newPose.getTranslation());
+            this.targetPose = newPose;
+            this.firstPose = false;
+        }
+        else if (newPose != Pose2d.kZero) {
+            this.targetPose = new Pose2d(
+                this.targetTranslation.getNextTranslation(newPose.getTranslation()),
+                this.targetPose.getRotation()
+            );
+        }
+
+        this.xController.setSetpoint(this.targetPose.getX());
+        this.yController.setSetpoint(this.targetPose.getY());
+        this.thetaController.setSetpoint(this.targetPose.getRotation().getRadians());
 
         Pose2d currentPose = SwerveSubsystem.getInstance().getState().Pose;
 
@@ -128,7 +122,7 @@ public class PIDAlignCommand extends Command {
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             xSpeed + Math.signum(xSpeed) * (0.075),
             ySpeed + Math.signum(ySpeed) * (0.075),
-            thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 24 : 0),
+            thetaSpeed + Math.signum(thetaSpeed) * ((Math.signum(xSpeed) == 0 && Math.signum(ySpeed) == 0) ? Math.PI / 32 : 0),
             currentPose.getRotation()
         );
         
@@ -156,7 +150,59 @@ public class PIDAlignCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.targetPose.equals(Pose2d.kZero) || (this.xController.atSetpoint() && this.yController.atSetpoint() && this.thetaController.atSetpoint());
+        System.out.println(
+            this.targetPose.equals(Pose2d.kZero) + " && " + this.timer.hasElapsed(0.25)
+            + " || " + (Math.abs(this.parallelError) <= 0.02) 
+            + " && " + (Math.abs(this.perpendicularError) <= 0.02)
+            + " && " + this.thetaController.atSetpoint()
+        );
+
+        System.out.println("parallel " + this.parallelError + " perpe " + this.perpendicularError);
+        
+        return (this.targetPose.equals(Pose2d.kZero) && this.timer.hasElapsed(0.25))
+            || (Math.abs(this.parallelError) <= 0.02
+                && Math.abs(this.perpendicularError) <= 0.02
+                && this.thetaController.atSetpoint());
+    }
+
+    /**
+     * Gets the target pose.
+     * @return The target pose.
+     */
+    private Optional<Pose2d> getTargetPose() {
+        Optional<Pose2d> botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
+
+        if (
+            botPose_TargetSpace.isEmpty() ||
+            !VisionSubsystem.getInstance().recentVisionData() ||
+            !VisionSubsystem.getInstance().getTagsInView_MegaTag().stream().anyMatch(this.tags::apply)
+        ) {
+            return Optional.empty();
+        }
+    
+        /** Forwards (from tag perspective, closer) is positive. */
+        double perpendicularChange = -(botPose_TargetSpace.get().getY() + this.PERPENDICULAR_DIST_TO_TAG);
+        this.perpendicularError = perpendicularChange;
+        /** Right (from tag perspective, left) is positive. */
+        double parallelChange = this.direction * this.PARALLEL_DIST_TO_TAG
+            - botPose_TargetSpace.get().getX();
+        this.parallelError = parallelChange;
+        Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
+
+        Rotation2d targetRotation = botPose.getRotation().plus(botPose_TargetSpace.get().getRotation());
+        
+        double xChange = targetRotation.getCos() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getCos() * parallelChange;
+        double yChange = targetRotation.getSin() * perpendicularChange + targetRotation.plus(Rotation2d.kCW_Pi_2).getSin() * parallelChange;
+
+        if (Math.hypot(xChange, yChange) > 1) {
+            // Don't try this command farther than 1 meter from the goal.
+            return Optional.empty();
+        }
+
+        return Optional.of(new Pose2d(
+            botPose.getTranslation().plus(new Translation2d(xChange, yChange)),
+            targetRotation
+        ));
     }
     
     /**
@@ -172,7 +218,9 @@ public class PIDAlignCommand extends Command {
                 "AlignToReefCommand",
                 TagSets.REEF_TAGS::contains,
                 direction,
-                AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
+                direction == 0
+                    ? AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG_ALGAE
+                    : AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG_CORAL,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
             );
         }

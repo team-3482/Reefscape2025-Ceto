@@ -66,6 +66,8 @@ public class RobotContainer {
     private final XboxController driverController_HID;
     private final XboxController operatorController_HID;
 
+    private Command auton = null;
+
     public RobotContainer() {
         this.driverController = new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_ID);
         this.operatorController = new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
@@ -78,7 +80,8 @@ public class RobotContainer {
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
-        this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
+        this.autoChooser = AutoBuilder.buildAutoChooser();
+        this.autoChooser.onChange((Command autoCommand) -> {this.auton = autoCommand;}); // Default auto will be Commands.none()
         Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
             .add("Auto Chooser", autoChooser)
             .withWidget(BuiltInWidgets.kComboBoxChooser)
@@ -308,6 +311,7 @@ public class RobotContainer {
         // Coral
         this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
         this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
+        // TODO : Fix coral alignment button (if it has gone too far past the laser, adjust it back to normal position)
     }
 
     /**
@@ -331,6 +335,9 @@ public class RobotContainer {
      * @return The command to run in autonomous.
      */
     public Command getAutonomousCommand() {
-        return this.autoChooser.getSelected();
+        if (this.auton == null) {
+            this.auton = this.autoChooser.getSelected();
+        }
+        return this.auton;
     }
 }

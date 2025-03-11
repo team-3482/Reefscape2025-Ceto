@@ -59,6 +59,9 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
+
+        RobotContainer.getInstance().getAutonomousCommand();
+        
         // Blink like the RSL when disabled
         LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
     }
