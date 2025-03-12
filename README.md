@@ -19,7 +19,9 @@ This code is for team 3482's on-season robot, Ceto.
 
 <hr>
 
-## Capabilities
+## Capabilities 
+
+Scouts, look here!
 
 ### Reef
 
