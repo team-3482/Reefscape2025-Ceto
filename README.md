@@ -17,6 +17,46 @@
 
 This code is for team 3482's on-season robot, Ceto.
 
+<hr>
+
+## Capabilities
+
+### Reef
+
+| Task  | L1 | L2 | L3 | L4 |
+|-------|:--:|:--:|:--:|:--:|
+| Coral | ✅ | ✅ | ✅ | ❌ |
+| Algae | -  | ✅ | ❌ | -  |
+
+### Barge
+
+| Park | Shallow Climb | Deep Climb |
+|:----:|:-------------:|:----------:|
+|  ✅  |       ❌      |     ❌     |
+
+### Other
+
+| Task                       | Capable |
+|----------------------------|:-------:|
+| Leave Starting Line (Auto) |   ✅    |
+| Processor                  |   ✅    |
+
+<br>
+
+🛈 `Ceto` is capable of scoring 2 `L3 (or lower) Coral` in the Autonomous period on the left or right side. It can either score 1 `Algae` once Teleop starts, or discard it to start Teleop at a `Coral Station`.<br>
+<sub>It is also capable of scoring 1 `L3 (or lower) Coral` if starting from the middle and staying out of the way of alliance bots running autons on the left or right, if requested.</sub>
+
+
+⚠️ The `Coral` subsystem can only intake from the `Coral Stations`, and not the ground.
+
+⚠️ The `Algae` subsystem can only intake from the `Reef`, and not the ground.
+
+<br>
+
+If you have any additional questions about `Ceto`, feel free to talk to us!
+
+<hr>
+
 ## Resources
 
 ### LED Status Codes
@@ -40,6 +80,8 @@ TBA
   <summary>Controller Bindings</summary>
   <img src="https://docs.google.com/drawings/d/e/2PACX-1vSC9Kgz5UuIplrKstMqQF4jVtzlN4xEv1x5urSxMqhfPQsvJs29qJOLpVRK4puhl9MaWH_dZFEPxZpH/pub?w=1440&h=1440" width="720" alt="controller bindings"/>
 </details>
+
+<hr>
 
 ## Contributors
 
