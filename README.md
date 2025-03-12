@@ -19,15 +19,11 @@ This code is for team 3482's on-season robot, Ceto.
 
 ## Resources
 
-### Controller Bindings
-
-TBA
-
 ### LED Status Codes
 
 | Color     | Status                     |
 |-----------|----------------------------|
-| ⚫ Black  | Standby                    |
+| ⚫ Off    | Standby                    |
 | 🔴 Red    | Error                      |
 | 🟠 Orange | Disabled                   |
 | 🟢 Green  | OK                         |
@@ -37,6 +33,13 @@ TBA
 ### Autonomous Paths
 
 TBA
+
+### Controls
+
+<details>
+  <summary>Controller Bindings</summary>
+  <img src="https://docs.google.com/drawings/d/e/2PACX-1vSC9Kgz5UuIplrKstMqQF4jVtzlN4xEv1x5urSxMqhfPQsvJs29qJOLpVRK4puhl9MaWH_dZFEPxZpH/pub?w=1440&h=1440" width="720" alt="controller bindings"/>
+</details>
 
 ## Contributors
 
