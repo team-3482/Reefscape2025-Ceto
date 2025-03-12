@@ -19,7 +19,24 @@ This code is for team 3482's on-season robot, Ceto.
 
 ## Resources
 
-TBD
+### Controller Bindings
+
+TBA
+
+### LED Status Codes
+
+| Color     | Status                     |
+|-----------|----------------------------|
+| ⚫ Black  | Standby                    |
+| 🔴 Red    | Error                      |
+| 🟠 Orange | Disabled                   |
+| 🟢 Green  | OK                         |
+| 🔵 Blue   | Reef/Processor Tag In View |
+| ⚪ White  | Has Coral                  |
+
+### Autonomous Paths
+
+TBA
 
 ## Contributors
 
