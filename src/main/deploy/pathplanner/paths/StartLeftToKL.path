@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.975285338641424,
-        "y": 6.17
+        "x": 6.545286885245901,
+        "y": 6.979969262295082
       },
       "isLocked": false,
       "linkedName": "Start Left"
@@ -20,8 +20,8 @@
         "y": 5.2897028688524586
       },
       "prevControl": {
-        "x": 4.5553278688524586,
-        "y": 6.5843750000000005
+        "x": 4.159733606557378,
+        "y": 6.380584016393442
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7105157936825309,
+      "waypointRelativePos": 0.5953618552578936,
       "rotationDegrees": -59.99999999999999
     }
   ],

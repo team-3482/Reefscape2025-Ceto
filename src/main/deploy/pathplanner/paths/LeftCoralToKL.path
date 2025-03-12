@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8663656521905212,
-        "y": 5.695691215021685
+        "x": 2.268938657376148,
+        "y": 6.336447431940376
       },
       "isLocked": false,
       "linkedName": "Coral Left"
@@ -20,8 +20,8 @@
         "y": 5.2897028688524586
       },
       "prevControl": {
-        "x": 3.5859522471414818,
-        "y": 5.953010861580719
+        "x": 3.3887363312490635,
+        "y": 5.573361002561908
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
     "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "CoralToReef",
+  "folder": "IntakeToReef",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": -55.0

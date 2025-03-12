@@ -3,14 +3,14 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "CoralToReef",
-    "ReefToCoral",
+    "IntakeToReef",
     "End",
+    "ReefToIntake",
     "Start"
   ],
   "autoFolders": [
-    "All L3",
-    "2 L3 & 1 Algae"
+    "2 L3 & Hold Algae",
+    "2 L3 & Drop Algae"
   ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,
