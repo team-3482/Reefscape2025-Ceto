@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4001418692613457,
-        "y": 6.203849661434327
+        "x": 2.9067332181584735,
+        "y": 6.542917716627427
       },
       "isLocked": false,
       "linkedName": "Reef KL"
@@ -20,8 +20,8 @@
         "y": 7.093
       },
       "prevControl": {
-        "x": 3.375380947013666,
-        "y": 5.260727336261108
+        "x": 3.173604107839513,
+        "y": 5.538264405434474
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
     },
     {
       "waypointRelativePos": 0.6001599360255894,
-      "rotationDegrees": 14.999999999999998
+      "rotationDegrees": -10.0
     }
   ],
   "constraintZones": [],

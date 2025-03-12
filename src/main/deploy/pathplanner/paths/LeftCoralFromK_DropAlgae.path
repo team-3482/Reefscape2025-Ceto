@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8902500000000004,
-        "y": 5.392437499999999
+        "x": 3.788114754098361,
+        "y": 5.409579918032787
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5489963213161406,
-        "y": 6.2715654148589834
+        "x": 3.446861075414501,
+        "y": 6.288707832891771
       },
       "isLocked": false,
       "linkedName": "Reef K"
@@ -80,7 +80,7 @@
   "folder": "ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -59.99999999999999
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

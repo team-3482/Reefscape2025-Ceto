@@ -185,6 +185,9 @@ public class VisionSubsystem extends SubsystemBase {
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
+
+            // TODO : Remove this at comp
+            if (DriverStation.isEnabled() && data.name.equals(LimelightConstants.TOP_LL)) continue;
             
             if (data.canTrustRotation()) {
                 // Only trust rotational data when adding this pose.

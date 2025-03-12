@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.5739375,
-        "y": 6.6502255859375
+        "x": 5.561838737329653,
+        "y": 5.82570800321238
       },
       "isLocked": false,
       "linkedName": "Start Left"
     },
     {
       "anchor": {
-        "x": 3.8902500000000004,
-        "y": 5.392437499999999
+        "x": 3.788114754098361,
+        "y": 5.409579918032787
       },
       "prevControl": {
-        "x": 3.3015592843040933,
-        "y": 5.1893220579618875
+        "x": 4.81905737704918,
+        "y": 6.128842213114753
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.3,
-      "rotationDegrees": -59.99999999999999
+      "rotationDegrees": -70.0
     }
   ],
   "constraintZones": [],
@@ -46,8 +46,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -59.99999999999999
+    "velocity": 0.0,
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Start",

@@ -127,6 +127,24 @@
               }
             ]
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCoralToL_L2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignRightReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
         }
       ]
     }
