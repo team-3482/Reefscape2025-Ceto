@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.767731676603618,
-        "y": 2.8261574193050993
+        "x": 6.941866438356165,
+        "y": 2.244456335616438
       },
       "isLocked": false,
       "linkedName": "Start Middle"
     },
     {
       "anchor": {
-        "x": 3.8044093081825654,
-        "y": 2.8069139982524667
+        "x": 3.7413955479452055,
+        "y": 2.6952268835616437
       },
       "prevControl": {
-        "x": 4.401794124239346,
-        "y": 1.8959714246844053
+        "x": 2.990111301369863,
+        "y": 0.8771190068493149
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef CD"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.62124248496994,
+      "rotationDegrees": 59.99999999999999
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
