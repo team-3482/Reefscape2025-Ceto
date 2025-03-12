@@ -64,11 +64,11 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 120;
+        currentLimitsConfigs.StatorCurrentLimit = 160;
         currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitsConfigs.SupplyCurrentLimit = 35;
+        currentLimitsConfigs.SupplyCurrentLimit = 45;
         currentLimitsConfigs.SupplyCurrentLowerTime = 0.75;
-        currentLimitsConfigs.SupplyCurrentLowerLimit = 10;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 15;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);
@@ -81,7 +81,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void intake() {
         this.state = SubsystemStates.INTAKING;
-        rightMotor.setVoltage(AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
+        rightMotor.setVoltage(AlgaeConstants.INTAKE_VOLTAGE);
     }
 
     /**
@@ -89,7 +89,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void outtake() {
         this.state = SubsystemStates.OUTTAKING;
-        rightMotor.setVoltage(-AlgaeConstants.INTAKE_OUTTAKE_VOLTAGE);
+        rightMotor.setVoltage(-AlgaeConstants.OUTTAKE_VOLTAGE);
     }
 
     /**

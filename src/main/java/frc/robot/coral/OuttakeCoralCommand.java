@@ -48,6 +48,6 @@ public class OuttakeCoralCommand extends Command {
     @Override
     public boolean isFinished() {
         // Stops the motor after 0.25 seconds of the coral leaving the beam
-        return timer.hasElapsed(0.25);
+        return timer.hasElapsed(0.35);
     }
 }

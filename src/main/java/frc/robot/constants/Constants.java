@@ -32,7 +32,7 @@ public final class Constants {
     public static final class AligningConstants {
         public static final class Reef {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.45;
+            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.46;
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
             public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
             /** How far (in meters) the robot should be parallel to the tag to score. */
@@ -50,7 +50,7 @@ public final class Constants {
     /** Constants for elevator heights */
     public static final class ScoringConstants {
         /* Heights in elevator meters for scoring at these heights. */
-        public static final double L1_CORAL = 0.22;
+        public static final double L1_CORAL = 0.235;
         public static final double L2_CORAL = 0.34;
         public static final double L2_ALGAE = 0.63;
         public static final double L3_CORAL = 0.74;

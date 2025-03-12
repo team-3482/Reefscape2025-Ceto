@@ -76,7 +76,7 @@ public final class CommandGenerators {
      */
     public static Command IntakeAlgaeAndHoldCommand() {
         return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
-            .andThen(Commands.waitSeconds(1))
+            .andThen(Commands.waitSeconds(0.8))
             .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
     }
 

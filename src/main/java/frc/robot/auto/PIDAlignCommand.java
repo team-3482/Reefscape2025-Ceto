@@ -150,18 +150,20 @@ public class PIDAlignCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        System.out.println(
-            this.targetPose.equals(Pose2d.kZero) + " && " + this.timer.hasElapsed(0.25)
-            + " || " + (Math.abs(this.parallelError) <= 0.02) 
-            + " && " + (Math.abs(this.perpendicularError) <= 0.02)
-            + " && " + (Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2))
-        );
+        // System.out.println(
+        //     this.targetPose.equals(Pose2d.kZero) + " && " + this.timer.hasElapsed(0.25)
+        //     + " || " + (Math.abs(this.parallelError) <= 0.025) 
+        //     + " && " + (Math.abs(this.perpendicularError) <= 0.025)
+        //     + " && " + (Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(3))
+        // );
 
-        System.out.println("parallel " + this.parallelError + " perpe " + this.perpendicularError);
+        // System.out.println("parallel " + this.parallelError + " perpe " + this.perpendicularError);
         return (this.targetPose == Pose2d.kZero && this.timer.hasElapsed(0.25))
-            || (Math.abs(this.parallelError) <= 0.025
-                && Math.abs(this.perpendicularError) <= 0.025
-                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(2.5));
+            || (
+                Math.abs(this.parallelError) <= 0.02
+                && Math.abs(this.perpendicularError) <= 0.02
+                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(3)
+            );
     }
 
     /**
