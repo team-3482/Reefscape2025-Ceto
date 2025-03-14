@@ -18,6 +18,8 @@
 
 This code is for team 3482's on-season robot, Ceto.
 
+https://github.com/user-attachments/assets/2b92c98b-00dd-4389-8422-ad95c4a4d2f4
+
 <hr>
 
 ## Capabilities 
