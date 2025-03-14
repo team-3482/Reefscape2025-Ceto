@@ -9,8 +9,8 @@
     "Start"
   ],
   "autoFolders": [
-    "2 L3 & Hold Algae",
-    "2 L3 & Drop Algae"
+    "Drop Algae",
+    "Hold Algae"
   ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,

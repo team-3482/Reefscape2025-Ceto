@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartMiddleToCD"
+                  "pathName": "StartLeftToKL"
                 }
               },
               {
@@ -22,6 +22,12 @@
                       "type": "named",
                       "data": {
                         "name": "ReleaseAlgaeAndZeroElevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
                       }
                     },
                     {
@@ -39,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignRightReef"
+            "name": "PIDAlignLeftReef"
           }
         },
         {
@@ -49,27 +55,34 @@
           }
         },
         {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftCoralFromKL"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "RightCoralFromCD"
+            "pathName": "LeftCoralToKL"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightCoralToCD"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PIDAlignLeftReef"
+            "name": "PIDAlignRightReef"
           }
         },
         {
@@ -99,13 +112,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EndRightCD"
+            "pathName": "EndLeftKL"
           }
         }
       ]
     }
   },
   "resetOdom": false,
-  "folder": "2 L3 & Hold Algae",
+  "folder": "Hold Algae",
   "choreoAuto": false
 }

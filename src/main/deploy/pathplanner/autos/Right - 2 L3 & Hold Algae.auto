@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartLeftToKL"
+                  "pathName": "StartRightToCD"
                 }
               },
               {
@@ -45,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignLeftReef"
+            "name": "PIDAlignRightReef"
           }
         },
         {
@@ -67,7 +67,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralFromKL"
+                  "pathName": "RightCoralFromCD"
                 }
               }
             ]
@@ -76,13 +76,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCoralToKL"
+            "pathName": "RightCoralToCD"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignRightReef"
+            "name": "PIDAlignLeftReef"
           }
         },
         {
@@ -112,13 +112,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EndLeftKL"
+            "pathName": "EndRightCD"
           }
         }
       ]
     }
   },
   "resetOdom": false,
-  "folder": "2 L3 & Hold Algae",
+  "folder": "Hold Algae",
   "choreoAuto": false
 }
