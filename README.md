@@ -77,7 +77,10 @@ If you have any additional questions about `Ceto`, feel free to talk to us!
 
 ### Autonomous Paths
 
-TBA
+![path](https://github.com/user-attachments/assets/75e373d9-f89a-46b4-9048-9185e126dbae)
+
+This shows our preferred autonomous path. It can be ran on the left or right side.
+`Ceto` is capable of scoring 2 `L3 Coral` and either picking up, or discarding 1 `Algae`, in about ~13.5 seconds
 
 ### Controls
 
