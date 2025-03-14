@@ -82,6 +82,28 @@ If you have any additional questions about `Ceto`, feel free to talk to us!
 This shows our preferred autonomous path. It can be ran on the left or right side.
 `Ceto` is capable of scoring 2 `L3 Coral` and either picking up, or discarding 1 `Algae`, in about ~13.5 seconds
 
+#### Drop Algae 
+
+1. Starting Line -> `KL` or `CD`
+2. Score `Coral` on `K` or `D`
+3. Pick up `Algae`
+4. Drive to `Coral Station` and drop `Algae` halfway through
+5. Intake `Coral`
+6. Drive back to `KL` or `CD`
+7. Score `Coral` on `L` or `C`
+8. Drive back to `Coral Station` to be ready for Teleop
+
+#### Hold Algae
+
+1. Starting Line -> `KL` or `CD`
+2. Score `Coral` on `K` or `D`
+3. Drive to `Coral Station`
+4. Intake `Coral`
+5. Drive back to `KL` or `CD`
+6. Score `Coral` on `L` or `C`
+7. Pick up `Algae`
+8. Drive to `Barge` to be ready for Teleop
+
 ### Controls
 
 <details>
