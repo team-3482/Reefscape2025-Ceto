@@ -14,6 +14,7 @@ public class AdjustCoralCommand extends Command {
     private final Timer timer = new Timer();
     private boolean atBackOnce = false;
 
+    // TODO AT COMP : Test this command in the pits
     /** Creates a new AdjustCoralCommand. */
     public AdjustCoralCommand() {
         setName("AdjustCoralCommand");
@@ -48,7 +49,7 @@ public class AdjustCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.timer.hasElapsed(0.25)
+        return this.timer.hasElapsed(1)
             && CoralSubsystem.getInstance().hasCoral_frontLaser()
             && !CoralSubsystem.getInstance().hasCoral_backLaser();
     }

@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.612375,
-        "y": 2.8330624999999987
+        "x": 3.6082991803278692,
+        "y": 2.8082479508196716
       },
       "prevControl": {
-        "x": 3.381209014321327,
-        "y": 2.6841688372651853
+        "x": 3.377133194649196,
+        "y": 2.659354288084858
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,8 +58,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 59.99999999999999
+    "velocity": 0.0,
+    "rotation": 29.999999999999996
   },
   "reversed": false,
   "folder": "IntakeToReef",

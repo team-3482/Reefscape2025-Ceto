@@ -76,7 +76,7 @@ public final class CommandGenerators {
      */
     public static Command IntakeAlgaeAndHoldCommand() {
         return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
-            .andThen(Commands.waitSeconds(0.5))
+            .andThen(Commands.waitSeconds(0.7))
             .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
     }
 
@@ -99,8 +99,8 @@ public final class CommandGenerators {
             // Just in case it has been booted before the algae was put down,
             // and the position is already correct (should be rare though because it wastes battery)
             ElevatorSubsystem.getInstance().runOnce(() -> ElevatorSubsystem.getInstance().setPosition(0)),
-            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false),
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false),
+            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false),
+            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false),
             new ZeroElevatorCommand()
         );
     }

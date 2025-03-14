@@ -202,26 +202,26 @@ public class RobotContainer {
     /** Register all NamedCommands for PathPlanner use */
     private void registerNamedCommands() {
         NamedCommands.registerCommand("MoveElevatorToBottom",
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false));
+            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false));
         NamedCommands.registerCommand("MoveElevatorToL1Coral",
-            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false));
+            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL2Coral",
-            new MoveElevatorCommand(ScoringConstants.L2_CORAL, false));
+            new MoveElevatorCommand(ScoringConstants.L2_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL3Coral",
-            new MoveElevatorCommand(ScoringConstants.L3_CORAL, false));
+            new MoveElevatorCommand(ScoringConstants.L3_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL2Algae",
-            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false));
+            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false, false));
         
         // NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
-        //     new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true));
+        //     new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true, false));
         // NamedCommands.registerCommand("MoveElevatorToL1Coral_Slow",
-        //     new MoveElevatorCommand(ScoringConstants.L1_CORAL, true));
+        //     new MoveElevatorCommand(ScoringConstants.L1_CORAL, true, false));
         // NamedCommands.registerCommand("MoveElevatorToL2Coral_Slow",
-        //     new MoveElevatorCommand(ScoringConstants.L2_CORAL, true));
+        //     new MoveElevatorCommand(ScoringConstants.L2_CORAL, true, false));
         // NamedCommands.registerCommand("MoveElevatorToL3Coral_Slow",
-        //     new MoveElevatorCommand(ScoringConstants.L3_CORAL, true));
+        //     new MoveElevatorCommand(ScoringConstants.L3_CORAL, true, false));
         // NamedCommands.registerCommand("MoveElevatorToL2Algae_Slow",
-        //     new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true));
+        //     new MoveElevatorCommand(ScoringConstants.L2_ALGAE, true, false));
         
         NamedCommands.registerCommand("IntakeCoral",
             new IntakeCoralCommand());
@@ -235,13 +235,21 @@ public class RobotContainer {
             CommandGenerators.OuttakeAlgaeAndStopCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignCommand.Reef(1));
+            new PIDAlignCommand.Reef(1)
+                .withTimeout(3)
+        );
         NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignCommand.Reef(-1));
+            new PIDAlignCommand.Reef(-1)
+                .withTimeout(3)
+        );
         NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
-            new PIDAlignCommand.Reef(0));
+            new PIDAlignCommand.Reef(0)
+                .withTimeout(3)
+        );
         NamedCommands.registerCommand("PIDAlignProcessor",
-            new PIDAlignCommand.Processor());
+            new PIDAlignCommand.Processor()
+                .withTimeout(3)
+        );
         
         NamedCommands.registerCommand("ReleaseAlgaeAndZeroElevator",
             CommandGenerators.InitialElevatorLiftAndZeroCommand());
@@ -287,17 +295,15 @@ public class RobotContainer {
 
         // Elevator
         this.operatorController.povDown()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L1_CORAL, slowElevatorSupplier))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L1_CORAL, slowElevatorSupplier, true));
         this.operatorController.povRight()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_CORAL, slowElevatorSupplier))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_CORAL, slowElevatorSupplier, true));
         this.operatorController.povUp()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier, true));
         this.operatorController.x()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier))
-            .onFalse(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true));
+        this.operatorController.leftTrigger()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
         this.operatorController.povLeft()
             .onTrue(new ZeroElevatorCommand());
 

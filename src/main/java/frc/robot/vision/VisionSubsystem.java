@@ -186,7 +186,8 @@ public class VisionSubsystem extends SubsystemBase {
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
 
-            // TODO : Remove this at comp
+            // TODO AT COMP : Remove this
+            // TODO AT COMP : Clear logs from USB
             if (DriverStation.isEnabled() && data.name.equals(LimelightConstants.TOP_LL)) continue;
             
             if (data.canTrustRotation()) {
