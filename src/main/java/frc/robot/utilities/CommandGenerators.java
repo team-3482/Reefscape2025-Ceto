@@ -4,6 +4,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.algae.AlgaeSubsystem;
+import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.elevator.ElevatorSubsystem;
+import frc.robot.elevator.MoveElevatorCommand;
+import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.swerve.SwerveSubsystem;
 
 /**
@@ -43,17 +48,11 @@ public final class CommandGenerators {
     }
 
     /**
-     * A command that resets the odometry using data from the Limelights.
+     * A command that resets the odometry to an empty Pose2d.
      * @return The command.
-     * @apiNote If the Limelight returns an empty Pose2d, this command is a no-op.
-     * @deprecated Vision code keeps up fast enough for this to not be necessary. This method will set the robot to an empty Pose2d.
      */
-    @Deprecated
-    public static Command ResetPoseUsingLimelightCommand() {
-        return Commands.runOnce(() -> {
-            Pose2d estimatedPose = Pose2d.kZero;
-            SwerveSubsystem.getInstance().resetPose(estimatedPose);
-        });
+    public static Command ResetOdometryToOriginCommand() {
+        return Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero));
     }
 
     // OPERATOR
@@ -63,4 +62,46 @@ public final class CommandGenerators {
     //
     //
     //
+
+    // AUTO
+    //
+    //
+    //
+    //
+    //
+    //
+    /**
+     * A command that intakes the algae for a certain amount of time before holding.
+     * @return The command.
+     */
+    public static Command IntakeAlgaeAndHoldCommand() {
+        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
+            .andThen(Commands.waitSeconds(0.7))
+            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+    }
+
+    /**
+     * A command that outtakes the algae for a certain amount of time before stopping.
+     * @return The command.
+     */
+    public static Command OuttakeAlgaeAndStopCommand() {
+        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake())
+            .andThen(Commands.waitSeconds(1))
+            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+    }
+
+    /**
+     * A command that moves the elevator up to release the algae and re-zero.
+     * @return The command.
+     */
+    public static Command InitialElevatorLiftAndZeroCommand() {
+        return Commands.sequence(
+            // Just in case it has been booted before the algae was put down,
+            // and the position is already correct (should be rare though because it wastes battery)
+            ElevatorSubsystem.getInstance().runOnce(() -> ElevatorSubsystem.getInstance().setPosition(0)),
+            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false),
+            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false),
+            new ZeroElevatorCommand()
+        );
+    }
 }

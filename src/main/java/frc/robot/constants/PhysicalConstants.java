@@ -24,7 +24,7 @@ public final class PhysicalConstants {
         /** Id for PWM */
         public static final int PWM_HEADER = 0;
         /** This is how many nodes are on the strip */
-        public static final int LED_LENGTH = 70;
+        public static final int LED_LENGTH = 72;
         /** Blink cooldown; time that the selected blink color will stay for, then blink */
         public static final double BLINK_COOLDOWN = 0.2;
     }
@@ -54,13 +54,13 @@ public final class PhysicalConstants {
          * Tolerance used for elevator command in meters.
          * @see {@link MoveElevatorCommand}
          */
-        public static final double HEIGHT_TOLERANCE = 0.01;
+        public static final double HEIGHT_TOLERANCE = 0.05;
 
         /* Motion Magic Config */
         public static final double ROTOR_TO_MECHANISM_RATIO = (double) 36 / 18;
-        public static final double CRUISE_SPEED = 35;
+        public static final double CRUISE_SPEED = 30;
         public static final double SLOW_CRUISE_SPEED = 10;
-        public static final double ACCELERATION = 70;
+        public static final double ACCELERATION = 60;
         public static final double SLOW_ACCELERATION = 30;
 
         /** Gains used for MotionMagic slot 0. */
@@ -69,7 +69,7 @@ public final class PhysicalConstants {
             public static final double kS = 0.1;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 32;
+            public static final double kP = 28;
             public static final double kI = 0;
             public static final double kD = 0;
         }
@@ -79,7 +79,8 @@ public final class PhysicalConstants {
         public static final int RIGHT_MOTOR_ID = 41;
         public static final int LEFT_MOTOR_ID = 40;
 
-        public static final double INTAKE_OUTTAKE_VOLTAGE = 3;
+        public static final double INTAKE_VOLTAGE = 5;
+        public static final double OUTTAKE_VOLTAGE = 3;
         public static final double HOLDING_VOLTAGE = 0.45;
 
         public static final double MECHANISM_RATIO = 1;
@@ -92,8 +93,8 @@ public final class PhysicalConstants {
         public static final int FRONT_LASER_ID = 3;
         public static final int BACK_LASER_ID = 4;
 
-        public static final double INTAKE_VOLTAGE = 3;
-        public static final double SLOW_INTAKE_VOLTAGE = 1.5;
+        public static final double INTAKE_VOLTAGE = 2;
+        public static final double SLOW_INTAKE_VOLTAGE = 0.75;
         public static final double OUTTAKE_VOLTAGE = 2;
         
         public static final double MECHANISM_RATIO = 1;

@@ -6,6 +6,7 @@ package frc.robot.vision;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,6 +19,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -26,10 +29,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.constants.Constants.StatusColors;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** 
@@ -38,39 +43,30 @@ import org.littletonrobotics.junction.Logger;
  * position updates to the internal odometer.
  */
 public class VisionSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile VisionSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class VisionSubsystemHolder {
+        private static final VisionSubsystem INSTANCE = new VisionSubsystem();
+    }
+    
     public static VisionSubsystem getInstance() {
-        VisionSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new VisionSubsystem();
-                }
-            }
-        }
-        return instance;
+        return VisionSubsystemHolder.INSTANCE;
     }
 
     /** Used to run vision processing on a separate thread. */
     private final Notifier notifier;
 
     /** Latest Limelight data. May contain faulty data unsuitable for odometry. */
-    private volatile VisionData[] limelightDatas = new VisionData[2];
+    private VisionData[] limelightDatas = new VisionData[2];
     /** Last heartbeat of the front LL (updated every frame) */
-    private volatile long lastHeartbeatLeftLL = 0;
+    private long lastHeartbeatBottomLL = 0;
     /** Last heartbeat of the back LL (updated every frame) */
-    private volatile long lastHeartbeatRightLL = 0;
+    private long lastHeartbeatToptLL = 0;
     /**
      * Timer used to track when the cameras last got data.
      * @apiNote It would probably be better to track distance traveled instead,
      * but this was the quickest solution.
      */
-    private volatile Timer lastDataTimer;
+    private final Timer lastDataTimer = new Timer();
 
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -98,6 +94,10 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(3, 1)
         .withPosition(0, 2)
         .getEntry();
+    
+    private boolean lastReef = false;
+    private boolean lastProcessor = false;
+    private boolean lastCanAlign = false;
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -120,7 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
                 .withSize(7, 4)
                 .withPosition(6, 0);
-                Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
+            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
                 .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
@@ -131,7 +131,6 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.TOP_LL, LimelightConstants.ALL_TAG_IDS);
 
-        this.lastDataTimer = new Timer();
         this.lastDataTimer.start();
 
         this.notifier = new Notifier(this::notifierLoop);
@@ -146,50 +145,57 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
+        // These methods are here because they are NOT thread-safe
+        boolean processor, reef, canAlign;
+        processor = reef = canAlign = false;
+
+        if (recentVisionData()) {
+            int primaryTag = getPrimaryTagInView_Bottom_MegaTag();
+            
+            reef = TagSets.REEF_TAGS.contains(primaryTag);
+            processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
+            canAlign = reef || processor;
+        }
+        
+        if (reef != this.lastReef) {
+            this.shuffleboardReefInView.setBoolean(reef);
+            Logger.recordOutput("Vision/ReefInView", reef);
+            this.lastReef = reef;
+        }
+        if (processor != this.lastProcessor) {
+            this.shuffleboardProcessorInView.setBoolean(processor);
+            Logger.recordOutput("Vision/ProcessorInView", processor);
+            this.lastProcessor = processor;
+        }
+        if (canAlign != this.lastCanAlign) {
+            Logger.recordOutput("Vision/canAlign", processor || reef);
+            this.lastCanAlign = canAlign;
+        }
+        
+        if (canAlign && DriverStation.isEnabled()) {
+            LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
+        }
     }
 
     /**
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
-    private synchronized void notifierLoop() {
-        fetchLimelightData();
+    private void notifierLoop() {
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
-            if (data.optimized) continue;
+            if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
+
+            // TODO AT COMP : Remove this
+            // TODO AT COMP : Clear logs from USB
+            if (DriverStation.isEnabled() && data.name.equals(LimelightConstants.TOP_LL)) continue;
             
-            if (data.MegaTag2 != null && data.MegaTag2.rawFiducials.length > 0) {
-                boolean processor = data.MegaTag2.rawFiducials[0].id == 3 || data.MegaTag2.rawFiducials[0].id == 16;
-                boolean reef = 17 <= data.MegaTag2.rawFiducials[0].id || (6 <= data.MegaTag2.rawFiducials[0].id && data.MegaTag2.rawFiducials[0].id <= 11);
-                boolean canAlign = processor || reef;
-
-                this.shuffleboardProcessorInView.setBoolean(processor);
-                this.shuffleboardReefInView.setBoolean(reef);
-
-                Logger.recordOutput("Vision/ProcessorInView", processor);
-                Logger.recordOutput("Vision/ReefInView", reef);
-                Logger.recordOutput("Vision/canAlign", canAlign);
-
-                if (canAlign) {
-                    LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
-                }
-            }
-            else {
-            // else if (!recentVisionData()) {
-                this.shuffleboardProcessorInView.setBoolean(false);
-                this.shuffleboardReefInView.setBoolean(false);
-
-                Logger.recordOutput("Vision/ProcessorInView", false);
-                Logger.recordOutput("Vision/ReefInView", false);
-                Logger.recordOutput("Vision/canAlign", false);
-            }
-            
-            if (data.canTrustRotation) {
+            if (data.canTrustRotation()) {
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? 1 : 0.5
+                    recentVisionData() ? 1 : 0.4
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -197,7 +203,7 @@ public class VisionSubsystem extends SubsystemBase {
                 );
             }
 
-            if (data.canTrustPosition) {
+            if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     recentVisionData() ? 0.7 : 0.1,
@@ -211,8 +217,8 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             hasRecentVisionData(
-                data.canTrustPosition ? data.MegaTag2.pose.getTranslation() : null,
-                data.canTrustRotation ? data.MegaTag.pose.getRotation() : null
+                data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
+                data.canTrustRotation() ? data.MegaTag.pose.getRotation() : null
             );
         }
         // This method is suprprisingly efficient, generally below 1 ms.
@@ -226,8 +232,8 @@ public class VisionSubsystem extends SubsystemBase {
      * However, this happens at 2e9 frames, which would take consecutive 96 days at a consistent 240 fps.
      */
     private VisionData[] fetchLimelightData() {
-        long heartbeatLeftLL = -1;
-        long heartbeatRightLL = -1;
+        long heartbeatBottomLL = -1;
+        long heartbeatTopLL = -1;
 
         // Periodic logic
         double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
@@ -238,17 +244,17 @@ public class VisionSubsystem extends SubsystemBase {
             rotationDegrees, 0, 0, 0, 0, 0
         );
         
-        heartbeatLeftLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
-        heartbeatRightLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
+        heartbeatBottomLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
+        heartbeatTopLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
 
-        if (heartbeatLeftLL == -1 || this.lastHeartbeatLeftLL < heartbeatLeftLL) {
+        if (heartbeatBottomLL == -1 || this.lastHeartbeatBottomLL < heartbeatBottomLL) {
             this.limelightDatas[0] = getVisionData(LimelightConstants.BOTTOM_LL);
-            this.lastHeartbeatLeftLL = heartbeatLeftLL == -1 ? this.lastHeartbeatLeftLL : heartbeatLeftLL;
+            this.lastHeartbeatBottomLL = heartbeatBottomLL == -1 ? this.lastHeartbeatBottomLL : heartbeatBottomLL;
         }
         
-        if (heartbeatRightLL == -1 || this.lastHeartbeatRightLL < heartbeatRightLL) {
+        if (heartbeatTopLL == -1 || this.lastHeartbeatToptLL < heartbeatTopLL) {
             this.limelightDatas[1] = getVisionData(LimelightConstants.TOP_LL);
-            this.lastHeartbeatRightLL = heartbeatRightLL == -1 ? this.lastHeartbeatRightLL : heartbeatRightLL;
+            this.lastHeartbeatToptLL = heartbeatTopLL == -1 ? this.lastHeartbeatToptLL : heartbeatTopLL;
         }
 
         // There is no point actually filtering out nonexistent or null data,
@@ -378,8 +384,8 @@ public class VisionSubsystem extends SubsystemBase {
                 //     rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
                 // }
                 // else {
-                leftCrop -= LimelightConstants.BOUNDING_BOX * 2;
-                rightCrop += LimelightConstants.BOUNDING_BOX * 2;
+                leftCrop -= LimelightConstants.BOUNDING_BOX;
+                rightCrop += LimelightConstants.BOUNDING_BOX;
                 // }
                 
                 bottomCrop -= LimelightConstants.BOUNDING_BOX;
@@ -395,24 +401,13 @@ public class VisionSubsystem extends SubsystemBase {
      * @param limelight - The limelight to set the crops for.
      */
     private void setDefaultCrops(String limelight) {
-        if (limelight.equals(LimelightConstants.TOP_LL)) {
-            LimelightHelpers.setCropWindow(
-                limelight,
-                LimelightConstants.DEFAULT_TOP_CROP[0],
-                LimelightConstants.DEFAULT_TOP_CROP[1],
-                LimelightConstants.DEFAULT_TOP_CROP[2],
-                LimelightConstants.DEFAULT_TOP_CROP[3]
-            );
-        }
-        else if (limelight.equals(LimelightConstants.BOTTOM_LL)) {
-            LimelightHelpers.setCropWindow(
-                limelight,
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[1],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[2],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[3]
-            );
-        }
+        double[] cropValues = limelight.equals(LimelightConstants.TOP_LL)
+            ? LimelightConstants.DEFAULT_TOP_CROP
+            : LimelightConstants.DEFAULT_BOTTTOM_CROP;
+
+        LimelightHelpers.setCropWindow(
+            limelight, cropValues[0], cropValues[1], cropValues[2], cropValues[3]
+        );
     }
 
     /**
@@ -449,33 +444,43 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the robot position according to the Limelight in target-space (the target is at the origin);
+     * Gets the robot position according to the Limelight in target-space (the target is at the origin).
      * @return The robot position.
      * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom one.
      * Returns {@code null} if there is no tags in view for either Limelight.
      */
-    public Pose2d getEstimatedPosition_TargetSpace() {
-        /* [ x, y, z, pitch, yaw, roll ] (meters, degrees) */
+    public Optional<Pose2d> getEstimatedPosition_TargetSpace() {
+        return getEstimatedPosition_TargetSpace(LimelightConstants.BOTTOM_LL)
+            .or(() -> getEstimatedPosition_TargetSpace(LimelightConstants.TOP_LL));
+    }
+
+    /**
+     * Gets the robot position according to the Limelight in target-space (the target is at the origin).
+     * @return The robot position.
+     * Returns {@code null} if there is no tags in view for the limelight.
+     */
+    private Optional<Pose2d> getEstimatedPosition_TargetSpace(String limelight) {
+        /* [ x, z, y, pitch, yaw, roll ] (meters, degrees) */
         double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
-        Pose2d botPose = Pose2d.kZero;
 
-        if (poseArray.length != 0) {
-            botPose = new Pose2d(
-                new Translation2d(poseArray[0], poseArray[2]),
+        // 0, 0, 0
+        if (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new Pose2d(
+            new Translation2d(poseArray[0], poseArray[2]),
                 Rotation2d.fromDegrees(poseArray[4])
-            );
-        }
-        
-        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
-            return botPose;
-        }
+        ));
+    }
 
-        botPose = LimelightHelpers.toPose2D(LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL));
-
-        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
-            return botPose;
-        }
-
-        return null;
+    /**
+     * Gets the primary tag in view of the bottom limelight.
+     * @return The tag IDs.
+     * @apiNote Gets it for both limelights, combined.
+     */
+    public int getPrimaryTagInView_Bottom_MegaTag() {
+        return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
+            .getEntry("tid").getInteger(0);
     }
 }

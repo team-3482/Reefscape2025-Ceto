@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.Constants.StatusColors;
 import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -59,7 +59,11 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
-        LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
+
+        RobotContainer.getInstance().getAutonomousCommand();
+        
+        // Blink like the RSL when disabled
+        LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
     @Override
@@ -71,7 +75,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
         SignalLogger.stop();
         // Blink like the RSL when disabled
-        LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
+        LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
     @Override
@@ -91,11 +95,10 @@ public class Robot extends LoggedRobot {
 
         if (this.auton != null) {
             this.auton.schedule();
-            LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
         else {
             System.err.println("No auton command found.");
-            LEDSubsystem.getInstance().blinkColor(StatusColors.ERROR);
+            LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
     }
 
@@ -109,6 +112,7 @@ public class Robot extends LoggedRobot {
     public void teleopInit() {
         if (auton != null) {
             this.auton.cancel();
+            LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
     } 
 

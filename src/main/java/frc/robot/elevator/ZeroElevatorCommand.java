@@ -2,6 +2,8 @@ package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.led.StatusColors;
+import frc.robot.led.LEDSubsystem;
 
 /** A command which lifts the elevator and lets it fall down slowly to reset position. */
 public class ZeroElevatorCommand extends Command {
@@ -34,6 +36,7 @@ public class ZeroElevatorCommand extends Command {
         if (!interrupted) {
             ElevatorSubsystem.getInstance().setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
+        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
     }
 
 

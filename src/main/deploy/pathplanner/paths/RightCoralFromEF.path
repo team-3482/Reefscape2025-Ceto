@@ -1,0 +1,71 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.199187500000001,
+        "y": 2.745312499999999
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.354316634522659,
+        "y": 1.784103762067622
+      },
+      "isLocked": false,
+      "linkedName": "Reef EF"
+    },
+    {
+      "anchor": {
+        "x": 1.1177448927380231,
+        "y": 0.9720506509627046
+      },
+      "prevControl": {
+        "x": 3.2584643650702207,
+        "y": 1.73326981547268
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral Right"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.06904903778248588,
+      "rotationDegrees": 119.99999999999999
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "MoveElevatorToBottom",
+      "waypointRelativePos": 0.07060185185185183,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveElevatorToBottom"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 55.0
+  },
+  "reversed": false,
+  "folder": "ReefToIntake",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

@@ -2,6 +2,7 @@ package frc.robot.elevator;
 
 import java.util.Map;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
@@ -34,23 +36,15 @@ import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants.ElevatorSlot0Gains;
 import org.littletonrobotics.junction.Logger;
 
+/** A subsystem that moves the elevator up and down using MotionMagic. */
 public class ElevatorSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile ElevatorSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class ElevatorSubsystemHolder {
+        private static final ElevatorSubsystem INSTANCE = new ElevatorSubsystem();
+    }
+    
     public static ElevatorSubsystem getInstance() {
-        ElevatorSubsystem result = instance;
-       
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new ElevatorSubsystem();
-                }
-            }
-        }
-        return instance;
+        return ElevatorSubsystemHolder.INSTANCE;
     }
 
     private TalonFX leftMotor = new TalonFX(ElevatorConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
@@ -60,7 +54,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private DigitalInput stageTwoUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_TWO_UPPER_LASER_ID);
     private DigitalInput stageThreeUpperLimitSwitch = new DigitalInput(ElevatorConstants.STAGE_THREE_UPPER_LASER_ID);
 
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0).withSlot(0);
+    private final VoltageOut voltageOut = new VoltageOut(0);
     private final Follower FOLLOW_RIGHT = new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true);
     private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
 
@@ -108,6 +103,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withSize(5, 1)
         .withPosition(0, 5)
         .getEntry();
+    
+    private double lastPosition = Double.NaN;
+    // Shuffleboard values are initialized at false, so these should be false
+    private boolean lastUpperLimit_StageThree = false;
+    private boolean lastUpperLimit_StageTwo = false;
+    private boolean lastLowerLimit = false;
+    private double lastRotorVelocity = Double.NaN;
 
     /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
@@ -121,6 +123,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.leftMotor.setControl(this.FOLLOW_RIGHT);
 
         if (atLowerLimit()) {
+            // If starting at the bottom (beginning of a match, etc.) reset the position
+            // We do not do this every time because sometimes we deploy code while the elevator
+            // is being worked on by mech, etc. and in that case the position is correct
+            // because it is using the last reset
             setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
     }
@@ -128,15 +134,39 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     // This method will be called once per scheduler run
     public void periodic() {
-        this.shuffleboardPositionNumberBar.setDouble(getPosition());
-        this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
-        this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
-        this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+        double position = getPosition();
+        boolean upperLimit_StageThree = atUpperLimit_StageThree();
+        boolean upperLimit_StageTwo = atUpperLimit_StageTwo();
+        boolean lowerLimit = atLowerLimit();
+        double rotorVelocity = getRotorVelocity();
+
+        if (position != this.lastPosition) {
+            this.shuffleboardPositionNumberBar.setDouble(position);
+            Logger.recordOutput("Elevator/Position", position);
+            this.lastPosition = position;
+        }
+        if (upperLimit_StageThree != this.lastUpperLimit_StageThree) {
+            this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
+            this.lastUpperLimit_StageThree = upperLimit_StageThree;
+        }
+        if (upperLimit_StageTwo != this.lastUpperLimit_StageTwo) {
+            this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
+            this.lastUpperLimit_StageTwo = upperLimit_StageTwo;
+        }
+        if (lowerLimit != this.lastLowerLimit) {
+            this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+            this.lastLowerLimit = lowerLimit;
+        }
+        if (rotorVelocity != this.lastRotorVelocity) {
+            Logger.recordOutput("Elevator/RotorVelocity", getRotorVelocity());
+            this.lastRotorVelocity = rotorVelocity;
+        }
 
         boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
+        boolean atUpperLimit = atUpperLimit();
 
         if (!inputToggled) {
-            this.shuffleboardSliderInput.setDouble(getPosition());
+            this.shuffleboardSliderInput.setDouble(position);
         }
         
         if (DriverStation.isEnabled()) {
@@ -144,64 +174,69 @@ public class ElevatorSubsystem extends SubsystemBase {
             String controlName = appliedControl.getControlInfo().get("Name");
             boolean leftMotor = false;
 
-            if (controlName.equals("Follower")) {
-                appliedControl = this.leftMotor.getAppliedControl();
-                controlName = appliedControl.getControlInfo().get("Name");
-                leftMotor = true;
+            switch (controlName) {
+                case "Follower":
+                    appliedControl = this.leftMotor.getAppliedControl();
+                    controlName = appliedControl.getControlInfo().get("Name");
+                    leftMotor = true;
+                    break;
             }
 
-            if (controlName.equals("VoltageOut")) {
-                if (leftMotor) {
-                    this.leftMotor.setControl(((VoltageOut) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.rightMotor.setControl(this.FOLLOW_LEFT);
-                }
-                else {
-                    this.rightMotor.setControl(((VoltageOut) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
-                }
-            }
-            else if (controlName.equals("MotionMagicVoltage")) {
-                if (leftMotor) {
-                    this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.rightMotor.setControl(this.FOLLOW_LEFT);
-                }
-                else {
-                    this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
-                        .withLimitForwardMotion(atUpperLimit())
-                        .withLimitReverseMotion(atLowerLimit())
-                    );
-                    this.leftMotor.setControl(this.FOLLOW_RIGHT);
-                }
+            switch (controlName) {
+                case "VoltageOut":
+                    if (leftMotor) {
+                        this.leftMotor.setControl(((VoltageOut) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.rightMotor.setControl(this.FOLLOW_LEFT);
+                    }
+                    else {
+                        this.rightMotor.setControl(((VoltageOut) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                    }
+                    break;
+                
+                case "MotionMagicVoltage":
+                    if (leftMotor) {
+                        this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.rightMotor.setControl(this.FOLLOW_LEFT);
+                    }
+                    else {
+                        this.rightMotor.setControl(((MotionMagicVoltage) appliedControl)
+                            .withLimitForwardMotion(atUpperLimit)
+                            .withLimitReverseMotion(atLowerLimit())
+                        );
+                        this.leftMotor.setControl(this.FOLLOW_RIGHT);
+                    }
+                    break;
             }
 
             Command currentCommand = getCurrentCommand();
 
-            if (atUpperLimit()) {
-                motionMagicPosition(getPosition() - 0.01, false, true);
+            if (atUpperLimit) {
+                if (currentCommand != null) {
+                    CommandScheduler.getInstance().cancel(currentCommand);
+                }
+                motionMagicPosition(position - 0.01, false, true);
             }
             else if (currentCommand != null) {
                 this.shuffleboardToggleInput.setBoolean(false);
             }
             else if (inputToggled && currentCommand == null) {
-                motionMagicPosition(this.shuffleboardSliderInput.getDouble(getPosition()), true, false);
+                motionMagicPosition(this.shuffleboardSliderInput.getDouble(position), true, false);
             }
         }
         else {
             this.shuffleboardToggleInput.setBoolean(false);
             setVoltage(0);
         }
-
-        Logger.recordOutput("Elevator/Position", this.getPosition());
-        Logger.recordOutput("Elevator/RotorVelocity", this.getRotorVelocity());
     }
 
     /**
@@ -236,6 +271,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
         // motionMagicConfigs.MotionMagicJerk = PivotConstants.MOTION_MAGIC_JERK;
 
+        CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
+        currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        currentLimitsConfigs.StatorCurrentLimit = 80;
+        currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        currentLimitsConfigs.SupplyCurrentLimit = 15;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 0.5;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 7.5;
+
         // Motor-specific configurations.
         motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive; // Right motor not inverted.
         this.rightMotor.getConfigurator().apply(configuration);
@@ -251,8 +294,9 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param position - The position in meters.
      */
     public void setPosition(double position) {
-        this.rightMotor.setPosition(metersToRotation(position));
-        this.leftMotor.setPosition(metersToRotation(position));
+        double convertedPosition = metersToRotation(position);
+        this.rightMotor.setPosition(convertedPosition);
+        this.leftMotor.setPosition(convertedPosition);
     }
 
     /**
@@ -283,21 +327,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         MotionMagicVoltage control = motionMagicVoltage
-            .withSlot(0)
-            .withPosition(this.metersToRotation(position));
+            // .withSlot(0)
+            .withPosition(this.metersToRotation(position))
+            .withLimitForwardMotion(atUpperLimit())
+            .withLimitReverseMotion(atLowerLimit());
 
         if (slow) {
-            this.leftMotor.setControl(control
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
+            this.leftMotor.setControl(control);
             this.rightMotor.setControl(this.FOLLOW_LEFT);
         }
         else {
-            this.rightMotor.setControl(control
-                .withLimitForwardMotion(atUpperLimit())
-                .withLimitReverseMotion(atLowerLimit())
-            );
+            this.rightMotor.setControl(control);
             this.leftMotor.setControl(this.FOLLOW_RIGHT);
         }
     }
@@ -309,10 +349,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void setVoltage(double voltage) {
         voltage = MathUtil.clamp(voltage, -12, 12);
 
-        rightMotor.setControl(new VoltageOut(voltage)
+        VoltageOut control = this.voltageOut
+            .withOutput(voltage)
             .withLimitForwardMotion(atUpperLimit())
-            .withLimitReverseMotion(atLowerLimit())
-        );
+            .withLimitReverseMotion(atLowerLimit());
+
+        this.rightMotor.setControl(control);
     }
 
     /**

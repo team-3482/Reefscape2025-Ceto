@@ -6,23 +6,15 @@ package frc.robot.templates;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/** An example subsystem that does nothing. */
 public class ExampleSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile ExampleSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class ExampleSubsystemHolder {
+        private static final ExampleSubsystem INSTANCE = new ExampleSubsystem();
+    }
+    
     public static ExampleSubsystem getInstance() {
-        ExampleSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new ExampleSubsystem();
-                }
-            }
-        }
-        return instance;
+        return ExampleSubsystemHolder.INSTANCE;
     }
 
     /** Creates a new ExampleSubsystem. */

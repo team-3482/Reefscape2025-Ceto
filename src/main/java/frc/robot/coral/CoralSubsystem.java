@@ -6,6 +6,9 @@ package frc.robot.coral;
 
 import java.util.Map;
 
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,35 +17,28 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
-import frc.robot.constants.Constants.StatusColors;
+import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.led.StatusColors;
 
+/** A subsystem that manipulates the coral game piece. */
 public class CoralSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile CoralSubsystem instance;
-    private static Object mutex = new Object();
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class CoralSubsystemHolder {
+        private static final CoralSubsystem INSTANCE = new CoralSubsystem();
+    }
 
     public static CoralSubsystem getInstance() {
-        CoralSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new CoralSubsystem();
-                }
-            }
-        }
-        return instance;
+        return CoralSubsystemHolder.INSTANCE;
     }
 
     private TalonFX rightMotor = new TalonFX(CoralConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
@@ -69,8 +65,9 @@ public class CoralSubsystem extends SubsystemBase {
         .withSize(5, 1)
         .withPosition(0, 1)
         .getEntry();
-
-    private String state = "stopped";
+    
+    private SubsystemStates state = SubsystemStates.STOPPED;
+    private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
 
     /** Creates a new OuttakeSubsystem. */
     private CoralSubsystem() {
@@ -84,15 +81,25 @@ public class CoralSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     @Override
     public void periodic() {
-        this.shuffleboard_entry_frontLaser.setBoolean(hasCoral_frontLaser());
-        this.shuffleboard_entry_backLaser.setBoolean(hasCoral_backLaser());
+        boolean coralFront = hasCoral_frontLaser();
+        boolean coralBack = hasCoral_backLaser();
+        
+        this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
+        this.shuffleboard_entry_backLaser.setBoolean(coralBack);
+        
+        boolean coral = coralFront || coralBack;
+        
+        Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
+        Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
+        Logger.recordOutput("Coral/HasCoral", coral);
 
-        Logger.recordOutput("Coral/FrontLaserHasCoral", hasCoral_frontLaser());
-        Logger.recordOutput("Coral/BackLaserHasCoral", hasCoral_backLaser());
-        Logger.recordOutput("Coral/HasCoral", hasCoral());
-        Logger.recordOutput("Coral/State", state);
+        // Avoids logging every loop
+        if (this.state != this.lastLoggedState) {
+            Logger.recordOutput("Coral/State", this.state);
+            this.lastLoggedState = this.state;
+        }
 
-        if (hasCoral()) {
+        if (coral && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
     }
@@ -106,6 +113,14 @@ public class CoralSubsystem extends SubsystemBase {
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
+        currentLimitsConfigs.StatorCurrentLimitEnable = true;
+        currentLimitsConfigs.StatorCurrentLimit = 60;
+        currentLimitsConfigs.SupplyCurrentLimitEnable = true;
+        currentLimitsConfigs.SupplyCurrentLimit = 10;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 1;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 5;
+
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);
         configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -116,32 +131,33 @@ public class CoralSubsystem extends SubsystemBase {
      * Sets the speed of the motors to the intake speed
      */
     public void intake() {
+        this.state = SubsystemStates.INTAKING;
         rightMotor.setVoltage(CoralConstants.INTAKE_VOLTAGE);
-        state = "intaking";
     }
 
     /**
      * Sets the speed of the motors to the slow intake speed
+     * @param direction - The direction of the slow intake (- is backwards)
      */
-    public void slowIntake() {
-        this.rightMotor.setVoltage(CoralConstants.SLOW_INTAKE_VOLTAGE);
-        state = "slow intaking";
+    public void slowIntake(int direction) {
+        this.state = SubsystemStates.SLOW_INTAKING;
+        this.rightMotor.setVoltage(Math.signum(direction) * CoralConstants.SLOW_INTAKE_VOLTAGE);
     }
 
     /**
      * Sets the speed of the motors to the outtake speed
      */
     public void outtake() {
+        this.state = SubsystemStates.OUTTAKING;
         rightMotor.setVoltage(CoralConstants.OUTTAKE_VOLTAGE);
-        state = "outtaking";
     }
 
     /**
      * Stops the motors immediately
      */
     public void stop() {
+        this.state = SubsystemStates.STOPPED;
         rightMotor.setVoltage(0);
-        state = "stopped";
     }
 
     /**
