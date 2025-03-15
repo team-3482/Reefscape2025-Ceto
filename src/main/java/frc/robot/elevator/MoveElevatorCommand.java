@@ -11,7 +11,6 @@ public class MoveElevatorCommand extends Command {
     private final Supplier<Boolean> slowSupplier;
     private final boolean toggle;
 
-    // TODO AT COMP : Test toggling the elevator
     /**
      * Creates a new ElevatorCommand.
      * @param position - The position the elevator will move to. In meters

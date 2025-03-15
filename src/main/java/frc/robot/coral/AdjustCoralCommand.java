@@ -4,17 +4,14 @@
 
 package frc.robot.coral;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
 
 /** A command that adjusts the coral in case it has been intook too far. */
 public class AdjustCoralCommand extends Command {
-    private final Timer timer = new Timer();
     private boolean atBackOnce = false;
 
-    // TODO AT COMP : Test this command in the pits
     /** Creates a new AdjustCoralCommand. */
     public AdjustCoralCommand() {
         setName("AdjustCoralCommand");
@@ -26,7 +23,6 @@ public class AdjustCoralCommand extends Command {
     @Override
     public void initialize() {
         this.atBackOnce = false;
-        this.timer.restart();
         CoralSubsystem.getInstance().slowIntake(-1);
     }
 
@@ -49,7 +45,7 @@ public class AdjustCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.timer.hasElapsed(1)
+        return this.atBackOnce
             && CoralSubsystem.getInstance().hasCoral_frontLaser()
             && !CoralSubsystem.getInstance().hasCoral_backLaser();
     }
