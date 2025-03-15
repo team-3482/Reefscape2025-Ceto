@@ -57,6 +57,7 @@ public final class Constants {
         public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
         public static final double MAX_HEIGHT = 0.75;
 
+        public static final double IDLE_HEIGHT = L1_CORAL;
     }
     
     /** Sets of tags for O(1) lookup. */

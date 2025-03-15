@@ -112,30 +112,28 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         Drivetrain.setDefaultCommand(
             Drivetrain.applyRequest(() -> {
+                boolean elevatorTooHigh = ElevatorSubsystem.getInstance().getPosition() > 0.4;
                 boolean topSpeed = leftTrigger.get();
                 boolean fineControl = rightTrigger.get();
+
+                double linearSpeed = elevatorTooHigh
+                    ? (TunerConstants.kElevatorTooHighSpeed.in(Units.MetersPerSecond))
+                    : (topSpeed ? MaxSpeed : LesserMaxSpeed);
+                double angularSpeed = elevatorTooHigh
+                    ? (TunerConstants.kElevatorTooHighAngularSpeed.in(Units.MetersPerSecond))
+                    : (topSpeed ? NormalAngularSpeed : FastAngularSpeed);
+                double fineControlMult = fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1;
                 
                 return fieldCentricDrive_withDeadband
                     // Drive forward with negative Y (forward)
-                    .withVelocityX(
-                        -driverController.getLeftY()
-                        * (topSpeed ? MaxSpeed : LesserMaxSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
+                    .withVelocityX(-driverController.getLeftY() * linearSpeed * fineControlMult)
                     // Drive left with negative X (left)
-                    .withVelocityY(
-                        -driverController.getLeftX()
-                        * (topSpeed ? MaxSpeed : LesserMaxSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
+                    .withVelocityY(-driverController.getLeftX() * linearSpeed * fineControlMult)
                     // Drive counterclockwise with negative X (left)
-                    .withRotationalRate(
-                        -driverController.getRightX()
-                        * (topSpeed ? NormalAngularSpeed : FastAngularSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
-                    .withDeadband(ControllerConstants.DEADBAND * (fineControl ? LesserMaxSpeed : MaxSpeed))
-                    .withRotationalDeadband(ControllerConstants.DEADBAND * (fineControl ? NormalAngularSpeed : FastAngularSpeed));
+                    .withRotationalRate(-driverController.getRightX() * angularSpeed * fineControlMult)
+
+                    .withDeadband(ControllerConstants.DEADBAND * linearSpeed)
+                    .withRotationalDeadband(ControllerConstants.DEADBAND * angularSpeed);
             }).ignoringDisable(true)
         );
         
@@ -283,6 +281,7 @@ public class RobotContainer {
 
         this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1));
         this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1));
+        // TODO : Flip based on side
         this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
@@ -318,7 +317,12 @@ public class RobotContainer {
             .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
 
         // Coral
-        this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
+        this.operatorController.leftBumper().whileTrue(
+            Commands.parallel(
+                new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
+                new IntakeCoralCommand()
+            )
+        );
         this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
         this.operatorController.rightStick().onTrue(new AdjustCoralCommand());
     }
