@@ -56,6 +56,10 @@ Scouts, look here!
 
 <br>
 
+|  Dimensions  | Height |   Swerve   |      Vison      | Top Speed |
+|--------------|--------|------------|-----------------|-----------|
+| 27x27 in     | 35 in  | Kraken X60 | 2x Limelight 3G | 4.0 m/s   |
+
 If you have any additional questions about `Ceto`, feel free to talk to us!
 
 <hr>
