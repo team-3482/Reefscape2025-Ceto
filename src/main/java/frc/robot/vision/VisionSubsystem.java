@@ -107,11 +107,11 @@ public class VisionSubsystem extends SubsystemBase {
             // Shuffleboard camera feeds.
             HttpCamera leftLLCamera = new HttpCamera(
                 LimelightConstants.BOTTOM_LL,
-                "http://" + LimelightConstants.BOTTOM_LL + ".local:5800/stream.mjpg"
+                "http://" + "10.34.82.12" + ":5800/stream.mjpg"
             );
             HttpCamera rightLLCamera = new HttpCamera(
                 LimelightConstants.TOP_LL,
-                "http://" + LimelightConstants.TOP_LL + ".local:5800/stream.mjpg"
+                "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -186,7 +186,11 @@ public class VisionSubsystem extends SubsystemBase {
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
 
-            // if (DriverStation.isEnabled() && data.name.equals(LimelightConstants.TOP_LL)) continue;
+            if (
+                DriverStation.isEnabled()
+                && data.MegaTag2.rawFiducials.length > 0
+                && TagSets.BARGE_TAGS.contains(data.MegaTag2.rawFiducials[0].id)
+            ) continue;
             
             if (data.canTrustRotation()) {
                 // Only trust rotational data when adding this pose.
@@ -474,8 +478,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     /**
      * Gets the primary tag in view of the bottom limelight.
-     * @return The tag IDs.
-     * @apiNote Gets it for both limelights, combined.
+     * @return The tag ID.
      */
     public int getPrimaryTagInView_Bottom_MegaTag() {
         return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
