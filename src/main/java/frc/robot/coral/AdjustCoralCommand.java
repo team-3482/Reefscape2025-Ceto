@@ -23,7 +23,7 @@ public class AdjustCoralCommand extends Command {
     @Override
     public void initialize() {
         this.atBackOnce = false;
-        CoralSubsystem.getInstance().slowIntake(-1);
+        CoralSubsystem.getInstance().reverseIntake(true);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -31,7 +31,7 @@ public class AdjustCoralCommand extends Command {
     public void execute() {
         if (!this.atBackOnce && CoralSubsystem.getInstance().hasCoral_backLaser()) {
             this.atBackOnce = true;
-            CoralSubsystem.getInstance().slowIntake(1);
+            CoralSubsystem.getInstance().intake(true);
         }
     }
 

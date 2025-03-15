@@ -32,11 +32,11 @@ public final class Constants {
     public static final class AligningConstants {
         public static final class Reef {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.46;
+            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.48;
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
             public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
             /** How far (in meters) the robot should be parallel to the tag to score. */
-            public static final double PARALLEL_DIST_TO_TAG = 0.17;
+            public static final double PARALLEL_DIST_TO_TAG = 0.185;
         }
 
         public static final class Processor {
@@ -69,6 +69,6 @@ public final class Constants {
 
     /** States used with Algae and Coral subsystems, reduces overhead. */
     public static enum SubsystemStates {
-        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING
+        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING, SLOW_OUTTAKING
     }
 }
