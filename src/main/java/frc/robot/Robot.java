@@ -120,8 +120,6 @@ public class Robot extends LoggedRobot {
             this.auton.cancel();
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
-
-        // TODO : idle elevator at L1 unless intaking
     }
 
     @Override

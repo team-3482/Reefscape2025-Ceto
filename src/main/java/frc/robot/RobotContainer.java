@@ -281,7 +281,6 @@ public class RobotContainer {
 
         this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1, true));
         this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1, true));
-        // TODO : Flip based on side
         this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0, false));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
