@@ -112,7 +112,7 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         Drivetrain.setDefaultCommand(
             Drivetrain.applyRequest(() -> {
-                boolean elevatorTooHigh = ElevatorSubsystem.getInstance().getPosition() > 0.4;
+                boolean elevatorTooHigh = ElevatorSubsystem.getInstance().getPosition() > ScoringConstants.SLOW_DRIVE_HEIGHT;
                 boolean topSpeed = leftTrigger.get();
                 boolean fineControl = rightTrigger.get();
 
@@ -233,15 +233,15 @@ public class RobotContainer {
             CommandGenerators.OuttakeAlgaeAndStopCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignCommand.Reef(1)
+            new PIDAlignCommand.Reef(1, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignCommand.Reef(-1)
+            new PIDAlignCommand.Reef(-1, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
-            new PIDAlignCommand.Reef(0)
+            new PIDAlignCommand.Reef(0, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignProcessor",
@@ -279,10 +279,10 @@ public class RobotContainer {
             SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
         );
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1));
-        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1));
+        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1, true));
+        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1, true));
         // TODO : Flip based on side
-        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0));
+        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0, false));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 

@@ -58,11 +58,16 @@ public final class Constants {
         public static final double MAX_HEIGHT = 0.75;
 
         public static final double IDLE_HEIGHT = L1_CORAL;
+        public static final double SLOW_DRIVE_HEIGHT = 0.4;
     }
     
     /** Sets of tags for O(1) lookup. */
     public static final class TagSets {
+        public static final Set<Integer> REEF_TAGS_NORMAL = Set.of(6, 7, 8, 17, 18, 19);
+        public static final Set<Integer> REEF_TAGS_FLIPPED = Set.of(9, 10, 11, 20, 21, 22);
         public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+        public static final Set<Integer> EMPTY_SET = Set.of();
+        
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
         public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
 

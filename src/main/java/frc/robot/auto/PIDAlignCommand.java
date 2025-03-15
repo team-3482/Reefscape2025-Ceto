@@ -34,7 +34,8 @@ public class PIDAlignCommand extends Command {
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
 
-    private final Function<Integer, Boolean> TAGS;
+    private final Function<Integer, Boolean> ALL_TAGS;
+    private final Function<Integer, Boolean> FLIPPED_TAGS;
     private final double PERPENDICULAR_DIST_TO_TAG;
     private final double PARALLEL_DIST_TO_TAG;
 
@@ -56,18 +57,21 @@ public class PIDAlignCommand extends Command {
     /**
      * Creates a new PIDAlignCommand.
      * @param name - The name of the sub-command.
-     * @param tags - A function that checks if a tag can be aligned to.
+     * @param normalTags - A function that checks if a tag can be aligned to.
+     * @param allTags - Tags, if any, that the robot should flip the direction for.
+     * This is useful for the driver.
      * @param direction - Line up to the left (-1), right (1), or center of the tag.
      * @param perpendicularDistanceToTag - The perpendicular distance from the tag to line up.
      * @param parallelDistanceToTag  - The parallel distance from the tag to line up.
      */
     private PIDAlignCommand(
-        String name, Function<Integer, Boolean> tags, int direction,
-        double perpendicularDistanceToTag, double parallelDistanceToTag
+        String name, Function<Integer, Boolean> normalTags, Function<Integer, Boolean> allTags,
+        int direction, double perpendicularDistanceToTag, double parallelDistanceToTag
     ) {
         setName(name);
 
-        this.TAGS = tags;
+        this.ALL_TAGS = normalTags;
+        this.FLIPPED_TAGS = allTags;
         this.PERPENDICULAR_DIST_TO_TAG = perpendicularDistanceToTag;
         this.PARALLEL_DIST_TO_TAG = parallelDistanceToTag * Math.signum(direction);
 
@@ -172,11 +176,12 @@ public class PIDAlignCommand extends Command {
      */
     private Optional<Pose2d> getTargetPose() {
         Optional<Pose2d> botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
+        int primaryInViewTag = VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag();
 
         if (
             botPose_TargetSpace.isEmpty() ||
             !VisionSubsystem.getInstance().recentVisionData() ||
-            !this.TAGS.apply(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
+            !this.ALL_TAGS.apply(primaryInViewTag)
         ) {
             return Optional.empty();
         }
@@ -185,7 +190,8 @@ public class PIDAlignCommand extends Command {
         double perpendicularChange = -(botPose_TargetSpace.get().getY() + this.PERPENDICULAR_DIST_TO_TAG);
         this.perpendicularError = perpendicularChange;
         /** Right (from tag perspective, left) is positive. */
-        double parallelChange = this.PARALLEL_DIST_TO_TAG - botPose_TargetSpace.get().getX();
+        double parallelChange = (this.FLIPPED_TAGS.apply(primaryInViewTag) ? -1 : 1) *
+            this.PARALLEL_DIST_TO_TAG - botPose_TargetSpace.get().getX();
         this.parallelError = parallelChange;
 
         Pose2d botPose = SwerveSubsystem.getInstance().getState().Pose;
@@ -225,11 +231,13 @@ public class PIDAlignCommand extends Command {
         /**
          * Creates a new AlignToReefCommand.
          * @param direction - Line up to the left (-1), right (1), or center of the tag.
+         * @param flipTags - Whether to use the set of tags that flip the direction.
          */
-        public Reef(int direction) {
+        public Reef(int direction, boolean flipTags) {
             super(
                 "AlignToReefCommand",
                 TagSets.REEF_TAGS::contains,
+                (flipTags ? TagSets.REEF_TAGS_FLIPPED::contains : TagSets.EMPTY_SET::contains),
                 direction,
                 direction == 0
                     ? AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG_ALGAE
@@ -250,6 +258,7 @@ public class PIDAlignCommand extends Command {
             super(
                 "AlignToProcessorCommand",
                 TagSets.PROCESSOR_TAGS::contains,
+                TagSets.EMPTY_SET::contains,
                 0, // Doesn't matter, because the parallel distance is 0.
                 AligningConstants.Processor.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Processor.PARALLEL_DIST_TO_TAG
