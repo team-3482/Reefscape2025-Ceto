@@ -32,6 +32,7 @@ import frc.robot.coral.OuttakeCoralCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ZeroElevatorCommand;
+import frc.robot.swerve.OscillateXDirectionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
@@ -275,9 +276,10 @@ public class RobotContainer {
          *     Right Trigger > 0.5 : Use FINE CONTROL for joysticks
          *                           Use ROBOT CENTRIC for POV 
          */
-        this.driverController.x().whileTrue(
-            SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
-        );
+        // this.driverController.x().whileTrue(
+        //     SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+        // );
+        this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
         this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1, true));
         this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1, true));
