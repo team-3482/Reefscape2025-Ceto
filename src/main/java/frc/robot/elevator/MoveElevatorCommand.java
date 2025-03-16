@@ -33,11 +33,11 @@ public class MoveElevatorCommand extends Command {
      * Creates a new ElevatorCommand.
      * @param position - The position the elevator will move to in meters.
      * @param slow - Whether to move the elevator slower.
-     * @param toggle - When the command ends, the elevator will return to the bottom position.
-     * It will also never end, such that it stays toggled.
+     * @param returnToIdle - When the command ends, the elevator will return to the bottom position.
+     * It will also make the command never end, such that it stays at the position until interrupted.
      */
-    public MoveElevatorCommand(double position, boolean slow, boolean toggle) {
-        this(position, () -> slow, toggle); // Still creates a supplier that supplies just the boolean
+    public MoveElevatorCommand(double position, boolean slow, boolean returnToIdle) {
+        this(position, () -> slow, returnToIdle); // Still creates a supplier that supplies just the boolean
     }
 
     // Called when the command is initially scheduled.
