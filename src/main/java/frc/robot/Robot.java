@@ -125,7 +125,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void teleopPeriodic() {
         if (
-            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 2 &&
+            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
             TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
         ) {
             CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
