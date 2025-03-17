@@ -326,7 +326,11 @@ public class RobotContainer {
         );
         this.operatorController.rightBumper()
             .whileTrue(new OuttakeCoralCommand())
-            .onFalse(new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false));
+            .onFalse(Commands.sequence(
+                new MoveElevatorCommand(Double.NaN, false, false),
+                Commands.waitSeconds(0.5),
+                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
+            ));
 
         this.operatorController.rightStick().onTrue(new AdjustCoralCommand());
     }

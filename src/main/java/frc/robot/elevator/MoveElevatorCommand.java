@@ -32,6 +32,7 @@ public class MoveElevatorCommand extends Command {
     /**
      * Creates a new ElevatorCommand.
      * @param position - The position the elevator will move to in meters.
+     * If Double.NaN, it will move to the current position.
      * @param slow - Whether to move the elevator slower.
      * @param returnToIdle - When the command ends, the elevator will return to the bottom position.
      * It will also make the command never end, such that it stays at the position until interrupted.
@@ -43,7 +44,10 @@ public class MoveElevatorCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        ElevatorSubsystem.getInstance().motionMagicPosition(this.position, true, this.slowSupplier.get());
+        ElevatorSubsystem.getInstance().motionMagicPosition(
+            Double.isNaN(this.position) ? ElevatorSubsystem.getInstance().getPosition()
+                : this.position, true, this.slowSupplier.get()
+        );
     }
 
 
@@ -66,6 +70,6 @@ public class MoveElevatorCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !this.returnToIdle && ElevatorSubsystem.getInstance().withinTolerance(this.position);
+        return !this.returnToIdle && (Double.isNaN(this.position) || ElevatorSubsystem.getInstance().withinTolerance(this.position));
     }
 }
