@@ -32,6 +32,7 @@ import frc.robot.coral.OuttakeCoralCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ZeroElevatorCommand;
+import frc.robot.swerve.OscillateXDirectionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
@@ -112,30 +113,28 @@ public class RobotContainer {
         // Drivetrain will execute this command periodically
         Drivetrain.setDefaultCommand(
             Drivetrain.applyRequest(() -> {
+                boolean elevatorTooHigh = ElevatorSubsystem.getInstance().getPosition() > ScoringConstants.SLOW_DRIVE_HEIGHT;
                 boolean topSpeed = leftTrigger.get();
                 boolean fineControl = rightTrigger.get();
+
+                double linearSpeed = elevatorTooHigh
+                    ? (TunerConstants.kElevatorTooHighSpeed.in(Units.MetersPerSecond))
+                    : (topSpeed ? MaxSpeed : LesserMaxSpeed);
+                double angularSpeed = elevatorTooHigh
+                    ? (TunerConstants.kElevatorTooHighAngularSpeed.in(Units.MetersPerSecond))
+                    : (topSpeed ? NormalAngularSpeed : FastAngularSpeed);
+                double fineControlMult = fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1;
                 
                 return fieldCentricDrive_withDeadband
                     // Drive forward with negative Y (forward)
-                    .withVelocityX(
-                        -driverController.getLeftY()
-                        * (topSpeed ? MaxSpeed : LesserMaxSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
+                    .withVelocityX(-driverController.getLeftY() * linearSpeed * fineControlMult)
                     // Drive left with negative X (left)
-                    .withVelocityY(
-                        -driverController.getLeftX()
-                        * (topSpeed ? MaxSpeed : LesserMaxSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
+                    .withVelocityY(-driverController.getLeftX() * linearSpeed * fineControlMult)
                     // Drive counterclockwise with negative X (left)
-                    .withRotationalRate(
-                        -driverController.getRightX()
-                        * (topSpeed ? NormalAngularSpeed : FastAngularSpeed)
-                        * (fineControl ? ControllerConstants.FINE_CONTROL_MULT : 1)
-                    )
-                    .withDeadband(ControllerConstants.DEADBAND * (fineControl ? LesserMaxSpeed : MaxSpeed))
-                    .withRotationalDeadband(ControllerConstants.DEADBAND * (fineControl ? NormalAngularSpeed : FastAngularSpeed));
+                    .withRotationalRate(-driverController.getRightX() * angularSpeed * fineControlMult)
+
+                    .withDeadband(ControllerConstants.DEADBAND * linearSpeed)
+                    .withRotationalDeadband(ControllerConstants.DEADBAND * angularSpeed);
             }).ignoringDisable(true)
         );
         
@@ -235,15 +234,15 @@ public class RobotContainer {
             CommandGenerators.OuttakeAlgaeAndStopCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignCommand.Reef(1)
+            new PIDAlignCommand.Reef(1, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignCommand.Reef(-1)
+            new PIDAlignCommand.Reef(-1, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
-            new PIDAlignCommand.Reef(0)
+            new PIDAlignCommand.Reef(0, false)
                 .withTimeout(3)
         );
         NamedCommands.registerCommand("PIDAlignProcessor",
@@ -277,13 +276,14 @@ public class RobotContainer {
          *     Right Trigger > 0.5 : Use FINE CONTROL for joysticks
          *                           Use ROBOT CENTRIC for POV 
          */
-        this.driverController.x().whileTrue(
-            SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
-        );
+        // this.driverController.x().whileTrue(
+        //     SwerveSubsystem.getInstance().applyRequest(() -> new SwerveRequest.SwerveDriveBrake())
+        // );
+        this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1));
-        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1));
-        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0));
+        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1, true));
+        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1, true));
+        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0, false));
         this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 
@@ -318,8 +318,20 @@ public class RobotContainer {
             .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
 
         // Coral
-        this.operatorController.leftBumper().whileTrue(new IntakeCoralCommand());
-        this.operatorController.rightBumper().whileTrue(new OuttakeCoralCommand());
+        this.operatorController.leftBumper().whileTrue(
+            Commands.parallel(
+                new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
+                new IntakeCoralCommand()
+            )
+        );
+        this.operatorController.rightBumper()
+            .whileTrue(new OuttakeCoralCommand())
+            .onFalse(Commands.sequence(
+                new MoveElevatorCommand(Double.NaN, false, false),
+                Commands.waitSeconds(0.5),
+                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
+            ));
+
         this.operatorController.rightStick().onTrue(new AdjustCoralCommand());
     }
 

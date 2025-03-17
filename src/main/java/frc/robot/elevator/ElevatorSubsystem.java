@@ -111,6 +111,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     private boolean lastLowerLimit = false;
     private double lastRotorVelocity = Double.NaN;
 
+    private double lastSetGoal;
+
     /** Creates a new ElevatorSubsystem. */
     private ElevatorSubsystem() {
         super("ElevatorSubsystem");
@@ -129,6 +131,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             // because it is using the last reset
             setPosition(ScoringConstants.BOTTOM_HEIGHT);
         }
+
+        this.lastSetGoal = getPosition();
     }
 
     @Override
@@ -326,6 +330,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.MAX_HEIGHT);
         }
 
+        this.lastSetGoal = position;
+
         MotionMagicVoltage control = motionMagicVoltage
             // .withSlot(0)
             .withPosition(this.metersToRotation(position))
@@ -396,6 +402,14 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public boolean atLowerLimit() {
         return this.lowerLimitSwitch.get();
+    }
+
+    /**
+     * Gets the latest set goal.
+     * @return The latest set goal.
+     */
+    public double getLastSetGoal() {
+        return this.lastSetGoal;
     }
 
     /**

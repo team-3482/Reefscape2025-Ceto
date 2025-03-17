@@ -76,8 +76,10 @@ public class TunerConstants {
     // This needs to be tuned to your individual robot
     public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(4.6);
     public static final LinearVelocity kTopSpeed = MetersPerSecond.of(3.8);
+    public static final LinearVelocity kElevatorTooHighSpeed = MetersPerSecond.of(2.0);
     public static final AngularVelocity kAngularSpeedNormal = RadiansPerSecond.of(1 * Math.PI);
     public static final AngularVelocity kAngularSpeedFast = RadiansPerSecond.of(2 * Math.PI);
+    public static final LinearVelocity kElevatorTooHighAngularSpeed = MetersPerSecond.of(1.5 * Math.PI);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot

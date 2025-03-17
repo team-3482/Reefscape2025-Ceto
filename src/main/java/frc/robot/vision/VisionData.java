@@ -62,7 +62,9 @@ public class VisionData {
      */
     public boolean canTrustRotation() {
         if (this.canTrustRotation == null) {
-            this.canTrustRotation = this.MegaTag != null && this.MegaTag2 != null
+            this.canTrustRotation = 
+                this.MegaTag != null
+                && this.MegaTag2 != null
                 && ((this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
                 || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= 3)
                 || (DriverStation.isDisabled() && bargeMegaTag())); // Important for pre-match positioning updates
@@ -76,9 +78,12 @@ public class VisionData {
      */
     public boolean canTrustPosition() {
         if (this.canTrustPosition == null) {
-            this.canTrustPosition = this.MegaTag2 != null
-                && this.MegaTag2.tagCount > 0
-                && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE;
+            this.canTrustPosition =
+                this.MegaTag2 != null
+                && (
+                    (this.MegaTag2.tagCount > 0 && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE)
+                    || (DriverStation.isDisabled() && bargeMegaTag())
+                );
         }
         return this.canTrustPosition;
     }

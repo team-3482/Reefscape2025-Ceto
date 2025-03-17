@@ -21,7 +21,7 @@ public class IntakeCoralCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        CoralSubsystem.getInstance().intake();
+        CoralSubsystem.getInstance().intake(false);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -29,7 +29,7 @@ public class IntakeCoralCommand extends Command {
     public void execute() {
         // Checks whether the system has a note and stops if it does
         if (CoralSubsystem.getInstance().hasCoral_frontLaser()) {
-            CoralSubsystem.getInstance().slowIntake(1);
+            CoralSubsystem.getInstance().intake(true);;
         }
     }
 

@@ -64,11 +64,11 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 160;
+        currentLimitsConfigs.StatorCurrentLimit = 180;
         currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitsConfigs.SupplyCurrentLimit = 45;
+        currentLimitsConfigs.SupplyCurrentLimit = 60;
         currentLimitsConfigs.SupplyCurrentLowerTime = 0.75;
-        currentLimitsConfigs.SupplyCurrentLowerLimit = 15;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 25;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.rightMotor.getConfigurator().apply(configuration);

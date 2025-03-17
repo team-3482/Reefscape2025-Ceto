@@ -128,36 +128,59 @@ public class CoralSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the speed of the motors to the intake speed
+     * Method that sets the motor voltages and the subsystem state.
+     * @param voltage - Voltage to set.
+     * @param state - The state for this voltage.
      */
-    public void intake() {
-        this.state = SubsystemStates.INTAKING;
-        rightMotor.setVoltage(CoralConstants.INTAKE_VOLTAGE);
-    }
-
-    /**
-     * Sets the speed of the motors to the slow intake speed
-     * @param direction - The direction of the slow intake (- is backwards)
-     */
-    public void slowIntake(int direction) {
-        this.state = SubsystemStates.SLOW_INTAKING;
-        this.rightMotor.setVoltage(Math.signum(direction) * CoralConstants.SLOW_INTAKE_VOLTAGE);
-    }
-
-    /**
-     * Sets the speed of the motors to the outtake speed
-     */
-    public void outtake() {
-        this.state = SubsystemStates.OUTTAKING;
-        rightMotor.setVoltage(CoralConstants.OUTTAKE_VOLTAGE);
+    private void setVoltageAndState(double voltage, SubsystemStates state) {
+        this.rightMotor.setVoltage(voltage);
+        this.state = state;
     }
 
     /**
      * Stops the motors immediately
      */
     public void stop() {
-        this.state = SubsystemStates.STOPPED;
-        rightMotor.setVoltage(0);
+        setVoltageAndState(0, SubsystemStates.STOPPED);
+    }
+
+    /**
+     * Sets the speed of the motors to the intake speed.
+     * @param slow - Slow intake.
+     * @param forward - Whether to intake in the forward direction.
+     */
+    private void intake(boolean slow, boolean forward) {
+        setVoltageAndState(
+            (slow ? CoralConstants.SLOW_VOLTAGE : CoralConstants.NORMAL_VOLTAGE) * (forward ? 1 : -1),
+            (slow ? SubsystemStates.SLOW_INTAKING : SubsystemStates.INTAKING)
+        );
+    }
+
+    /**
+     * Sets the speed of the motors to the intake speed
+     * @param slow - Slow intake.
+     */
+    public void intake(boolean slow) {
+        intake(slow, true);
+    }
+
+    /**
+     * Sets the speed of the motors to the intake speed, in reverse.
+     * @param slow - Slow intake.
+     */
+    public void reverseIntake(boolean slow) {
+        intake(slow, false);
+    }
+
+    /**
+     * Sets the speed of the motors to the outtake speed
+     * @boolean slow - Slow outtake.
+     */
+    public void outtake(boolean slow) {
+        setVoltageAndState(
+            (slow ? CoralConstants.SLOW_VOLTAGE : CoralConstants.NORMAL_VOLTAGE),
+            (slow ? SubsystemStates.SLOW_OUTTAKING : SubsystemStates.OUTTAKING)
+        );
     }
 
     /**
