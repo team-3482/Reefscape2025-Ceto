@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8663656521905212,
-        "y": 5.695691215021685
+        "x": 2.268938657376148,
+        "y": 6.336447431940376
       },
       "isLocked": false,
       "linkedName": "Coral Left"
     },
     {
       "anchor": {
-        "x": 3.8240778688524584,
-        "y": 5.229764344262294
+        "x": 3.7413955479452055,
+        "y": 5.324721746575342
       },
       "prevControl": {
-        "x": 3.645890771731645,
-        "y": 5.893072336990554
+        "x": 3.3659925349319737,
+        "y": 5.608379880284792
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "MoveElevatorToL3Coral",
-      "waypointRelativePos": 0.6488444010416664,
+      "waypointRelativePos": 0.5474833808167165,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -62,7 +62,7 @@
     "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "CoralToReef",
+  "folder": "IntakeToReef",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": -55.0

@@ -3,14 +3,14 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "CoralToReef",
-    "ReefToCoral",
+    "IntakeToReef",
     "End",
+    "ReefToIntake",
     "Start"
   ],
   "autoFolders": [
-    "All L3",
-    "2 L3 & 1 Algae"
+    "Drop Algae",
+    "Hold Algae"
   ],
   "defaultMaxVel": 3.5,
   "defaultMaxAccel": 3.0,
@@ -38,6 +38,7 @@
   "bumperOffsetY": 0.0,
   "robotFeatures": [
     "{\"name\":\"Battery\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.25,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.15},\"borderRadius\":0.01,\"strokeWidth\":0.01,\"filled\":true}}",
-    "{\"name\":\"Elevator\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.125,\"y\":0.0},\"size\":{\"width\":0.5,\"length\":0.05},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
+    "{\"name\":\"Elevator\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.125,\"y\":0.0},\"size\":{\"width\":0.5,\"length\":0.05},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}",
+    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.433,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.2},\"borderRadius\":0.025,\"strokeWidth\":0.015,\"filled\":false}}"
   ]
 }

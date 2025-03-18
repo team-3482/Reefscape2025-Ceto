@@ -39,7 +39,7 @@ public final class LimelightConstants {
      * {@code xMin, xMax, yMin, yMax}.
      */
     public static final double[] DEFAULT_TOP_CROP = new double[]{ -0.75, 0.75, -0.8, 0.9 };
-    public static final double[] DEFAULT_BOTTTOM_CROP = new double[]{ -0.85, 0.85, -0.7, 0.8 };
+    public static final double[] DEFAULT_BOTTTOM_CROP = new double[]{ -1, 1, -1, 1 };
     
     /** Horizontal resolution of limelight in pixels. */
     public static final double RES_X = 1280;

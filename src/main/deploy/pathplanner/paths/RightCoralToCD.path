@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.653635963083687,
-        "y": 2.747363458914494
+        "x": 2.8545716194273654,
+        "y": 2.1052190723565616
       },
       "isLocked": false,
       "linkedName": "Coral Right"
     },
     {
       "anchor": {
-        "x": 3.732384920785325,
-        "y": 2.6864167203608247
+        "x": 3.752151639344262,
+        "y": 2.748309426229507
       },
       "prevControl": {
-        "x": 3.542851372991207,
-        "y": 2.0440231295482114
+        "x": 3.520985653665589,
+        "y": 2.5994157634946937
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
     "rotation": 59.99999999999999
   },
   "reversed": false,
-  "folder": "CoralToReef",
+  "folder": "IntakeToReef",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 55.0

@@ -69,7 +69,7 @@ public final class PhysicalConstants {
             public static final double kS = 0.1;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 32;
+            public static final double kP = 28;
             public static final double kI = 0;
             public static final double kD = 0;
         }
@@ -79,7 +79,8 @@ public final class PhysicalConstants {
         public static final int RIGHT_MOTOR_ID = 41;
         public static final int LEFT_MOTOR_ID = 40;
 
-        public static final double INTAKE_OUTTAKE_VOLTAGE = 3;
+        public static final double INTAKE_VOLTAGE = 5;
+        public static final double OUTTAKE_VOLTAGE = 3;
         public static final double HOLDING_VOLTAGE = 0.45;
 
         public static final double MECHANISM_RATIO = 1;
@@ -92,9 +93,8 @@ public final class PhysicalConstants {
         public static final int FRONT_LASER_ID = 3;
         public static final int BACK_LASER_ID = 4;
 
-        public static final double INTAKE_VOLTAGE = 2;
-        public static final double SLOW_INTAKE_VOLTAGE = 0.75;
-        public static final double OUTTAKE_VOLTAGE = 2;
+        public static final double NORMAL_VOLTAGE = 2;
+        public static final double SLOW_VOLTAGE = 0.75;
         
         public static final double MECHANISM_RATIO = 1;
     }

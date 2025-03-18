@@ -29,22 +29,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> implements Subsystem {
-    // Thread-safe singleton design pattern.
-    private static volatile SwerveSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class SwerveSubsystemHolder {
+        private static final SwerveSubsystem INSTANCE = new SwerveSubsystem();
+    }
+    
     public static SwerveSubsystem getInstance() {
-        SwerveSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new SwerveSubsystem();
-                }
-            }
-        }
-        return instance;
+        return SwerveSubsystemHolder.INSTANCE;
     }
     
     private static final double kSimLoopPeriod = 0.005; // 5 ms

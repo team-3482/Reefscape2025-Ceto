@@ -8,30 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7754821187894847,
-        "y": 1.0053299741812898
+        "x": 2.865061475409836,
+        "y": 1.4656249999999988
       },
       "isLocked": false,
       "linkedName": "Reef CD"
     },
     {
       "anchor": {
-        "x": 7.032020547938373,
-        "y": 6.196211472609316
+        "x": 1.1177448927380231,
+        "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 7.302482876705495,
-        "y": 1.748608732883289
+        "x": 2.817110655737705,
+        "y": 2.1249487704918035
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral Right"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.18837675350701322,
+      "waypointRelativePos": 0.03141551906779661,
       "rotationDegrees": 59.99999999999999
+    },
+    {
+      "waypointRelativePos": 0.5313874450219901,
+      "rotationDegrees": 5.0
     }
   ],
   "constraintZones": [],
@@ -39,12 +43,23 @@
   "eventMarkers": [
     {
       "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.10256618923611094,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "MoveElevatorToBottom"
+        }
+      }
+    },
+    {
+      "name": "OuttakeAlgaeAndStop",
+      "waypointRelativePos": 0.5455840455840454,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "OuttakeAlgaeAndStop"
         }
       }
     }
@@ -59,12 +74,12 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 55.0
   },
   "reversed": false,
-  "folder": "End",
+  "folder": "ReefToIntake",
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true

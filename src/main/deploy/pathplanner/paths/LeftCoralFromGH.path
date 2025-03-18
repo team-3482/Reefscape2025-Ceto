@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.0,
-        "y": 4.0
+        "x": 5.95,
+        "y": 4.0307880602384865
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.9911142880154635,
-        "y": 6.483988875833838
+        "x": 6.123190789473685,
+        "y": 6.798007041529605
       },
       "isLocked": false,
       "linkedName": "Reef GH"
@@ -57,7 +57,7 @@
     "rotation": -55.0
   },
   "reversed": false,
-  "folder": "ReefToCoral",
+  "folder": "ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 180.0

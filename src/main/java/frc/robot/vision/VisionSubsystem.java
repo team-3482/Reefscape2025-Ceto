@@ -4,9 +4,9 @@
 
 package frc.robot.vision;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,10 +29,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.LimelightConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** 
@@ -40,39 +43,30 @@ import org.littletonrobotics.junction.Logger;
  * position updates to the internal odometer.
  */
 public class VisionSubsystem extends SubsystemBase {
-    // Thread-safe singleton design pattern.
-    private static volatile VisionSubsystem instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class VisionSubsystemHolder {
+        private static final VisionSubsystem INSTANCE = new VisionSubsystem();
+    }
+    
     public static VisionSubsystem getInstance() {
-        VisionSubsystem result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new VisionSubsystem();
-                }
-            }
-        }
-        return instance;
+        return VisionSubsystemHolder.INSTANCE;
     }
 
     /** Used to run vision processing on a separate thread. */
     private final Notifier notifier;
 
     /** Latest Limelight data. May contain faulty data unsuitable for odometry. */
-    private volatile VisionData[] limelightDatas = new VisionData[2];
+    private VisionData[] limelightDatas = new VisionData[2];
     /** Last heartbeat of the front LL (updated every frame) */
-    private volatile long lastHeartbeatBottomLL = 0;
+    private long lastHeartbeatBottomLL = 0;
     /** Last heartbeat of the back LL (updated every frame) */
-    private volatile long lastHeartbeatToptLL = 0;
+    private long lastHeartbeatToptLL = 0;
     /**
      * Timer used to track when the cameras last got data.
      * @apiNote It would probably be better to track distance traveled instead,
      * but this was the quickest solution.
      */
-    private volatile Timer lastDataTimer;
+    private final Timer lastDataTimer = new Timer();
 
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -80,7 +74,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(5, 3)
         .withPosition(1, 2);
-    private volatile GenericEntry shuffleboardProcessorInView = shuffleboardLayout
+    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
         .add("Processor Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of(
@@ -90,7 +84,7 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(3, 1)
         .withPosition(0, 1)
         .getEntry();
-    private volatile GenericEntry shuffleboardReefInView = shuffleboardLayout
+    private GenericEntry shuffleboardReefInView = shuffleboardLayout
         .add("Reef Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
         .withProperties(Map.of(
@@ -100,6 +94,10 @@ public class VisionSubsystem extends SubsystemBase {
         .withSize(3, 1)
         .withPosition(0, 2)
         .getEntry();
+    
+    private boolean lastReef = false;
+    private boolean lastProcessor = false;
+    private boolean lastCanAlign = false;
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -109,11 +107,11 @@ public class VisionSubsystem extends SubsystemBase {
             // Shuffleboard camera feeds.
             HttpCamera leftLLCamera = new HttpCamera(
                 LimelightConstants.BOTTOM_LL,
-                "http://" + LimelightConstants.BOTTOM_LL + ".local:5800/stream.mjpg"
+                "http://" + "10.34.82.12" + ":5800/stream.mjpg"
             );
             HttpCamera rightLLCamera = new HttpCamera(
                 LimelightConstants.TOP_LL,
-                "http://" + LimelightConstants.TOP_LL + ".local:5800/stream.mjpg"
+                "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -133,7 +131,6 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.TOP_LL, LimelightConstants.ALL_TAG_IDS);
 
-        this.lastDataTimer = new Timer();
         this.lastDataTimer.start();
 
         this.notifier = new Notifier(this::notifierLoop);
@@ -153,25 +150,27 @@ public class VisionSubsystem extends SubsystemBase {
         processor = reef = canAlign = false;
 
         if (recentVisionData()) {
-            ArrayList<Integer> tagsInView = getTagsInView_MegaTag();
+            int primaryTag = getPrimaryTagInView_Bottom_MegaTag();
             
-            if (tagsInView.stream().anyMatch((Integer id) -> (6 <= id && id <= 11) || (17 <= id && id <= 22))) {
-                reef = true;
-            }
-            if (tagsInView.stream().anyMatch((Integer id) -> id == 3 || id == 16)) {
-                processor = true;
-            }
+            reef = TagSets.REEF_TAGS.contains(primaryTag);
+            processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
             canAlign = reef || processor;
-
-            
         }
         
-        this.shuffleboardProcessorInView.setBoolean(processor);
-        this.shuffleboardReefInView.setBoolean(reef);
-
-        Logger.recordOutput("Vision/ProcessorInView", processor);
-        Logger.recordOutput("Vision/ReefInView", reef);
-        Logger.recordOutput("Vision/canAlign", processor || reef);
+        if (reef != this.lastReef) {
+            this.shuffleboardReefInView.setBoolean(reef);
+            Logger.recordOutput("Vision/ReefInView", reef);
+            this.lastReef = reef;
+        }
+        if (processor != this.lastProcessor) {
+            this.shuffleboardProcessorInView.setBoolean(processor);
+            Logger.recordOutput("Vision/ProcessorInView", processor);
+            this.lastProcessor = processor;
+        }
+        if (canAlign != this.lastCanAlign) {
+            Logger.recordOutput("Vision/canAlign", processor || reef);
+            this.lastCanAlign = canAlign;
+        }
         
         if (canAlign && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
@@ -181,18 +180,24 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
-    private synchronized void notifierLoop() {
+    private void notifierLoop() {
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
-            if (data.optimized) continue;
+            if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
+
+            if (
+                DriverStation.isEnabled()
+                && data.MegaTag2.rawFiducials.length > 0
+                && TagSets.BARGE_TAGS.contains(data.MegaTag2.rawFiducials[0].id)
+            ) continue;
             
-            if (data.canTrustRotation) {
+            if (data.canTrustRotation()) {
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? 1 : 0.5
+                    recentVisionData() ? 1 : 0.4
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -200,7 +205,7 @@ public class VisionSubsystem extends SubsystemBase {
                 );
             }
 
-            if (data.canTrustPosition) {
+            if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     recentVisionData() ? 0.7 : 0.1,
@@ -214,8 +219,8 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             hasRecentVisionData(
-                data.canTrustPosition ? data.MegaTag2.pose.getTranslation() : null,
-                data.canTrustRotation ? data.MegaTag.pose.getRotation() : null
+                data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
+                data.canTrustRotation() ? data.MegaTag.pose.getRotation() : null
             );
         }
         // This method is suprprisingly efficient, generally below 1 ms.
@@ -398,24 +403,13 @@ public class VisionSubsystem extends SubsystemBase {
      * @param limelight - The limelight to set the crops for.
      */
     private void setDefaultCrops(String limelight) {
-        if (limelight.equals(LimelightConstants.TOP_LL)) {
-            LimelightHelpers.setCropWindow(
-                limelight,
-                LimelightConstants.DEFAULT_TOP_CROP[0],
-                LimelightConstants.DEFAULT_TOP_CROP[1],
-                LimelightConstants.DEFAULT_TOP_CROP[2],
-                LimelightConstants.DEFAULT_TOP_CROP[3]
-            );
-        }
-        else if (limelight.equals(LimelightConstants.BOTTOM_LL)) {
-            LimelightHelpers.setCropWindow(
-                limelight,
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[1],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[2],
-                LimelightConstants.DEFAULT_BOTTTOM_CROP[3]
-            );
-        }
+        double[] cropValues = limelight.equals(LimelightConstants.TOP_LL)
+            ? LimelightConstants.DEFAULT_TOP_CROP
+            : LimelightConstants.DEFAULT_BOTTTOM_CROP;
+
+        LimelightHelpers.setCropWindow(
+            limelight, cropValues[0], cropValues[1], cropValues[2], cropValues[3]
+        );
     }
 
     /**
@@ -452,62 +446,42 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the robot position according to the Limelight in target-space (the target is at the origin);
+     * Gets the robot position according to the Limelight in target-space (the target is at the origin).
      * @return The robot position.
      * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom one.
      * Returns {@code null} if there is no tags in view for either Limelight.
      */
-    public Pose2d getEstimatedPosition_TargetSpace() {
-        /* [ x, z, y, pitch, yaw, roll ] (meters, degrees) */
-        double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
-
-        Pose2d botPose = Pose2d.kZero;
-
-        if (poseArray.length != 0) {
-            botPose = new Pose2d(
-                new Translation2d(poseArray[0], poseArray[2]),
-                Rotation2d.fromDegrees(poseArray[4])
-            );
-        }
-        
-        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
-            return botPose;
-        }
-
-        poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.TOP_LL);
-
-        if (poseArray.length != 0) {
-            botPose = new Pose2d(
-                new Translation2d(poseArray[0], poseArray[2]),
-                Rotation2d.fromDegrees(poseArray[4])
-            );
-        }
-
-        if (botPose != null && !botPose.equals(Pose2d.kZero)) {
-            return botPose;
-        }
-
-        return null;
+    public Optional<Pose2d> getEstimatedPosition_TargetSpace() {
+        return getEstimatedPosition_TargetSpace(LimelightConstants.BOTTOM_LL)
+            .or(() -> getEstimatedPosition_TargetSpace(LimelightConstants.TOP_LL));
     }
 
     /**
-     * Get all of the tag IDs in view of MegaTag (not MegaTag2) from the latest vision data.
-     * @return The tag IDs.
-     * @apiNote Gets it for both limelights, combined.
+     * Gets the robot position according to the Limelight in target-space (the target is at the origin).
+     * @return The robot position.
+     * Returns {@code null} if there is no tags in view for the limelight.
      */
-    public ArrayList<Integer> getTagsInView_MegaTag() {
-        ArrayList<Integer> tags = new ArrayList<Integer>();
+    private Optional<Pose2d> getEstimatedPosition_TargetSpace(String limelight) {
+        /* [ x, z, y, pitch, yaw, roll ] (meters, degrees) */
+        double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
 
-        for (int i = 0; i < this.limelightDatas.length; i++) {
-            if (this.limelightDatas[i] != null && this.limelightDatas[i].MegaTag != null) {
-                for (LimelightHelpers.RawFiducial fiducial :
-                    this.limelightDatas[i].MegaTag.rawFiducials
-                ) {
-                    tags.add(fiducial.id);
-                }
-            }
+        // 0, 0, 0
+        if (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0) {
+            return Optional.empty();
         }
 
-        return tags;
+        return Optional.of(new Pose2d(
+            new Translation2d(poseArray[0], poseArray[2]),
+                Rotation2d.fromDegrees(poseArray[4])
+        ));
+    }
+
+    /**
+     * Gets the primary tag in view of the bottom limelight.
+     * @return The tag ID.
+     */
+    public int getPrimaryTagInView_Bottom_MegaTag() {
+        return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
+            .getEntry("tid").getInteger(0);
     }
 }

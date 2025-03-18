@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.236430696634324,
-        "y": 2.6677917961643427
+        "x": 5.199187500000001,
+        "y": 2.745312499999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.3915598311569823,
-        "y": 1.7065830582319657
+        "x": 3.354316634522659,
+        "y": 1.784103762067622
       },
       "isLocked": false,
       "linkedName": "Reef EF"
@@ -62,7 +62,7 @@
     "rotation": 55.0
   },
   "reversed": false,
-  "folder": "ReefToCoral",
+  "folder": "ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 119.99999999999999

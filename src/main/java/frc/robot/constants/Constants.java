@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import java.util.Set;
+
 /** Constants used throughout the code that are not categorized in other constants files. */
 public final class Constants {
     /** Tab names in Elastic. */
@@ -31,9 +33,11 @@ public final class Constants {
     public static final class AligningConstants {
         public static final class Reef {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG = 0.42;
+            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.48;
+            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
+            public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
             /** How far (in meters) the robot should be parallel to the tag to score. */
-            public static final double PARALLEL_DIST_TO_TAG = 0.2;
+            public static final double PARALLEL_DIST_TO_TAG = 0.185;
         }
 
         public static final class Processor {
@@ -47,11 +51,31 @@ public final class Constants {
     /** Constants for elevator heights */
     public static final class ScoringConstants {
         /* Heights in elevator meters for scoring at these heights. */
-        public static final double L1_CORAL = 0.21;
-        public static final double L2_CORAL = 0.33;
+        public static final double L1_CORAL = 0.235;
+        public static final double L2_CORAL = 0.34;
         public static final double L2_ALGAE = 0.63;
         public static final double L3_CORAL = 0.74;
         public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
-        public static final double MAX_HEIGHT = 0.76;
+        public static final double MAX_HEIGHT = 0.75;
+
+        public static final double IDLE_HEIGHT = L1_CORAL;
+        public static final double SLOW_DRIVE_HEIGHT = 0.4;
+    }
+    
+    /** Sets of tags for O(1) lookup. */
+    public static final class TagSets {
+        public static final Set<Integer> REEF_TAGS_NORMAL = Set.of(6, 7, 8, 17, 18, 19);
+        public static final Set<Integer> REEF_TAGS_FLIPPED = Set.of(9, 10, 11, 20, 21, 22);
+        public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
+        public static final Set<Integer> EMPTY_SET = Set.of();
+        
+        public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
+        public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
+
+    }
+
+    /** States used with Algae and Coral subsystems, reduces overhead. */
+    public static enum SubsystemStates {
+        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING, SLOW_OUTTAKING
     }
 }

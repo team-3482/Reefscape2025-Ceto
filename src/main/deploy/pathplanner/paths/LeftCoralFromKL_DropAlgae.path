@@ -3,35 +3,39 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.752151639344262,
-        "y": 2.748309426229507
+        "x": 3.7413955479452055,
+        "y": 5.324721746575342
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7754821187894847,
-        "y": 1.0053299741812898
+        "x": 2.9067332181584735,
+        "y": 6.542917716627427
       },
       "isLocked": false,
-      "linkedName": "Reef CD"
+      "linkedName": "Reef KL"
     },
     {
       "anchor": {
-        "x": 7.032020547938373,
-        "y": 6.196211472609316
+        "x": 1.166,
+        "y": 7.093
       },
       "prevControl": {
-        "x": 7.302482876705495,
-        "y": 1.748608732883289
+        "x": 3.173604107839513,
+        "y": 5.538264405434474
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Coral Left"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.18837675350701322,
-      "rotationDegrees": 59.99999999999999
+      "waypointRelativePos": 0.05878133827683616,
+      "rotationDegrees": -59.99999999999999
+    },
+    {
+      "waypointRelativePos": 0.6001599360255894,
+      "rotationDegrees": -10.0
     }
   ],
   "constraintZones": [],
@@ -39,12 +43,23 @@
   "eventMarkers": [
     {
       "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.09934714988425926,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "MoveElevatorToBottom"
+        }
+      }
+    },
+    {
+      "name": "OuttakeAlgaeAndStop",
+      "waypointRelativePos": 0.5968660968660977,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "OuttakeAlgaeAndStop"
         }
       }
     }
@@ -59,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -55.0
   },
   "reversed": false,
-  "folder": "End",
+  "folder": "ReefToIntake",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 59.99999999999999
+    "velocity": 0.0,
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

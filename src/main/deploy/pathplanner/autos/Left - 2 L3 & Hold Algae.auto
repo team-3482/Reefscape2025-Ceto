@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartMiddleToKL"
+                  "pathName": "StartLeftToKL"
                 }
               },
               {
@@ -22,6 +22,12 @@
                       "type": "named",
                       "data": {
                         "name": "ReleaseAlgaeAndZeroElevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
                       }
                     },
                     {
@@ -49,15 +55,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "LeftCoralFromKL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftCoralFromKL"
+                }
+              }
+            ]
           }
         },
         {
@@ -105,7 +118,7 @@
       ]
     }
   },
-  "resetOdom": true,
-  "folder": "2 L3 & 1 Algae",
+  "resetOdom": false,
+  "folder": "Hold Algae",
   "choreoAuto": false
 }

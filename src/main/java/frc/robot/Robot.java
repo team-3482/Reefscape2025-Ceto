@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
@@ -14,16 +15,21 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.LimelightConstants;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
+import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.vision.VisionSubsystem;
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -31,8 +37,8 @@ public class Robot extends LoggedRobot {
     @SuppressWarnings({ "resource", "unused" })
     public Robot() {
         for (int port = 5800; port <= 5809; port++) {
-            PortForwarder.add(port, LimelightConstants.BOTTOM_LL + ".local", port);
-            PortForwarder.add(port + 10, LimelightConstants.TOP_LL + ".local", port);
+            PortForwarder.add(port, "10.34.82.12", port);
+            PortForwarder.add(port + 10, "10.34.82.13", port);
         }
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -63,8 +69,11 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
+
+        RobotContainer.getInstance().getAutonomousCommand();
+        
         // Blink like the RSL when disabled
-        LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
+        LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
     @Override
@@ -76,7 +85,7 @@ public class Robot extends LoggedRobot {
     public void disabledInit() {
         SignalLogger.stop();
         // Blink like the RSL when disabled
-        LEDSubsystem.getInstance().blinkColor(StatusColors.RSL);
+        LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
     @Override
@@ -96,7 +105,6 @@ public class Robot extends LoggedRobot {
 
         if (this.auton != null) {
             this.auton.schedule();
-            LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
         else {
             System.err.println("No auton command found.");
@@ -116,10 +124,22 @@ public class Robot extends LoggedRobot {
             this.auton.cancel();
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
-    } 
+    }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        if (
+            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
+            TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
+        ) {
+            CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
+            SwerveSubsystem.getInstance().setControl(
+                new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
+                    new ChassisSpeeds(-2, 0, 0)
+                )
+            );
+        }
+    }
 
     @Override
     public void teleopExit() {}

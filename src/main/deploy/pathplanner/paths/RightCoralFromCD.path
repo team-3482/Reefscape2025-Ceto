@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.732384920785325,
-        "y": 2.6864167203608247
+        "x": 3.752151639344262,
+        "y": 2.748309426229507
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.551703870415912,
-        "y": 2.036048087939637
+        "x": 2.9267306510085485,
+        "y": 2.198302587036906
       },
       "isLocked": false,
       "linkedName": "Reef CD"
@@ -20,8 +20,8 @@
         "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 2.842387208660325,
-        "y": 2.9549759854446065
+        "x": 3.2031938337538555,
+        "y": 2.340525025632295
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
     "rotation": 55.0
   },
   "reversed": false,
-  "folder": "ReefToCoral",
+  "folder": "ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 59.99999999999999

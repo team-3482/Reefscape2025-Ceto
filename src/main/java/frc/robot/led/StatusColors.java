@@ -2,6 +2,9 @@ package frc.robot.led;
 
 import static edu.wpi.first.units.Units.Percent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -25,6 +28,15 @@ public enum StatusColors {
     /** The brightness to run this color at. */
     public final Dimensionless brightness;
 
+     // Precompute the color map for fast lookup
+    private static final Map<Color, StatusColors> COLOR_MAP = new HashMap<>();
+    
+    static {
+        for (StatusColors statusColor : values()) {
+            COLOR_MAP.put(statusColor.color, statusColor);
+        }
+    }
+
     /**
      * Creates a new StatusColors.
      * @param color - The Color.
@@ -46,11 +58,6 @@ public enum StatusColors {
      * @return The StatusColors. If none, returns null.
      */
     public static StatusColors getColor(Color color) {
-        for (StatusColors statusColor : StatusColors.values()) {
-            if (statusColor.color.equals(color)) {
-                return statusColor;
-            }
-        }
-        return null;
+        return StatusColors.COLOR_MAP.getOrDefault(color, null);
     }
 }

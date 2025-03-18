@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 3.128972746196546,
+        "y": 4.01346146432977
       },
       "prevControl": {
-        "x": 2.8746191205886378,
-        "y": 4.808279359158535
+        "x": 3.0035918667851838,
+        "y": 4.8217408234883035
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +62,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "CoralToReef",
+  "folder": "IntakeToReef",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": -55.0

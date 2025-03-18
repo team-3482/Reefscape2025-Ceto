@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 3.128972746196546,
+        "y": 4.01346146432977
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2473612493436432,
-        "y": 4.950350948882153
+        "x": 3.376333995540189,
+        "y": 4.963812413211922
       },
       "isLocked": false,
       "linkedName": "Reef AB"
@@ -62,7 +62,7 @@
     "rotation": -55.0
   },
   "reversed": false,
-  "folder": "ReefToCoral",
+  "folder": "ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": 0.0

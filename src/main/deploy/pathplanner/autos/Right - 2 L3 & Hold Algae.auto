@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartRightToEF"
+                  "pathName": "StartRightToCD"
                 }
               },
               {
@@ -22,6 +22,12 @@
                       "type": "named",
                       "data": {
                         "name": "ReleaseAlgaeAndZeroElevator"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.1
                       }
                     },
                     {
@@ -39,36 +45,6 @@
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignLeftReef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightCoralFromEF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "RightCoralToCD"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "PIDAlignRightReef"
           }
         },
@@ -79,15 +55,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "RightCoralFromCD"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeCoral"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "RightCoralFromCD"
+                }
+              }
+            ]
           }
         },
         {
@@ -107,11 +90,35 @@
           "data": {
             "name": "OuttakeCoral"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignCenterReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveElevatorToL2Algae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeAlgaeAndHold"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EndRightCD"
+          }
         }
       ]
     }
   },
-  "resetOdom": true,
-  "folder": "All L3",
+  "resetOdom": false,
+  "folder": "Hold Algae",
   "choreoAuto": false
 }
