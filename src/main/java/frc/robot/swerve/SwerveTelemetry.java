@@ -14,6 +14,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -127,5 +129,27 @@ public class SwerveTelemetry {
 
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
+
+        /* Dashboard swerve drive */
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+                builder.setSmartDashboardType("SwerveDrive");
+
+                builder.addDoubleProperty("Front Left Angle", () -> m_moduleDirections[0].getAngle(), null);
+                builder.addDoubleProperty("Front Left Velocity", () -> m_moduleSpeeds[0].getLength(), null);
+
+                builder.addDoubleProperty("Front Right Angle", () -> m_moduleDirections[0].getAngle(), null);
+                builder.addDoubleProperty("Front Right Velocity", () -> m_moduleSpeeds[0].getLength(), null);
+
+                builder.addDoubleProperty("Back Left Angle", () -> m_moduleDirections[0].getAngle(), null);
+                builder.addDoubleProperty("Back Left Velocity", () -> m_moduleSpeeds[0].getLength(), null);
+
+                builder.addDoubleProperty("Back Right Angle", () -> m_moduleDirections[0].getAngle(), null);
+                builder.addDoubleProperty("Back Right Velocity", () -> m_moduleSpeeds[0].getLength(), null);
+
+                builder.addDoubleProperty("Robot Angle", () -> state.Pose.getRotation().getDegrees(), null);
+            }
+        });
     }
 }
