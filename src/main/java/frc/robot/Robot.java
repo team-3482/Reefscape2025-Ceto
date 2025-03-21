@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -78,11 +79,15 @@ public class Robot extends LoggedRobot {
         
         // Blink like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
+
+        SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
     }
 
     @Override
