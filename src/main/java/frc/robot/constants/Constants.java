@@ -57,7 +57,8 @@ public final class Constants {
         public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
         public static final double MAX_HEIGHT = 0.75;
 
-        public static final double IDLE_HEIGHT = L1_CORAL;
+        /** The height ideal to remove the bottom algae when driving up against it. */
+        public static final double IDLE_HEIGHT = 0.08;
         public static final double SLOW_DRIVE_HEIGHT = 0.4;
     }
     
