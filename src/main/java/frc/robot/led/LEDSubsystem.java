@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 import org.littletonrobotics.junction.Logger;
@@ -38,24 +38,22 @@ public class LEDSubsystem extends SubsystemBase {
 
     private final Timer stickyTimer = new Timer();
 
-    private SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .add("LED 1", false);
-    private SimpleWidget shuffleboard_widget2 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .add("LED 2", false);
-    @SuppressWarnings("unused")
-    private GenericEntry shuffleboard_entry1 = shuffleboard_widget1
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-        .withSize(1, 8)
-        .withPosition(0, 0)
-        .getEntry();
-    @SuppressWarnings("unused")
-    private GenericEntry shuffleboard_entry2 = shuffleboard_widget2
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-        .withSize(1, 8)
-        .withPosition(18, 0)
-        .getEntry();
+//    private SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//        .add("LED 1", false);
+//    private SimpleWidget shuffleboard_widget2 = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//        .add("LED 2", false);
+//    private GenericEntry shuffleboard_entry1 = shuffleboard_widget1
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
+//        .withSize(1, 8)
+//        .withPosition(0, 0)
+//        .getEntry();
+//    private GenericEntry shuffleboard_entry2 = shuffleboard_widget2
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
+//        .withSize(1, 8)
+//        .withPosition(18, 0)
+//        .getEntry();
 
     /** Creates a new LEDSubsystem. */
     private LEDSubsystem() {
@@ -144,8 +142,8 @@ public class LEDSubsystem extends SubsystemBase {
             // in red, which could confuse the driver. Thus, it has to be modified to orange.
             newColor.equals(StatusColors.RSL) ? Color.kDarkOrange.toHexString() : hexString);
 
-        this.shuffleboard_widget1.withProperties(properties);
-        this.shuffleboard_widget2.withProperties(properties);
+//        this.shuffleboard_widget1.withProperties(properties);
+//        this.shuffleboard_widget2.withProperties(properties);
 
         Logger.recordOutput("LED/Status", newColor);
         Logger.recordOutput("LED/Color", hexString);

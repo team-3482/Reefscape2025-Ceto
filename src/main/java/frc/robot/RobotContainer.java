@@ -23,7 +23,7 @@ import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.coral.AdjustCoralCommand;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;

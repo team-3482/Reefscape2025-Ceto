@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
@@ -69,32 +69,32 @@ public class VisionSubsystem extends SubsystemBase {
     private final Timer lastDataTimer = new Timer();
 
     /* Shuffleboard */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("VisionSubsystem", BuiltInLayouts.kList)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(5, 3)
-        .withPosition(1, 2);
-    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
-        .add("Processor Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    private GenericEntry shuffleboardReefInView = shuffleboardLayout
-        .add("Reef Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 2)
-        .getEntry();
-    
+//    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//        .getLayout("VisionSubsystem", BuiltInLayouts.kList)
+//        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
+//        .withSize(5, 3)
+//        .withPosition(1, 2);
+//    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
+//        .add("Processor Align", false)
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of(
+//            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+//            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+//        ))
+//        .withSize(3, 1)
+//        .withPosition(0, 1)
+//        .getEntry();
+//    private GenericEntry shuffleboardReefInView = shuffleboardLayout
+//        .add("Reef Align", false)
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of(
+//            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
+//            "colorWhenFalse", StatusColors.OFF.color.toHexString()
+//        ))
+//        .withSize(3, 1)
+//        .withPosition(0, 2)
+//        .getEntry();
+//
     private boolean lastReef = false;
     private boolean lastProcessor = false;
     private boolean lastCanAlign = false;
@@ -114,18 +114,18 @@ public class VisionSubsystem extends SubsystemBase {
                 "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.TOP_LL, rightLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 0);
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 4);
+//            Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//                .add(LimelightConstants.TOP_LL, rightLLCamera)
+//                .withWidget(BuiltInWidgets.kCameraStream)
+//                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+//                .withSize(7, 4)
+//                .withPosition(6, 0);
+//            Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
+//                .withWidget(BuiltInWidgets.kCameraStream)
+//                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
+//                .withSize(7, 4)
+//                .withPosition(6, 4);
         }
 
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
@@ -158,12 +158,12 @@ public class VisionSubsystem extends SubsystemBase {
         }
         
         if (reef != this.lastReef) {
-            this.shuffleboardReefInView.setBoolean(reef);
+//            this.shuffleboardReefInView.setBoolean(reef);
             Logger.recordOutput("Vision/ReefInView", reef);
             this.lastReef = reef;
         }
         if (processor != this.lastProcessor) {
-            this.shuffleboardProcessorInView.setBoolean(processor);
+//            this.shuffleboardProcessorInView.setBoolean(processor);
             Logger.recordOutput("Vision/ProcessorInView", processor);
             this.lastProcessor = processor;
         }

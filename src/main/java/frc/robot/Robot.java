@@ -25,11 +25,15 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+
 import frc.robot.constants.Constants.TagSets;
+import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.VisionSubsystem;
+import frc.robot.utilities.Elastic;
+
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -110,6 +114,8 @@ public class Robot extends LoggedRobot {
             System.err.println("No auton command found.");
             LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
+
+        Elastic.selectTab(DashboardTabNames.AUTON);
     }
 
     @Override
@@ -124,6 +130,8 @@ public class Robot extends LoggedRobot {
             this.auton.cancel();
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
+
+        Elastic.selectTab(DashboardTabNames.TELEOP);
     }
 
     @Override

@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
@@ -46,26 +46,26 @@ public class CoralSubsystem extends SubsystemBase {
     private DigitalInput frontLaser = new DigitalInput(CoralConstants.FRONT_LASER_ID);
     private DigitalInput backLaser = new DigitalInput(CoralConstants.BACK_LASER_ID);
 
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("CoralSubsystem", BuiltInLayouts.kList)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(5, 3)
-        .withPosition(1, 5);
-    private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
-        .add("Front Laser", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(5, 1)
-        .withPosition(0, 0)
-        .getEntry();
-    private GenericEntry shuffleboard_entry_backLaser = shuffleboardLayout
-        .add("Back Laser", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(5, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    
+//    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
+//        .getLayout("CoralSubsystem", BuiltInLayouts.kList)
+//        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
+//        .withSize(5, 3)
+//        .withPosition(1, 5);
+//    private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
+//        .add("Front Laser", false)
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
+//        .withSize(5, 1)
+//        .withPosition(0, 0)
+//        .getEntry();
+//    private GenericEntry shuffleboard_entry_backLaser = shuffleboardLayout
+//        .add("Back Laser", false)
+//        .withWidget(BuiltInWidgets.kBooleanBox)
+//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
+//        .withSize(5, 1)
+//        .withPosition(0, 1)
+//        .getEntry();
+//
     private SubsystemStates state = SubsystemStates.STOPPED;
     private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
 
@@ -84,8 +84,8 @@ public class CoralSubsystem extends SubsystemBase {
         boolean coralFront = hasCoral_frontLaser();
         boolean coralBack = hasCoral_backLaser();
         
-        this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
-        this.shuffleboard_entry_backLaser.setBoolean(coralBack);
+//        this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
+//        this.shuffleboard_entry_backLaser.setBoolean(coralBack);
         
         boolean coral = coralFront || coralBack;
         
