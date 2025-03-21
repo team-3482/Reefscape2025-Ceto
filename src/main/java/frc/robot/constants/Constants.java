@@ -76,6 +76,6 @@ public final class Constants {
 
     /** States used with Algae and Coral subsystems, reduces overhead. */
     public static enum SubsystemStates {
-        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING, SLOW_OUTTAKING
+        STOPPED, INTAKING, SLOW_INTAKING, OUTTAKING, SLOW_OUTTAKING, DISCARDING
     }
 }

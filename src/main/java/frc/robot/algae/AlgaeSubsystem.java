@@ -77,27 +77,11 @@ public class AlgaeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the speed of the motors to the intake speed
+     * Sets the speed of the motors to the ON speed
      */
-    public void intake() {
-        this.state = SubsystemStates.INTAKING;
-        rightMotor.setVoltage(AlgaeConstants.INTAKE_VOLTAGE);
-    }
-
-    /**
-     * Sets the speed of the motors to the outtake speed
-     */
-    public void outtake() {
-        this.state = SubsystemStates.OUTTAKING;
-        rightMotor.setVoltage(-AlgaeConstants.OUTTAKE_VOLTAGE);
-    }
-
-    /**
-     * Sets the speed of the motors to the holding voltage.
-     */
-    public void hold() {
-        this.state = SubsystemStates.HOLDING;
-        this.rightMotor.setVoltage(AlgaeConstants.HOLDING_VOLTAGE);
+    public void enable() {
+        this.state = SubsystemStates.DISCARDING;
+        rightMotor.setVoltage(AlgaeConstants.ON_VOLTAGE);
     }
 
     /**

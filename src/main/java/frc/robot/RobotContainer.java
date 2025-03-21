@@ -309,11 +309,7 @@ public class RobotContainer {
 
         // Algae
         this.operatorController.a()
-            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake()))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()))
-            .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
-        this.operatorController.y()
-            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake()))
+            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable()))
             .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()))
             .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
 

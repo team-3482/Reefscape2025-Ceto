@@ -74,18 +74,20 @@ public final class CommandGenerators {
      * A command that intakes the algae for a certain amount of time before holding.
      * @return The command.
      */
+    @Deprecated
     public static Command IntakeAlgaeAndHoldCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
-            .andThen(Commands.waitSeconds(0.7))
-            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable())
+            .andThen(Commands.waitSeconds(0.7));
+            // .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
     }
 
     /**
      * A command that outtakes the algae for a certain amount of time before stopping.
      * @return The command.
      */
+    @Deprecated
     public static Command OuttakeAlgaeAndStopCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake())
+        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable())
             .andThen(Commands.waitSeconds(1))
             .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
     }
