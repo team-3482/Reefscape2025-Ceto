@@ -328,7 +328,7 @@ public class RobotContainer {
             .whileTrue(new OuttakeCoralCommand())
             .onFalse(Commands.sequence(
                 new MoveElevatorCommand(Double.NaN, false, false),
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.5), // TODO NEW ALGAE/OUTTAKE : Can be removed
                 new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
             ));
 
