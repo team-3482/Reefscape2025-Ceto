@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
@@ -15,19 +14,13 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
-import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.vision.VisionSubsystem;
 
 public class Robot extends LoggedRobot {
     private Command auton;
@@ -124,17 +117,17 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void teleopPeriodic() {
-        if (
-            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
-            TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
-        ) {
-            CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-            SwerveSubsystem.getInstance().setControl(
-                new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
-                    new ChassisSpeeds(-2, 0, 0)
-                )
-            );
-        }
+        // if (
+        //     DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
+        //     TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
+        // ) {
+        //     CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
+        //     SwerveSubsystem.getInstance().setControl(
+        //         new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
+        //             new ChassisSpeeds(-2, 0, 0)
+        //         )
+        //     );
+        // }
     }
 
     @Override
