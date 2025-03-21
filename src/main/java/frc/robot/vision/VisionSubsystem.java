@@ -105,23 +105,23 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (LimelightConstants.PUBLISH_CAMERA_FEEDS) {
             // Shuffleboard camera feeds.
-            HttpCamera leftLLCamera = new HttpCamera(
+            HttpCamera bottomLLCamera = new HttpCamera(
                 LimelightConstants.BOTTOM_LL,
                 "http://" + "10.34.82.12" + ":5800/stream.mjpg"
             );
-            HttpCamera rightLLCamera = new HttpCamera(
+            HttpCamera topLLCamera = new HttpCamera(
                 LimelightConstants.TOP_LL,
                 "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.TOP_LL, rightLLCamera)
+                .add(LimelightConstants.TOP_LL, topLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
                 .withSize(7, 4)
                 .withPosition(6, 0);
             Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
+                .add(LimelightConstants.BOTTOM_LL, bottomLLCamera)
                 .withWidget(BuiltInWidgets.kCameraStream)
                 .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
                 .withSize(7, 4)
@@ -481,6 +481,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @return The tag ID.
      */
     public int getPrimaryTagInView_Bottom_MegaTag() {
+        // TODO BOTTOM LL : Move to old battery position
         return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
             .getEntry("tid").getInteger(0);
     }
