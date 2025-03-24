@@ -4,10 +4,8 @@
 
 package frc.robot.vision;
 
-import java.util.Iterator;
-import java.util.Optional;
-
 import com.ctre.phoenix6.Utils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,13 +22,17 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.constants.Constants.TagSets;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.constants.LimelightConstants;
 
 import org.littletonrobotics.junction.Logger;
+
+import java.util.Iterator;
+import java.util.Optional;
 
 /** 
  * A class that manages AprilTag Limelights for vision.

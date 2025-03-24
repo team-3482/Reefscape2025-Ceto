@@ -5,8 +5,9 @@
 package frc.robot.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.led.StatusColors;
+
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 /** A command that adjusts the coral in case it has been intook too far. */
 public class AdjustCoralCommand extends Command {

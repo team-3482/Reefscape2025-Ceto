@@ -6,9 +6,6 @@
 
 package frc.robot.auto;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -19,13 +16,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.constants.Constants.AligningConstants;
 import frc.robot.constants.Constants.TagSets;
-import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.utilities.FilteredTranslation;
 import frc.robot.vision.VisionSubsystem;
+
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * A command that wraps PID controllers to align to a position relative to a tag.

@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -21,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
@@ -32,14 +31,17 @@ import frc.robot.coral.OuttakeCoralCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ZeroElevatorCommand;
+import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 import frc.robot.swerve.OscillateXDirectionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
-import frc.robot.led.LEDSubsystem;
-import frc.robot.led.StatusColors;
 import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.VisionSubsystem;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class RobotContainer {
     // Thread-safe singleton design pattern.

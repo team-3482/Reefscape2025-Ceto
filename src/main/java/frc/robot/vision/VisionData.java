@@ -1,8 +1,9 @@
 package frc.robot.vision;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.constants.LimelightConstants;
+
 import frc.robot.constants.Constants.TagSets;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.vision.LimelightHelpers.RawFiducial;
 
 /**

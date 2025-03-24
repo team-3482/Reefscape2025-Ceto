@@ -1,13 +1,6 @@
 package frc.robot.elevator;
 
-import java.util.Map;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -25,10 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants;
-import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants.ElevatorSlot0Gains;
+import frc.robot.constants.PhysicalConstants.RobotConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that moves the elevator up and down using MotionMagic. */

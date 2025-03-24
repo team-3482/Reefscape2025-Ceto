@@ -4,9 +4,6 @@
 
 package frc.robot.coral;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -16,12 +13,16 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
+
+import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that manipulates the coral game piece. */
 public class CoralSubsystem extends SubsystemBase {

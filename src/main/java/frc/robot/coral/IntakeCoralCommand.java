@@ -5,8 +5,9 @@
 package frc.robot.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.led.StatusColors;
+
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 /** A command that intakes coral and stops when it reaches the end of the intake. */
 public class IntakeCoralCommand extends Command {
