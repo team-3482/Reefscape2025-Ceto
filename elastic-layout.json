@@ -7,10 +7,10 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Laser Has Coral",
-            "x": 128.0,
+            "title": "List Layout",
+            "x": 1408.0,
             "y": 576.0,
-            "width": 256.0,
+            "width": 192.0,
             "height": 256.0,
             "type": "List Layout",
             "properties": {
@@ -18,56 +18,9 @@
             },
             "children": [
               {
-                "title": "Front",
-                "x": 448.0,
-                "y": 384.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/FrontLaserHasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Back",
-                "x": 320.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/BackLaserHasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Elevator Sensors",
-            "x": 1408.0,
-            "y": 512.0,
-            "width": 192.0,
-            "height": 320.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
                 "title": "Stage Three",
-                "x": 0.0,
-                "y": 0.0,
+                "x": 896.0,
+                "y": 384.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
@@ -83,9 +36,9 @@
               },
               {
                 "title": "Stage Two",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
+                "x": 960.0,
+                "y": 448.0,
+                "width": 64.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
@@ -100,8 +53,8 @@
               },
               {
                 "title": "Bottom",
-                "x": 0.0,
-                "y": 0.0,
+                "x": 960.0,
+                "y": 448.0,
                 "width": 128.0,
                 "height": 128.0,
                 "type": "Boolean Box",
@@ -118,21 +71,38 @@
             ]
           },
           {
-            "title": "Vision",
+            "title": "Can Align",
             "x": 128.0,
-            "y": 256.0,
+            "y": 320.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
               {
-                "title": "Reef In View",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
+                "title": "Any",
+                "x": 384.0,
+                "y": 384.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/canAlign",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Reef",
+                "x": 448.0,
+                "y": 512.0,
+                "width": 192.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
@@ -146,10 +116,10 @@
                 }
               },
               {
-                "title": "Processor In View",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
+                "title": "Processor",
+                "x": 512.0,
+                "y": 512.0,
+                "width": 192.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
@@ -161,16 +131,63 @@
                   "true_icon": "None",
                   "false_icon": "None"
                 }
-              },
+              }
+            ]
+          },
+          {
+            "title": "Has Coral",
+            "x": 128.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
               {
-                "title": "Can Align",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
+                "title": "Any",
+                "x": 640.0,
+                "y": 320.0,
+                "width": 256.0,
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/SmartDashboard/Vision/canAlign",
+                  "topic": "/SmartDashboard/Coral/HasCoral",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Front",
+                "x": 640.0,
+                "y": 384.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Coral/FrontLaserHasCoral",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Back",
+                "x": 576.0,
+                "y": 448.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Coral/BackLaserHasCoral",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -188,7 +205,7 @@
             "x": 128.0,
             "y": 0.0,
             "width": 640.0,
-            "height": 256.0,
+            "height": 320.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Match Time",
@@ -204,7 +221,7 @@
             "x": 768.0,
             "y": 0.0,
             "width": 320.0,
-            "height": 256.0,
+            "height": 320.0,
             "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/Voltage",
@@ -248,7 +265,7 @@
             "x": 1408.0,
             "y": 0.0,
             "width": 192.0,
-            "height": 512.0,
+            "height": 576.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Elevator/Position",
@@ -266,7 +283,7 @@
             "x": 1088.0,
             "y": 0.0,
             "width": 320.0,
-            "height": 256.0,
+            "height": 320.0,
             "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/RoboRIO/Input Current",

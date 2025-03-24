@@ -57,15 +57,15 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         boolean coralFront = hasCoral_frontLaser();
         boolean coralBack = hasCoral_backLaser();
+        boolean coral = coralFront || coralBack;
 
         SmartDashboard.putBoolean("Coral/FrontLaserHasCoral", coralFront);
         SmartDashboard.putBoolean("Coral/BackLaserHasCoral", coralBack);
+        SmartDashboard.putBoolean("Coral/HasCoral", coral);
 
-        boolean coral = coralFront || coralBack;
-        
         Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
         Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
-        Logger.recordOutput("Coral/HasCoral", coral);
+        Logger.recordOutput("Coral/HasCoral", coral);   
 
         // Avoids logging every loop
         if (this.state != this.lastLoggedState) {
