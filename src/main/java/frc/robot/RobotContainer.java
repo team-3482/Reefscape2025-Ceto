@@ -13,17 +13,18 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.coral.AdjustCoralCommand;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;
@@ -83,6 +84,8 @@ public class RobotContainer {
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
+        SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
+        SmartDashboard.putData("Power Distribution", new PowerDistribution(1, PowerDistribution.ModuleType.kRev));
     }
 
     /**

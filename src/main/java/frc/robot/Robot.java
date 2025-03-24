@@ -10,6 +10,7 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
 
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -18,10 +19,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.net.WebServer;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -74,13 +72,12 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
-
         RobotContainer.getInstance().getAutonomousCommand();
         
         // Blink like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
 
-        SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
+        double startTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -88,6 +85,10 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("RoboRIO/CPU Temperature", RobotController.getCPUTemp());
+        SmartDashboard.putBoolean("RoboRIO/RSL", RobotController.getRSLState());
+        SmartDashboard.putNumber("RoboRIO/Input Current", RobotController.getInputCurrent());
+        SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }
 
     @Override
