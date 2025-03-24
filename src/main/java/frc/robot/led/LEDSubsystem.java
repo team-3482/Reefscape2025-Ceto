@@ -2,18 +2,13 @@ package frc.robot.led;
 
 import java.util.Map;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 import org.littletonrobotics.junction.Logger;
@@ -38,23 +33,6 @@ public class LEDSubsystem extends SubsystemBase {
     private final Timer blinkTimer = new Timer();
 
     private final Timer stickyTimer = new Timer();
-
-//    private SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
-//        .add("LED 1", false);
-//    private SimpleWidget shuffleboard_widget2 = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
-//        .add("LED 2", false);
-//    private GenericEntry shuffleboard_entry1 = shuffleboard_widget1
-//        .withWidget(BuiltInWidgets.kBooleanBox)
-//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-//        .withSize(1, 8)
-//        .withPosition(0, 0)
-//        .getEntry();
-//    private GenericEntry shuffleboard_entry2 = shuffleboard_widget2
-//        .withWidget(BuiltInWidgets.kBooleanBox)
-//        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-//        .withSize(1, 8)
-//        .withPosition(18, 0)
-//        .getEntry();
 
     /** Creates a new LEDSubsystem. */
     private LEDSubsystem() {
