@@ -72,7 +72,7 @@ public class VisionSubsystem extends SubsystemBase {
         super("VisionSubsystem");
 
         if (LimelightConstants.PUBLISH_CAMERA_FEEDS) {
-            // Shuffleboard camera feeds.
+            // Dashboard camera feeds.
             HttpCamera leftLLCamera = new HttpCamera(
                 LimelightConstants.BOTTOM_LL,
                 "http://" + "10.34.82.12" + ":5800/stream.mjpg"

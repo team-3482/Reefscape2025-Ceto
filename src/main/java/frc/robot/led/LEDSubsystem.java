@@ -107,14 +107,14 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkColor = this.currentColor = newColor;
         }
 
-        updateShuffleboardsAndLogs(newColor);
+        updateDashboardAndLogs(newColor);
     }
 
     /**
-     * Updates Shuffleboard and AdvantageScope logs.
+     * Updates Dashboard and AdvantageScope logs.
      * @param newColor - The new color to use.
      */
-    private void updateShuffleboardsAndLogs(StatusColors newColor) {
+    private void updateDashboardAndLogs(StatusColors newColor) {
         if (newColor == this.currentColor) return;
         
         String hexString = newColor.color.toHexString();
@@ -123,9 +123,6 @@ public class LEDSubsystem extends SubsystemBase {
             // very dark red that our eyes perceive as orange, but in driver station it shows
             // in red, which could confuse the driver. Thus, it has to be modified to orange.
             newColor.equals(StatusColors.RSL) ? Color.kDarkOrange.toHexString() : hexString);
-
-//        this.shuffleboard_widget1.withProperties(properties);
-//        this.shuffleboard_widget2.withProperties(properties);
 
         Logger.recordOutput("LED/Status", newColor);
         Logger.recordOutput("LED/Color", hexString);

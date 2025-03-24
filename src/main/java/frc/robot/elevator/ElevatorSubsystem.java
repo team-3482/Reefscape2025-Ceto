@@ -55,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
     
     private double lastPosition = Double.NaN;
-    // Shuffleboard values are initialized at false, so these should be false
+    // Dashboard values are initialized at false, so these should be false
     private boolean lastUpperLimit_StageThree = false;
     private boolean lastUpperLimit_StageTwo = false;
     private boolean lastLowerLimit = false;
