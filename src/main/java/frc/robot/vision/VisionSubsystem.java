@@ -5,30 +5,25 @@
 package frc.robot.vision;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.DoubleArrayEntry;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.DashboardTabNames;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
@@ -68,33 +63,6 @@ public class VisionSubsystem extends SubsystemBase {
      */
     private final Timer lastDataTimer = new Timer();
 
-    /* Shuffleboard */
-//    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(DashboardTabNames.DEFAULT)
-//        .getLayout("VisionSubsystem", BuiltInLayouts.kList)
-//        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-//        .withSize(5, 3)
-//        .withPosition(1, 2);
-//    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
-//        .add("Processor Align", false)
-//        .withWidget(BuiltInWidgets.kBooleanBox)
-//        .withProperties(Map.of(
-//            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-//            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-//        ))
-//        .withSize(3, 1)
-//        .withPosition(0, 1)
-//        .getEntry();
-//    private GenericEntry shuffleboardReefInView = shuffleboardLayout
-//        .add("Reef Align", false)
-//        .withWidget(BuiltInWidgets.kBooleanBox)
-//        .withProperties(Map.of(
-//            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-//            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-//        ))
-//        .withSize(3, 1)
-//        .withPosition(0, 2)
-//        .getEntry();
-//
     private boolean lastReef = false;
     private boolean lastProcessor = false;
     private boolean lastCanAlign = false;
@@ -114,18 +82,8 @@ public class VisionSubsystem extends SubsystemBase {
                 "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
-//            Shuffleboard.getTab(DashboardTabNames.DEFAULT)
-//                .add(LimelightConstants.TOP_LL, rightLLCamera)
-//                .withWidget(BuiltInWidgets.kCameraStream)
-//                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-//                .withSize(7, 4)
-//                .withPosition(6, 0);
-//            Shuffleboard.getTab(DashboardTabNames.DEFAULT)
-//                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
-//                .withWidget(BuiltInWidgets.kCameraStream)
-//                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-//                .withSize(7, 4)
-//                .withPosition(6, 4);
+            CameraServer.startAutomaticCapture(leftLLCamera);
+            CameraServer.startAutomaticCapture(rightLLCamera);
         }
 
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
@@ -139,6 +97,10 @@ public class VisionSubsystem extends SubsystemBase {
         // FPS will never be high enough to take advantage of every cycle,
         // but it's fine because repeat frames are entirely ignored (see heartbeats).
         this.notifier.startPeriodic(0.02);
+
+        SmartDashboard.putBoolean("Vision/ReefInView", false);
+        SmartDashboard.putBoolean("Vision/ProcessorInView", false);
+        SmartDashboard.putBoolean("Vision/canAlign", false);
     }
 
     // This method will be called once per scheduler run
@@ -158,16 +120,17 @@ public class VisionSubsystem extends SubsystemBase {
         }
         
         if (reef != this.lastReef) {
-//            this.shuffleboardReefInView.setBoolean(reef);
+            SmartDashboard.putBoolean("Vision/ReefInView", reef);
             Logger.recordOutput("Vision/ReefInView", reef);
             this.lastReef = reef;
         }
         if (processor != this.lastProcessor) {
-//            this.shuffleboardProcessorInView.setBoolean(processor);
+            SmartDashboard.putBoolean("Vision/ProcessorInView", processor);
             Logger.recordOutput("Vision/ProcessorInView", processor);
             this.lastProcessor = processor;
         }
         if (canAlign != this.lastCanAlign) {
+            SmartDashboard.putBoolean("Vision/canAlign", processor || reef);
             Logger.recordOutput("Vision/canAlign", processor || reef);
             this.lastCanAlign = canAlign;
         }
