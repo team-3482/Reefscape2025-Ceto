@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.DashboardTabNames;
@@ -64,6 +65,9 @@ public class LEDSubsystem extends SubsystemBase {
         this.LEDStrip.start();
 
         this.blinkTimer.start();
+
+        SmartDashboard.putString("LED", StatusColors.OFF.color.toHexString());
+
     }
 
     // This method will be called once per scheduler run
@@ -147,6 +151,8 @@ public class LEDSubsystem extends SubsystemBase {
 
         Logger.recordOutput("LED/Status", newColor);
         Logger.recordOutput("LED/Color", hexString);
+
+        SmartDashboard.putString("LED", hexString);
     }
 
     /**
