@@ -295,6 +295,25 @@
               "color": 4278238420,
               "line_width": 2.0
             }
+          },
+          {
+            "title": "limelight-stheno",
+            "x": 384.0,
+            "y": 320.0,
+            "width": 1024.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-stheno",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 30,
+              "fps": 10,
+              "resolution": [
+                640.0,
+                480.0
+              ]
+            }
           }
         ]
       }
@@ -598,6 +617,44 @@
               "divisions": 6,
               "inverted": false,
               "orientation": "vertical"
+            }
+          },
+          {
+            "title": "limelight-euryale",
+            "x": 128.0,
+            "y": 448.0,
+            "width": 704.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-euryale",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 40,
+              "fps": 10,
+              "resolution": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "title": "limelight-stheno",
+            "x": 832.0,
+            "y": 448.0,
+            "width": 704.0,
+            "height": 384.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-stheno",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 40,
+              "fps": 10,
+              "resolution": [
+                640.0,
+                480.0
+              ]
             }
           }
         ]
