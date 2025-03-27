@@ -202,6 +202,8 @@ public class RobotContainer {
     private void registerNamedCommands() {
         NamedCommands.registerCommand("MoveElevatorToBottom",
             new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false));
+        NamedCommands.registerCommand("MoveElevatorToIdle",
+            new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false));
 
         NamedCommands.registerCommand("MoveElevatorToL1Coral",
             new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false));
