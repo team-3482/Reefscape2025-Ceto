@@ -36,7 +36,9 @@ public class OuttakeCoralCommand extends Command {
     @Override
     public void execute() {
         // Starts the timer once the note doesn't break the beam
-        if (!CoralSubsystem.getInstance().hasCoral()) {
+        // Have to check for the front one, because the back one gets broken by
+        // the elevator when not in the intaking position
+        if (!CoralSubsystem.getInstance().hasCoral_frontLaser()) {
             this.timer.start();
         }
     }
@@ -52,7 +54,8 @@ public class OuttakeCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // Stops the motor after 0.35 seconds of the coral leaving the beam
-        return timer.hasElapsed(0.35);
+        // Stops the motor after 0.06 seconds of the coral leaving the beam
+        // (That's 3 robot cycles at minimum)
+        return timer.hasElapsed(0.06);
     }
 }
