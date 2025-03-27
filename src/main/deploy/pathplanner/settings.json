@@ -3,10 +3,10 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "IntakeToReef",
-    "End",
-    "ReefToIntake",
-    "Start"
+    "4. End",
+    "3. IntakeToReef",
+    "2. ReefToIntake",
+    "1. Start"
   ],
   "autoFolders": [
     "Drop Algae",

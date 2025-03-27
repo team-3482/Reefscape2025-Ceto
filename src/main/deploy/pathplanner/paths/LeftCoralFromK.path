@@ -62,7 +62,7 @@
     "rotation": -55.0
   },
   "reversed": false,
-  "folder": "ReefToIntake",
+  "folder": "2. ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": -90.0
