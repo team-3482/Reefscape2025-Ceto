@@ -7,11 +7,122 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "Elevator Sensors",
-            "x": 1408.0,
-            "y": 576.0,
-            "width": 192.0,
+            "title": "Can Align",
+            "x": 64.0,
+            "y": 256.0,
+            "width": 256.0,
             "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Any",
+                "x": 384.0,
+                "y": 384.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/canAlign",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4278190335,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Reef",
+                "x": 448.0,
+                "y": 512.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/ReefInView",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4278190335,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Processor",
+                "x": 512.0,
+                "y": 512.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Vision/ProcessorInView",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4278190335,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Has Coral",
+            "x": 64.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Front",
+                "x": 640.0,
+                "y": 384.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Coral/FrontLaserHasCoral",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4294967295,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Back",
+                "x": 576.0,
+                "y": 448.0,
+                "width": 192.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/SmartDashboard/Coral/BackLaserHasCoral",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4294967295,
+                  "false_color": 4278190080,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Elevator Sensors",
+            "x": 1280.0,
+            "y": 448.0,
+            "width": 192.0,
+            "height": 320.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -69,143 +180,15 @@
                 }
               }
             ]
-          },
-          {
-            "title": "Can Align",
-            "x": 128.0,
-            "y": 320.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Any",
-                "x": 384.0,
-                "y": 384.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/canAlign",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4278190335,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Reef",
-                "x": 448.0,
-                "y": 512.0,
-                "width": 192.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/ReefInView",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4278190335,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Processor",
-                "x": 512.0,
-                "y": 512.0,
-                "width": 192.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Vision/ProcessorInView",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4278190335,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Has Coral",
-            "x": 128.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Any",
-                "x": 640.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/HasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4294967295,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Front",
-                "x": 640.0,
-                "y": 384.0,
-                "width": 192.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/FrontLaserHasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4294967295,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Back",
-                "x": 576.0,
-                "y": 448.0,
-                "width": 192.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/BackLaserHasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4294967295,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
           }
         ],
         "containers": [
           {
             "title": "Match Time",
-            "x": 128.0,
+            "x": 64.0,
             "y": 0.0,
-            "width": 640.0,
-            "height": 320.0,
+            "width": 576.0,
+            "height": 256.0,
             "type": "Match Time",
             "properties": {
               "topic": "/SmartDashboard/Match Time",
@@ -218,10 +201,10 @@
           },
           {
             "title": "Voltage (Volts)",
-            "x": 768.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 320.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/Voltage",
@@ -238,8 +221,8 @@
             "title": "LED",
             "x": 0.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -249,10 +232,10 @@
           },
           {
             "title": "LED",
-            "x": 1600.0,
+            "x": 1472.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -262,10 +245,10 @@
           },
           {
             "title": "Elevator Position",
-            "x": 1408.0,
+            "x": 1280.0,
             "y": 0.0,
             "width": 192.0,
-            "height": 576.0,
+            "height": 448.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Elevator/Position",
@@ -280,10 +263,10 @@
           },
           {
             "title": "Current (Amps)",
-            "x": 1088.0,
+            "x": 960.0,
             "y": 0.0,
             "width": 320.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "Graph",
             "properties": {
               "topic": "/SmartDashboard/RoboRIO/Input Current",
@@ -298,9 +281,9 @@
           },
           {
             "title": "limelight-stheno",
-            "x": 384.0,
-            "y": 320.0,
-            "width": 1024.0,
+            "x": 320.0,
+            "y": 256.0,
+            "width": 960.0,
             "height": 512.0,
             "type": "Camera Stream",
             "properties": {
@@ -324,7 +307,7 @@
         "layouts": [
           {
             "title": "Can Align",
-            "x": 128.0,
+            "x": 64.0,
             "y": 192.0,
             "width": 256.0,
             "height": 256.0,
@@ -388,7 +371,7 @@
           },
           {
             "title": "Has Coral",
-            "x": 384.0,
+            "x": 320.0,
             "y": 192.0,
             "width": 256.0,
             "height": 256.0,
@@ -452,9 +435,9 @@
           },
           {
             "title": "Elevator Sensors",
-            "x": 640.0,
-            "y": 192.0,
-            "width": 192.0,
+            "x": 320.0,
+            "y": 448.0,
+            "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
             "properties": {
@@ -518,10 +501,10 @@
         "containers": [
           {
             "title": "Auto Chooser",
-            "x": 704.0,
+            "x": 576.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 192.0,
+            "width": 512.0,
+            "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
               "topic": "/SmartDashboard/Auto Chooser",
@@ -531,10 +514,10 @@
           },
           {
             "title": "CommandScheduler",
-            "x": 1280.0,
+            "x": 1216.0,
             "y": 0.0,
-            "width": 320.0,
-            "height": 448.0,
+            "width": 256.0,
+            "height": 704.0,
             "type": "Scheduler",
             "properties": {
               "topic": "/SmartDashboard/CommandScheduler",
@@ -545,8 +528,8 @@
             "title": "LED",
             "x": 0.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -556,10 +539,10 @@
           },
           {
             "title": "LED",
-            "x": 1600.0,
+            "x": 1472.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -569,9 +552,9 @@
           },
           {
             "title": "Match Time",
-            "x": 128.0,
+            "x": 64.0,
             "y": 0.0,
-            "width": 576.0,
+            "width": 512.0,
             "height": 192.0,
             "type": "Match Time",
             "properties": {
@@ -585,8 +568,8 @@
           },
           {
             "title": "Voltage",
-            "x": 832.0,
-            "y": 192.0,
+            "x": 64.0,
+            "y": 448.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Graph",
@@ -605,8 +588,8 @@
             "title": "Elevator Position",
             "x": 1088.0,
             "y": 0.0,
-            "width": 192.0,
-            "height": 448.0,
+            "width": 128.0,
+            "height": 704.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Elevator/Position",
@@ -621,10 +604,10 @@
           },
           {
             "title": "limelight-euryale",
-            "x": 128.0,
-            "y": 448.0,
-            "width": 704.0,
-            "height": 384.0,
+            "x": 576.0,
+            "y": 128.0,
+            "width": 512.0,
+            "height": 320.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-euryale",
@@ -640,10 +623,10 @@
           },
           {
             "title": "limelight-stheno",
-            "x": 832.0,
+            "x": 576.0,
             "y": 448.0,
-            "width": 704.0,
-            "height": 384.0,
+            "width": 512.0,
+            "height": 320.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/limelight-stheno",
@@ -666,10 +649,10 @@
         "layouts": [
           {
             "title": "Elevator Sensors",
-            "x": 1408.0,
-            "y": 512.0,
-            "width": 192.0,
-            "height": 320.0,
+            "x": 1216.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -730,10 +713,10 @@
           },
           {
             "title": "Can Align",
-            "x": 128.0,
-            "y": 512.0,
+            "x": 64.0,
+            "y": 320.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -794,32 +777,15 @@
           },
           {
             "title": "Has Coral",
-            "x": 384.0,
-            "y": 512.0,
+            "x": 320.0,
+            "y": 320.0,
             "width": 256.0,
-            "height": 320.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
             },
             "children": [
-              {
-                "title": "Any",
-                "x": 640.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/HasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4294967295,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
               {
                 "title": "Front",
                 "x": 640.0,
@@ -860,10 +826,10 @@
         "containers": [
           {
             "title": "Pose",
-            "x": 512.0,
+            "x": 576.0,
             "y": 0.0,
-            "width": 960.0,
-            "height": 512.0,
+            "width": 768.0,
+            "height": 448.0,
             "type": "Field",
             "properties": {
               "topic": "/Pose",
@@ -880,9 +846,9 @@
           },
           {
             "title": "Robot Angle",
-            "x": 640.0,
-            "y": 512.0,
-            "width": 320.0,
+            "x": 64.0,
+            "y": 0.0,
+            "width": 512.0,
             "height": 320.0,
             "type": "Radial Gauge",
             "properties": {
@@ -901,10 +867,10 @@
           },
           {
             "title": "Elevator Input",
-            "x": 960.0,
-            "y": 640.0,
-            "width": 448.0,
-            "height": 192.0,
+            "x": 64.0,
+            "y": 576.0,
+            "width": 384.0,
+            "height": 128.0,
             "type": "Number Slider",
             "properties": {
               "topic": "/SmartDashboard/Elevator/InputSlider",
@@ -918,9 +884,9 @@
           },
           {
             "title": "Enable Input",
-            "x": 960.0,
-            "y": 512.0,
-            "width": 448.0,
+            "x": 448.0,
+            "y": 576.0,
+            "width": 128.0,
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
@@ -933,8 +899,8 @@
             "title": "LED",
             "x": 0.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -944,10 +910,10 @@
           },
           {
             "title": "Elevator Position",
-            "x": 1472.0,
+            "x": 1344.0,
             "y": 0.0,
             "width": 128.0,
-            "height": 512.0,
+            "height": 448.0,
             "type": "Number Bar",
             "properties": {
               "topic": "/SmartDashboard/Elevator/Position",
@@ -962,10 +928,10 @@
           },
           {
             "title": "LED",
-            "x": 1600.0,
+            "x": 1472.0,
             "y": 0.0,
-            "width": 128.0,
-            "height": 832.0,
+            "width": 64.0,
+            "height": 768.0,
             "type": "Single Color View",
             "properties": {
               "topic": "/SmartDashboard/LED",
@@ -975,9 +941,9 @@
           },
           {
             "title": "Voltage (Volts)",
-            "x": 128.0,
-            "y": 0.0,
-            "width": 384.0,
+            "x": 576.0,
+            "y": 448.0,
+            "width": 320.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
@@ -993,9 +959,9 @@
           },
           {
             "title": "Current (Amps)",
-            "x": 128.0,
-            "y": 256.0,
-            "width": 384.0,
+            "x": 896.0,
+            "y": 448.0,
+            "width": 320.0,
             "height": 256.0,
             "type": "Graph",
             "properties": {
