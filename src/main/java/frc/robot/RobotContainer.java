@@ -37,7 +37,6 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
 import frc.robot.led.LEDSubsystem;
-import frc.robot.led.StatusColors;
 import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.VisionSubsystem;
 
@@ -236,6 +235,8 @@ public class RobotContainer {
             new AdjustCoralCommand());
         NamedCommands.registerCommand("EnableAlgae",
             CommandGenerators.EnableAlgaeCommand());
+        NamedCommands.registerCommand("DisableAlgae",
+            CommandGenerators.DisableAlgaeCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
             new PIDAlignCommand.Reef(1, false)
@@ -258,9 +259,6 @@ public class RobotContainer {
             CommandGenerators.InitialElevatorLiftAndZeroCommand());
         
         // TODO AUTO : Test new paths
-        // TODO AUTO : Test L3 Algae scoring auto
-        // TODO AUTO : Test L2 Algae scoring auto
-        // TODO AUTO : Test waiting time during autos
     }
 
     /** Configures the button bindings of the driver controller. */
@@ -321,10 +319,9 @@ public class RobotContainer {
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
         
         // Algae
-        this.operatorController.a()
+        this.operatorController.x()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable()))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()))
-            .onFalse(Commands.runOnce(() -> LEDSubsystem.getInstance().setColor(StatusColors.OK)));
+            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
 
         // Coral
         this.operatorController.leftBumper().whileTrue(

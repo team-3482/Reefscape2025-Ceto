@@ -481,7 +481,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @return The tag ID.
      */
     public int getPrimaryTagInView_Bottom_MegaTag() {
-        // TODO BOTTOM LL : Move to old battery position
+        // TODO BOTTOM LL : Check if can start match looking at reef
         return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
             .getEntry("tid").getInteger(0);
     }

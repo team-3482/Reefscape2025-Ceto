@@ -71,12 +71,23 @@ public final class CommandGenerators {
     //
     //
     /**
-     * A command that outtakes the algae, and stops when interrupted.
+     * A command that outtakes the algae.
      * @return The command.
      */
     public static Command EnableAlgaeCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable())
-            .finallyDo(                             () -> AlgaeSubsystem.getInstance().stop());
+        return AlgaeSubsystem.getInstance().runOnce(
+            () -> AlgaeSubsystem.getInstance().enable()
+        );
+    }
+
+    /**
+     * A command that stops the algae.
+     * @return The command.
+     */
+    public static Command DisableAlgaeCommand() {
+        return AlgaeSubsystem.getInstance().runOnce(
+            () -> AlgaeSubsystem.getInstance().stop()
+        );
     }
 
     /**
