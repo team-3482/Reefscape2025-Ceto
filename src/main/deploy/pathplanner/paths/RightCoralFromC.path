@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6082991803278692,
-        "y": 2.8082479508196716
+        "x": 3.79275,
+        "y": 2.80625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7828781919921557,
-        "y": 2.2582411116270706
+        "x": 2.9673290116642863,
+        "y": 2.256243160807399
       },
       "isLocked": false,
       "linkedName": "Reef C"
@@ -20,7 +20,7 @@
         "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 3.2031938337538555,
+        "x": 3.203193833753856,
         "y": 2.340525025632295
       },
       "nextControl": null,
@@ -65,7 +65,7 @@
   "folder": "2. ReefToIntake",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 29.999999999999996
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8545716194273654,
-        "y": 2.1052190723565616
+        "x": 2.8883352810113068,
+        "y": 2.201421312377315
       },
       "isLocked": false,
       "linkedName": "Coral Right"
     },
     {
       "anchor": {
-        "x": 3.6082991803278692,
-        "y": 2.8082479508196716
+        "x": 3.79275,
+        "y": 2.80625
       },
       "prevControl": {
-        "x": 3.377133194649196,
-        "y": 2.659354288084858
+        "x": 2.915488592806027,
+        "y": 2.2184668209780574
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,8 +38,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToL3Coral",
-      "waypointRelativePos": 0.6508913511994006,
+      "name": "Move Elevator to L3 Coral",
+      "waypointRelativePos": 0.7247863247863248,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -59,7 +59,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 29.999999999999996
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": "3. IntakeToReef",

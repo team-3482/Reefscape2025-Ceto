@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.199187500000001,
-        "y": 2.745312499999999
+        "x": 5.17725,
+        "y": 2.8257499999999993
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.354316634522659,
-        "y": 1.784103762067622
+        "x": 3.3163093888657817,
+        "y": 1.8472047098473108
       },
       "isLocked": false,
       "linkedName": "Reef EF"
@@ -20,8 +20,8 @@
         "y": 0.9720506509627046
       },
       "prevControl": {
-        "x": 3.2584643650702207,
-        "y": 1.73326981547268
+        "x": 3.09579744246337,
+        "y": 1.9873453255735472
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,7 +38,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToBottom",
+      "name": "Move Elevator to Bottom",
       "waypointRelativePos": 0.07060185185185183,
       "endWaypointRelativePos": null,
       "command": {

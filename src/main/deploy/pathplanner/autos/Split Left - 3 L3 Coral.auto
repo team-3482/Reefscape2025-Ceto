@@ -76,7 +76,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCoralToK"
+            "pathName": "LeftCoralToL"
           }
         },
         {
@@ -90,7 +90,7 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "PIDAlignLeftReef"
+                        "name": "PIDAlignRightReef"
                       }
                     },
                     {
@@ -145,13 +145,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCoralToL"
+            "pathName": "LeftCoralToK"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignRightReef"
+            "name": "PIDAlignLeftReef"
           }
         },
         {
