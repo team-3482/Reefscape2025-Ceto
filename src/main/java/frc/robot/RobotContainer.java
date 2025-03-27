@@ -303,19 +303,23 @@ public class RobotContainer {
         Supplier<Boolean> slowElevatorSupplier = () -> this.operatorController_HID.getRightTriggerAxis() >= 0.5;
 
         // Elevator
+        this.operatorController.leftTrigger()
+            .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
+        this.operatorController.povLeft()
+            .onTrue(new ZeroElevatorCommand());
+
         this.operatorController.povDown()
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L1_CORAL, slowElevatorSupplier, true));
         this.operatorController.povRight()
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_CORAL, slowElevatorSupplier, true));
         this.operatorController.povUp()
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier, true));
-        this.operatorController.x()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
-        this.operatorController.leftTrigger()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
-        this.operatorController.povLeft()
-            .onTrue(new ZeroElevatorCommand());
 
+        this.operatorController.a()
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true));
+        this.operatorController.y()
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
+        
         // Algae
         this.operatorController.a()
             .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable()))
