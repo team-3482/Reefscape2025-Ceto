@@ -76,8 +76,7 @@ public final class PhysicalConstants {
     }
 
     public static final class AlgaeConstants {
-        public static final int RIGHT_MOTOR_ID = 41;
-        public static final int LEFT_MOTOR_ID = 40;
+        public static final int ALGAE_MOTOR_ID = 41;
 
         public static final double ON_VOLTAGE = 5;
 

@@ -6,7 +6,6 @@ package frc.robot.algae;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -29,8 +28,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         return AlgaeSubsystemHolder.INSTANCE;
     }
 
-    private TalonFX rightMotor = new TalonFX(AlgaeConstants.RIGHT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
-    private TalonFX leftMotor = new TalonFX(AlgaeConstants.LEFT_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
+    private TalonFX algaeMotor = new TalonFX(AlgaeConstants.ALGAE_MOTOR_ID, RobotConstants.CTRE_CAN_BUS);
 
     private SubsystemStates state = SubsystemStates.STOPPED;
     private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
@@ -39,9 +37,6 @@ public class AlgaeSubsystem extends SubsystemBase {
     private AlgaeSubsystem() {
         super("AlgaeSubsystem");
         configureMotors();
-
-        Follower follow = new Follower(AlgaeConstants.RIGHT_MOTOR_ID, true);
-        this.leftMotor.setControl(follow);
     }
 
     // This method will be called once per scheduler run
@@ -62,6 +57,7 @@ public class AlgaeSubsystem extends SubsystemBase {
 
         configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        // TODO ALGAE : Current limits
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
         currentLimitsConfigs.StatorCurrentLimit = 180;
@@ -71,9 +67,7 @@ public class AlgaeSubsystem extends SubsystemBase {
         currentLimitsConfigs.SupplyCurrentLowerLimit = 25;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        this.rightMotor.getConfigurator().apply(configuration);
-        configuration.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        this.leftMotor.getConfigurator().apply(configuration);
+        this.algaeMotor.getConfigurator().apply(configuration);
     }
 
     /**
@@ -81,7 +75,7 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void enable() {
         this.state = SubsystemStates.DISCARDING;
-        rightMotor.setVoltage(AlgaeConstants.ON_VOLTAGE);
+        algaeMotor.setVoltage(AlgaeConstants.ON_VOLTAGE);
     }
 
     /**
@@ -89,6 +83,6 @@ public class AlgaeSubsystem extends SubsystemBase {
      */
     public void stop() {
         this.state = SubsystemStates.STOPPED;
-        rightMotor.setVoltage(0);
+        algaeMotor.setVoltage(0);
     }
 }

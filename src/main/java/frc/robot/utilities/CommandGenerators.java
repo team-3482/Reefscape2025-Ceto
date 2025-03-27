@@ -71,31 +71,20 @@ public final class CommandGenerators {
     //
     //
     /**
-     * A command that intakes the algae for a certain amount of time before holding.
+     * A command that outtakes the algae, and stops when interrupted.
      * @return The command.
      */
-    @Deprecated
-    public static Command IntakeAlgaeAndHoldCommand() {
+    public static Command EnableAlgaeCommand() {
         return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable())
-            .andThen(Commands.waitSeconds(0.7));
-            // .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
-    }
-
-    /**
-     * A command that outtakes the algae for a certain amount of time before stopping.
-     * @return The command.
-     */
-    @Deprecated
-    public static Command OuttakeAlgaeAndStopCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable())
-            .andThen(Commands.waitSeconds(1))
-            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+            .finallyDo(                             () -> AlgaeSubsystem.getInstance().stop());
     }
 
     /**
      * A command that moves the elevator up to release the algae and re-zero.
      * @return The command.
+     * @deprecated No longer necessary.
      */
+    @Deprecated(since = "26 March 2025")
     public static Command InitialElevatorLiftAndZeroCommand() {
         return Commands.sequence(
             // Just in case it has been booted before the algae was put down,

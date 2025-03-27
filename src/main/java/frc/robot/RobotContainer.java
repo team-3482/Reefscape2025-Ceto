@@ -209,7 +209,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("MoveElevatorToL3Coral",
             new MoveElevatorCommand(ScoringConstants.L3_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL2Algae",
-            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false, false));
+            new MoveElevatorCommand(ScoringConstants.L3_ALGAE, false, false));
         
         // NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
         //     new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, true, false));
@@ -228,10 +228,8 @@ public class RobotContainer {
             new OuttakeCoralCommand());
         NamedCommands.registerCommand("AdjustCoral",
             new AdjustCoralCommand());
-        NamedCommands.registerCommand("IntakeAlgaeAndHold",
-            CommandGenerators.IntakeAlgaeAndHoldCommand());
-        NamedCommands.registerCommand("OuttakeAlgaeAndStop",
-            CommandGenerators.OuttakeAlgaeAndStopCommand());
+        NamedCommands.registerCommand("EnableAlgae",
+            CommandGenerators.EnableAlgaeCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
             new PIDAlignCommand.Reef(1, false)
@@ -301,7 +299,7 @@ public class RobotContainer {
         this.operatorController.povUp()
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier, true));
         this.operatorController.x()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
         this.operatorController.leftTrigger()
             .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
         this.operatorController.povLeft()
@@ -324,7 +322,7 @@ public class RobotContainer {
             .whileTrue(new OuttakeCoralCommand())
             .onFalse(Commands.sequence(
                 new MoveElevatorCommand(Double.NaN, false, false),
-                Commands.waitSeconds(0.5), // TODO NEW ALGAE/OUTTAKE : Can be removed
+                Commands.waitSeconds(0.5),
                 new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
             ));
 
