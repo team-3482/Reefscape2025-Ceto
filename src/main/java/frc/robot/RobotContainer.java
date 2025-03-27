@@ -258,6 +258,7 @@ public class RobotContainer {
         // TODO AUTO : Test new paths
         // TODO AUTO : Test L3 Algae scoring auto
         // TODO AUTO : Test L2 Algae scoring auto
+        // TODO AUTO : Test waiting time during autos
     }
 
     /** Configures the button bindings of the driver controller. */
