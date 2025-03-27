@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartRightToD"
+                  "pathName": "StartLeftToK"
                 }
               },
               {
@@ -45,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignRightReef"
+            "name": "PIDAlignLeftReef"
           }
         },
         {
@@ -85,7 +85,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightCoralFromCD_DropAlgae"
+                  "pathName": "LeftCoralFromKL_DropAlgae"
                 }
               }
             ]
@@ -94,13 +94,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RightCoralToC"
+            "pathName": "LeftCoralToL"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignLeftReef"
+            "name": "PIDAlignRightReef"
           }
         },
         {
@@ -122,16 +122,34 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "RightCoralFromC"
+                  "pathName": "LeftCoralFromL"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCoralToL_L2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignRightReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
           }
         }
       ]
     }
   },
   "resetOdom": false,
-  "folder": "Drop Algae",
+  "folder": null,
   "choreoAuto": false
 }

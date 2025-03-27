@@ -132,6 +132,6 @@
     }
   },
   "resetOdom": false,
-  "folder": "Drop Algae",
+  "folder": "Non-split (old, not for new algae)",
   "choreoAuto": false
 }
