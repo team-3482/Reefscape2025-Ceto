@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
+          "data": {
+            "pathName": "StartLeftToJ"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "StartLeftToK"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -21,22 +21,22 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "ReleaseAlgaeAndZeroElevator"
+                        "name": "PIDAlignRightReef"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "MoveElevatorToL3Coral"
+                        "waitTime": 0.3
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EnableAlgae"
                 }
               }
             ]
@@ -45,31 +45,13 @@
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignLeftReef"
+            "name": "MoveElevatorToL3Coral"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "OuttakeCoral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PIDAlignCenterReef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "MoveElevatorToL2Algae"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeAlgaeAndHold"
           }
         },
         {
@@ -85,7 +67,76 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralFromKL_DropAlgae"
+                  "pathName": "LeftCoralFromIJ"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCoralToK"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "PIDAlignLeftReef"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EnableAlgae"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "MoveElevatorToL3Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftCoralFromKL"
                 }
               }
             ]
@@ -95,43 +146,6 @@
           "type": "path",
           "data": {
             "pathName": "LeftCoralToL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PIDAlignRightReef"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeCoral"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "LeftCoralFromL"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "LeftCoralToL_L2"
           }
         },
         {

@@ -5,22 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "StartMiddleToGH"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "MoveElevatorToIdle"
-                }
-              }
-            ]
+            "pathName": "StartMiddleToGH"
           }
         },
         {
@@ -68,22 +55,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "EndMiddleGH"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "MoveElevatorToIdle"
-                }
-              }
-            ]
+            "pathName": "EndMiddleGH"
           }
         }
       ]

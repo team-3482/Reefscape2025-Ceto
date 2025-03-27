@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.45660283186216,
-        "y": 6.0292332785544245
+        "x": 7.517757565092284,
+        "y": 6.1907888442438335
       },
       "isLocked": false,
       "linkedName": "Start Left"
     },
     {
       "anchor": {
-        "x": 5.221125000000001,
-        "y": 5.34125
+        "x": 5.0992500000000005,
+        "y": 5.39
       },
       "prevControl": {
-        "x": 5.179504238143486,
-        "y": 5.5877610792286685
+        "x": 5.128312365216324,
+        "y": 5.638305011886657
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,19 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Move Elevator to L3 Algae",
+      "waypointRelativePos": 0.6988034188034227,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveElevatorToL3Algae"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.0,
@@ -48,7 +60,7 @@
   "folder": "1. Start",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

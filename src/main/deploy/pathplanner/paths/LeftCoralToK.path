@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.268938657376148,
-        "y": 6.336447431940376
+        "x": 2.2977882214909693,
+        "y": 6.271562160434879
       },
       "isLocked": false,
       "linkedName": "Coral Left"
     },
     {
       "anchor": {
-        "x": 3.6660000000000004,
-        "y": 5.14625
+        "x": 3.8220000000000005,
+        "y": 5.1754999999999995
       },
       "prevControl": {
-        "x": 3.2905969869867686,
-        "y": 5.42990813370945
+        "x": 3.492674489285558,
+        "y": 5.434850593817807
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef L"
+      "linkedName": "Reef KL"
     }
   ],
   "rotationTargets": [
@@ -38,13 +38,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to L3 Coral",
-      "waypointRelativePos": 0.7781196581196472,
+      "name": "Move to L2 Algae",
+      "waypointRelativePos": 0.7630769230769159,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "MoveElevatorToL3Coral"
+          "name": "MoveElevatorToL2Algae"
         }
       }
     }
