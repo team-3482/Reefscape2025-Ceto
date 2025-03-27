@@ -11,47 +11,40 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "PIDAlignRightReef"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    }
-                  ]
-                }
-              },
               {
                 "type": "named",
                 "data": {
                   "name": "EnableAlgae"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PIDAlignRightReef"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "MoveElevatorToL3Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OuttakeCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DisableAlgae"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "MoveElevatorToL3Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
           }
         },
         {
@@ -80,47 +73,40 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "PIDAlignLeftReef"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    }
-                  ]
-                }
-              },
               {
                 "type": "named",
                 "data": {
                   "name": "EnableAlgae"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PIDAlignLeftReef"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "MoveElevatorToL3Coral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "OuttakeCoral"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "DisableAlgae"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "MoveElevatorToL3Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "OuttakeCoral"
           }
         },
         {

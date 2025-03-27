@@ -11,35 +11,15 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "PIDAlignRightReef"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "EnableAlgae"
-                }
-              }
-            ]
+            "name": "EnableAlgae"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PIDAlignRightReef"
           }
         },
         {
@@ -52,6 +32,12 @@
           "type": "named",
           "data": {
             "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DisableAlgae"
           }
         },
         {
