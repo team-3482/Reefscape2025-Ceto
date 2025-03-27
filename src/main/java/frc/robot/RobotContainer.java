@@ -202,13 +202,17 @@ public class RobotContainer {
     private void registerNamedCommands() {
         NamedCommands.registerCommand("MoveElevatorToBottom",
             new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false));
+
         NamedCommands.registerCommand("MoveElevatorToL1Coral",
             new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL2Coral",
             new MoveElevatorCommand(ScoringConstants.L2_CORAL, false, false));
         NamedCommands.registerCommand("MoveElevatorToL3Coral",
             new MoveElevatorCommand(ScoringConstants.L3_CORAL, false, false));
+
         NamedCommands.registerCommand("MoveElevatorToL2Algae",
+            new MoveElevatorCommand(ScoringConstants.L2_ALGAE, false, false));
+        NamedCommands.registerCommand("MoveElevatorToL3Algae",
             new MoveElevatorCommand(ScoringConstants.L3_ALGAE, false, false));
         
         // NamedCommands.registerCommand("MoveElevatorToBottom_Slow",
@@ -250,6 +254,10 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("ReleaseAlgaeAndZeroElevator",
             CommandGenerators.InitialElevatorLiftAndZeroCommand());
+        
+        // TODO AUTO : Test new paths
+        // TODO AUTO : Test L3 Algae scoring auto
+        // TODO AUTO : Test L2 Algae scoring auto
     }
 
     /** Configures the button bindings of the driver controller. */

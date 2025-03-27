@@ -239,9 +239,7 @@ public class PIDAlignCommand extends Command {
                 TagSets.REEF_TAGS::contains,
                 (flipTags ? TagSets.REEF_TAGS_FLIPPED::contains : TagSets.EMPTY_SET::contains),
                 direction,
-                direction == 0
-                    ? AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG_ALGAE
-                    : AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG_CORAL,
+                AligningConstants.Reef.PERPENDICULAR_DIST_TO_TAG,
                 AligningConstants.Reef.PARALLEL_DIST_TO_TAG
             );
         }

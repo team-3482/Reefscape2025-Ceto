@@ -31,10 +31,8 @@ public final class Constants {
     /** Constants used for auto-aligning the robot when scoring. */
     public static final class AligningConstants {
         public static final class Reef {
-            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.48;
-            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
+            /** How far (in meters) the robot should be from the tag perpendicularly to be flush with the reef. */
+            public static final double PERPENDICULAR_DIST_TO_TAG = 0.48; // TODO ALIGN : Find this again, to be flush
             /** How far (in meters) the robot should be parallel to the tag to score. */
             public static final double PARALLEL_DIST_TO_TAG = 0.185;
         }
