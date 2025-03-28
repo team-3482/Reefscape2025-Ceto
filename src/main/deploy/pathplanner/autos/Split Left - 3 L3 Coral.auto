@@ -5,27 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "StartLeftToJ"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "StartLeftToJ"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EnableAlgae"
+                }
+              }
+            ]
           }
         },
         {
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "EnableAlgae"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PIDAlignRightReef"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -67,27 +68,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "LeftCoralToL"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LeftCoralToL"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EnableAlgae"
+                }
+              }
+            ]
           }
         },
         {
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "EnableAlgae"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "PIDAlignRightReef"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -132,12 +134,6 @@
           "type": "path",
           "data": {
             "pathName": "LeftCoralToK"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PIDAlignLeftReef"
           }
         },
         {
