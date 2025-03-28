@@ -381,23 +381,6 @@
             },
             "children": [
               {
-                "title": "Any",
-                "x": 640.0,
-                "y": 320.0,
-                "width": 256.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/SmartDashboard/Coral/HasCoral",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4294967295,
-                  "false_color": 4278190080,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
                 "title": "Front",
                 "x": 640.0,
                 "y": 384.0,
