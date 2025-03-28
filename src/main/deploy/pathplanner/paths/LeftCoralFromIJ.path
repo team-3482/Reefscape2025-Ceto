@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.187,
-        "y": 5.2925
+        "x": 5.124214963569615,
+        "y": 5.10587094311088
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.367604782322203,
-        "y": 5.783707370637748
+        "x": 3.438735337085798,
+        "y": 6.279200200822309
       },
       "isLocked": false,
       "linkedName": "Reef IJ"
     },
     {
       "anchor": {
-        "x": 1.166,
-        "y": 7.093
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": {
-        "x": 1.303787107660684,
-        "y": 6.884398195207944
+        "x": 1.8632970802584365,
+        "y": 7.287618152836815
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.08450851871468931,
+      "waypointRelativePos": 0.180385288966725,
       "rotationDegrees": -119.99999999999999
     }
   ],
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.0973849826388889,
+      "waypointRelativePos": 0.10162601626016263,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

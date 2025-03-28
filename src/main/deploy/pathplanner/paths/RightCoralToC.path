@@ -3,43 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1177448927380231,
-        "y": 0.9720506509627046
+        "x": 1.6245420011888383,
+        "y": 0.6079411804969095
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8883352810113068,
-        "y": 2.201421312377315
+        "x": 2.956209023566093,
+        "y": 2.1136578009821423
       },
       "isLocked": false,
       "linkedName": "Coral Right"
     },
     {
       "anchor": {
-        "x": 3.79275,
-        "y": 2.80625
+        "x": 3.7195137535483185,
+        "y": 3.0214113367840536
       },
       "prevControl": {
-        "x": 2.915488592806027,
-        "y": 2.2184668209780574
+        "x": 3.047400651947533,
+        "y": 2.2585865635562685
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef C"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.03739627471751413,
-      "rotationDegrees": 55.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Move Elevator to L3 Coral",
-      "waypointRelativePos": 0.7247863247863248,
+      "waypointRelativePos": 0.8780487804878052,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

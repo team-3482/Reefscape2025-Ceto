@@ -3,50 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.166,
-        "y": 7.093
+        "x": 7.25,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7729846924272286,
-        "y": 6.381551792753183
+        "x": 6.493277850834794,
+        "y": 3.9370764318938427
       },
       "isLocked": false,
-      "linkedName": "Coral Left"
+      "linkedName": "Start Middle"
     },
     {
       "anchor": {
-        "x": 3.128972746196546,
-        "y": 4.01346146432977
+        "x": 5.742139723324795,
+        "y": 3.865070816442365
       },
       "prevControl": {
-        "x": 3.0035918667851838,
-        "y": 4.8217408234883035
+        "x": 6.589743165819313,
+        "y": 3.938879445632426
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef AB"
+      "linkedName": "Reef G"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.11359021892655367,
-      "rotationDegrees": -55.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToL3Coral",
-      "waypointRelativePos": 0.75,
+      "name": "MoveElevatorToL2Algae",
+      "waypointRelativePos": 0.8028455284552836,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "MoveElevatorToL3Coral"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -59,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "3. IntakeToReef",
+  "folder": "1. Start",
   "idealStartingState": {
-    "velocity": 0.0,
-    "rotation": -55.0
+    "velocity": 0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

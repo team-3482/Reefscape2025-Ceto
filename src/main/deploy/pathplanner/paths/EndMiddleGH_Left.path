@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.25,
-        "y": 4.0
+        "x": 5.74493027693961,
+        "y": 4.036165372597336
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.994214430064554,
-        "y": 4.003135152267659
+        "x": 5.770699356235617,
+        "y": 4.348158311915177
       },
       "isLocked": false,
-      "linkedName": "Start Middle"
+      "linkedName": "Reef GH"
     },
     {
       "anchor": {
-        "x": 5.87925,
-        "y": 4.0
+        "x": 5.74493027693961,
+        "y": 7.490407744200191
       },
       "prevControl": {
-        "x": 6.889189316956411,
-        "y": 3.9885681724180433
+        "x": 5.751611656909011,
+        "y": 6.456532703749737
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef GH"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,10 +33,15 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToL2Algae",
-      "waypointRelativePos": 0.8451282051281974,
+      "name": "Move Elevator to Idle",
+      "waypointRelativePos": 0.22357723577235772,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveElevatorToIdle"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -52,7 +57,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "1. Start",
+  "folder": "4. End",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

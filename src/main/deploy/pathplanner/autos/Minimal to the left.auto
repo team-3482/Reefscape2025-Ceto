@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "StartMiddleToGH"
+            "pathName": "StartMiddleToH"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EndMiddleGH"
+            "pathName": "EndMiddleGH_Left"
           }
         }
       ]

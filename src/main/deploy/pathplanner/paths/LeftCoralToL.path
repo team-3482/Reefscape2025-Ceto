@@ -3,43 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.166,
-        "y": 7.093
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.268938657376148,
-        "y": 6.336447431940376
+        "x": 2.5512784355261564,
+        "y": 6.401180773604343
       },
       "isLocked": false,
       "linkedName": "Coral Left"
     },
     {
       "anchor": {
-        "x": 3.728176229508197,
-        "y": 5.025973360655737
+        "x": 3.7180040213694934,
+        "y": 5.022788376820578
       },
       "prevControl": {
-        "x": 3.352773216494965,
-        "y": 5.3096314943651866
+        "x": 3.3957562584284924,
+        "y": 5.3828026029535305
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Reef L"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.023012667725988707,
-      "rotationDegrees": -55.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "MoveElevatorToL2Algae",
-      "waypointRelativePos": 0.7781196581196472,
+      "waypointRelativePos": 0.7784552845528455,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

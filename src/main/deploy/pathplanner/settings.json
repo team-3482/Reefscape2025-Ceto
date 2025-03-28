@@ -8,9 +8,7 @@
     "2. ReefToIntake",
     "1. Start"
   ],
-  "autoFolders": [
-    "Non-split (old, not for new algae)"
-  ],
+  "autoFolders": [],
   "defaultMaxVel": 4.25,
   "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 540.0,

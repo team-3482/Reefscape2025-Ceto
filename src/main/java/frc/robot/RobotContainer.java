@@ -254,11 +254,8 @@ public class RobotContainer {
             new PIDAlignCommand.Processor()
                 .withTimeout(3)
         );
-        
-        NamedCommands.registerCommand("ReleaseAlgaeAndZeroElevator",
-            CommandGenerators.InitialElevatorLiftAndZeroCommand());
-        
-        // TODO AUTO : Test new paths
+
+        // TODO AUTO : TRY "Unlimited" check on PP app for each path ?
     }
 
     /** Configures the button bindings of the driver controller. */

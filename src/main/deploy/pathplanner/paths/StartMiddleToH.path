@@ -3,50 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8025,
-        "y": 2.8452499999999996
+        "x": 7.25,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8258304794452225,
-        "y": 1.1022705479517818
+        "x": 6.493727211938596,
+        "y": 4.0932718246633755
       },
       "isLocked": false,
-      "linkedName": "Reef CD"
+      "linkedName": "Start Middle"
     },
     {
       "anchor": {
-        "x": 7.032020547938373,
-        "y": 6.196211472609316
+        "x": 5.742726540587683,
+        "y": 4.1786278294544426
       },
       "prevControl": {
-        "x": 7.302482876705495,
-        "y": 1.748608732883289
+        "x": 6.53838104295302,
+        "y": 4.080218729721592
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Reef H"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.18837675350701322,
-      "rotationDegrees": 59.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.1,
+      "name": "MoveElevatorToL2Algae",
+      "waypointRelativePos": 0.8028455284552836,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "MoveElevatorToBottom"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -59,13 +49,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "4. End",
+  "folder": "1. Start",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

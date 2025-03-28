@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.516771624194719,
-        "y": 6.185571041874635
+        "x": 7.821664198051188,
+        "y": 6.394781452834104
       },
       "isLocked": false,
       "linkedName": "Start Left"
     },
     {
       "anchor": {
-        "x": 4.998872950819672,
-        "y": 5.1698258196721305
+        "x": 4.978941880073785,
+        "y": 5.184902261247603
       },
       "prevControl": {
-        "x": 5.027505338516111,
-        "y": 5.4181807801114195
+        "x": 5.17109193782116,
+        "y": 5.373024458047896
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to L3 Algae",
-      "waypointRelativePos": 0.6988034188034227,
+      "name": "MoveElevatorToL3Algae",
+      "waypointRelativePos": 0.7703252032520328,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

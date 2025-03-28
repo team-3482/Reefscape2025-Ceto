@@ -489,3 +489,5 @@ public class VisionSubsystem extends SubsystemBase {
             .getEntry("tid").getInteger(0);
     }
 }
+
+// TODO Vision : Euryale is moving to bottom left from top

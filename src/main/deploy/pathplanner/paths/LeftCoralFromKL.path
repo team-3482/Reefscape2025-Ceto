@@ -3,43 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8220000000000005,
-        "y": 5.1754999999999995
+        "x": 3.8529557673136976,
+        "y": 5.104404707654408
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2669600581511467,
-        "y": 5.558550982371564
+        "x": 3.4468902051820587,
+        "y": 5.531512841528035
       },
       "isLocked": false,
       "linkedName": "Reef KL"
     },
     {
       "anchor": {
-        "x": 1.166,
-        "y": 7.093
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": {
-        "x": 3.2571820164647236,
-        "y": 5.6373689756536365
+        "x": 3.383970504110449,
+        "y": 5.595918850233583
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Coral Left"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.05878133827683616,
-      "rotationDegrees": -59.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.09934714988425926,
+      "waypointRelativePos": 0.09959349593495932,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

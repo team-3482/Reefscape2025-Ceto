@@ -5,10 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.algae.AlgaeSubsystem;
-import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.MoveElevatorCommand;
-import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.swerve.SwerveSubsystem;
 
 /**
@@ -87,23 +83,6 @@ public final class CommandGenerators {
     public static Command DisableAlgaeCommand() {
         return AlgaeSubsystem.getInstance().runOnce(
             () -> AlgaeSubsystem.getInstance().stop()
-        );
-    }
-
-    /**
-     * A command that moves the elevator up to release the algae and re-zero.
-     * @return The command.
-     * @deprecated No longer necessary.
-     */
-    @Deprecated(since = "26 March 2025")
-    public static Command InitialElevatorLiftAndZeroCommand() {
-        return Commands.sequence(
-            // Just in case it has been booted before the algae was put down,
-            // and the position is already correct (should be rare though because it wastes battery)
-            ElevatorSubsystem.getInstance().runOnce(() -> ElevatorSubsystem.getInstance().setPosition(0)),
-            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false),
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false),
-            new ZeroElevatorCommand()
         );
     }
 }
