@@ -33,13 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to L3 Coral",
-      "waypointRelativePos": 0.770325203252033,
+      "name": "Clear L2 Algae",
+      "waypointRelativePos": 0.7804878048780476,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "MoveElevatorToL3Coral"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToL2Algae"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableAlgae"
+              }
+            }
+          ]
         }
       }
     }

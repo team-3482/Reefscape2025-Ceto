@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.180385288966725,
+      "waypointRelativePos": 0.15936952714535885,
       "rotationDegrees": -119.99999999999999
     }
   ],
@@ -38,13 +38,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToBottom",
-      "waypointRelativePos": 0.10162601626016263,
+      "name": "Reset Elevator",
+      "waypointRelativePos": 0.09552845528455287,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "MoveElevatorToBottom"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToBottom"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DisableAlgae"
+              }
+            }
+          ]
         }
       }
     }

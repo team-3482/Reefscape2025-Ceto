@@ -33,13 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "MoveElevatorToL2Algae",
+      "name": "Move Elevator to L3 Coral",
       "waypointRelativePos": 0.7784552845528455,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "MoveElevatorToL2Algae"
+          "name": "MoveElevatorToL3Coral"
         }
       }
     }

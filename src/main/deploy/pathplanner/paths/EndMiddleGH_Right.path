@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 5.74493027693961,
-        "y": 0.5764851485148506
+        "y": 0.673655084230894
       },
       "prevControl": {
         "x": 5.738996169863499,
-        "y": 0.9047951238530056
+        "y": 1.001965059569049
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,13 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to Idle",
-      "waypointRelativePos": 0.16463414634146353,
+      "name": "Reset Elevator",
+      "waypointRelativePos": 0.2154471544715449,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "MoveElevatorToIdle"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToBottom"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DisableAlgae"
+              }
+            }
+          ]
         }
       }
     }

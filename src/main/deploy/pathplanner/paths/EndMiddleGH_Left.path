@@ -33,13 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to Idle",
-      "waypointRelativePos": 0.22357723577235772,
+      "name": "Reset Elevator",
+      "waypointRelativePos": 0.2500000000000001,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "MoveElevatorToIdle"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToBottom"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DisableAlgae"
+              }
+            }
+          ]
         }
       }
     }
