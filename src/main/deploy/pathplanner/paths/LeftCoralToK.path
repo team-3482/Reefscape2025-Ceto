@@ -38,19 +38,19 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move to L2 Algae",
+      "name": "Move Elevator to L3 Coral",
       "waypointRelativePos": 0.7630769230769159,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "MoveElevatorToL2Algae"
+          "name": "MoveElevatorToL3Coral"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

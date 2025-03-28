@@ -67,7 +67,8 @@ public class VisionData {
                 && this.MegaTag2 != null
                 && ((this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
                 || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= 3)
-                || (DriverStation.isDisabled() && bargeMegaTag())); // Important for pre-match positioning updates
+                // Trust any data when disabled, so that it can set initial pos/rot
+                || (this.MegaTag.tagCount > 0 && DriverStation.isDisabled()));
         }
         return this.canTrustRotation;
     }
@@ -80,9 +81,11 @@ public class VisionData {
         if (this.canTrustPosition == null) {
             this.canTrustPosition =
                 this.MegaTag2 != null
-                && (
-                    (this.MegaTag2.tagCount > 0 && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE)
-                    || (DriverStation.isDisabled() && bargeMegaTag())
+                && (this.MegaTag2.tagCount > 0 
+                    && (
+                        this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE
+                         // Trust any data when disabled, so that it can set initial pos/rot
+                        || DriverStation.isDisabled())
                 );
         }
         return this.canTrustPosition;
@@ -90,7 +93,9 @@ public class VisionData {
 
     /**
      * Checks if {@link VisionData#MegaTag} sees a barge tag. (4, 5, 14, or 15).
+     * @deprecated
      */
+    @Deprecated
     private boolean bargeMegaTag() {
         if (this.MegaTag == null) return false;
 

@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 2.8258304794452225,
-        "y": 1.102270547951782
+        "y": 1.1022705479517818
       },
       "isLocked": false,
       "linkedName": "Reef CD"
@@ -50,7 +50,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

@@ -352,7 +352,10 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // Downscaling closer to tags.
-            if (limelightData.MegaTag2.avgTagDist < 1) {
+            if (DriverStation.isDisabled()) {
+                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
+            }
+            else if (limelightData.MegaTag2.avgTagDist < 1) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
             }
             else if (limelightData.MegaTag2.avgTagDist < 2) {
