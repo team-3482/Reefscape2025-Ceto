@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6245420011888383,
-        "y": 0.6079411804969095
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.956209023566093,
-        "y": 2.1136578009821423
+        "x": 2.5512784355261564,
+        "y": 6.401180773604343
       },
       "isLocked": false,
-      "linkedName": "Coral Right"
+      "linkedName": "Coral Left"
     },
     {
       "anchor": {
-        "x": 3.7195137535483185,
-        "y": 3.0214113367840536
+        "x": 3.7180040213694934,
+        "y": 5.022788376820578
       },
       "prevControl": {
-        "x": 3.047400651947533,
-        "y": 2.2585865635562685
+        "x": 3.3957562584284924,
+        "y": 5.3828026029535305
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef C"
+      "linkedName": "Reef L"
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Move Elevator to L3 Coral",
-      "waypointRelativePos": 0.8780487804878052,
+      "waypointRelativePos": 0.7784552845528455,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -50,17 +50,17 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": 59.99999999999999
+    "velocity": 0,
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "3. IntakeToReef",
+  "folder": "3. Coral Station to Reef",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 55.0
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }

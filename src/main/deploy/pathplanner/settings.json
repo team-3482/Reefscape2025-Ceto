@@ -3,10 +3,10 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "4. End",
-    "3. IntakeToReef",
-    "2. ReefToIntake",
-    "1. Start"
+    "1. Start",
+    "2. Reef to Coral Station",
+    "3. Coral Station to Reef",
+    "4. End"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.25,

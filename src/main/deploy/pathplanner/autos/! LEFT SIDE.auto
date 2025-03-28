@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "StartLeftToJ"
+                  "pathName": "Start Left To J"
                 }
               },
               {
@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralFromIJ"
+                  "pathName": "IJ To Coral Left"
                 }
               }
             ]
@@ -55,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralToK"
+                  "pathName": "Coral Left To K"
                 }
               },
               {
@@ -86,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralFromKL"
+                  "pathName": "KL To Coral Left"
                 }
               }
             ]
@@ -99,7 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "LeftCoralToL"
+                  "pathName": "Coral Left To L"
                 }
               },
               {

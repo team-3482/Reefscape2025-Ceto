@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8801946761625423,
-        "y": 2.930759463594603
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.180391960041803,
-        "y": 2.2256372449054864
+        "x": 2.6000503759123,
+        "y": 6.4992848985144205
       },
       "isLocked": false,
-      "linkedName": "Reef CD"
+      "linkedName": "Coral Left"
     },
     {
       "anchor": {
-        "x": 1.6245420011888383,
-        "y": 0.6079411804969095
+        "x": 3.9998690296636723,
+        "y": 5.189017631332142
       },
       "prevControl": {
-        "x": 3.130993875977672,
-        "y": 2.147443121633245
+        "x": 3.7260956578232083,
+        "y": 5.474638125563048
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Coral Right"
+      "linkedName": "Reef K"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Reset Elevator",
-      "waypointRelativePos": 0.05691056910569112,
+      "name": "Clear L2 Algae",
+      "waypointRelativePos": 0.7804878048780476,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -43,13 +43,13 @@
             {
               "type": "named",
               "data": {
-                "name": "MoveElevatorToBottom"
+                "name": "MoveElevatorToL2Algae"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "DisableAlgae"
+                "name": "EnableAlgae"
               }
             }
           ]
@@ -63,17 +63,17 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "2. ReefToIntake",
+  "folder": "3. Coral Station to Reef",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 59.99999999999999
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }
