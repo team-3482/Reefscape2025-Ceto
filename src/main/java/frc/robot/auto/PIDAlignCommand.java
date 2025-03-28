@@ -176,7 +176,7 @@ public class PIDAlignCommand extends Command {
      */
     private Optional<Pose2d> getTargetPose() {
         Optional<Pose2d> botPose_TargetSpace = VisionSubsystem.getInstance().getEstimatedPosition_TargetSpace();
-        int primaryInViewTag = VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag();
+        int primaryInViewTag = VisionSubsystem.getInstance().getPrimaryTagInView_MegaTag();
 
         if (
             botPose_TargetSpace.isEmpty() ||

@@ -2,8 +2,6 @@ package frc.robot.vision;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.LimelightConstants;
-import frc.robot.constants.Constants.TagSets;
-import frc.robot.vision.LimelightHelpers.RawFiducial;
 
 /**
  * <p>A helper class used for storing MegaTag and MegaTag2 data from a Limelight
@@ -63,12 +61,13 @@ public class VisionData {
     public boolean canTrustRotation() {
         if (this.canTrustRotation == null) {
             this.canTrustRotation = 
-                this.MegaTag != null
-                && this.MegaTag2 != null
-                && ((this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
-                || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= 3)
-                // Trust any data when disabled, so that it can set initial pos/rot
-                || (this.MegaTag.tagCount > 0 && DriverStation.isDisabled()));
+                this.MegaTag != null && this.MegaTag2 != null
+                && (
+                    (this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
+                    || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= 3)
+                    // Trust any data when disabled, so that it can set initial position / rotation.
+                    || (this.MegaTag.tagCount > 0 && DriverStation.isDisabled())
+                );
         }
         return this.canTrustRotation;
     }
@@ -81,29 +80,15 @@ public class VisionData {
         if (this.canTrustPosition == null) {
             this.canTrustPosition =
                 this.MegaTag2 != null
-                && (this.MegaTag2.tagCount > 0 
+                && (
+                    this.MegaTag2.tagCount > 0 
                     && (
                         this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE
-                         // Trust any data when disabled, so that it can set initial pos/rot
-                        || DriverStation.isDisabled())
+                        // Trust any data when disabled, so that it can set initial position / rotation.
+                        || DriverStation.isDisabled()
+                    )
                 );
         }
         return this.canTrustPosition;
-    }
-
-    /**
-     * Checks if {@link VisionData#MegaTag} sees a barge tag. (4, 5, 14, or 15).
-     * @deprecated
-     */
-    @Deprecated
-    private boolean bargeMegaTag() {
-        if (this.MegaTag == null) return false;
-
-        for (RawFiducial fiducial : this.MegaTag.rawFiducials) {
-            if (TagSets.BARGE_TAGS.contains(fiducial.id)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
