@@ -123,6 +123,8 @@ public class SwerveTelemetry {
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
 
+        SmartDashboard.putNumber("Robot Angle", state.Pose.getRotation().getDegrees());
+
         /* causing some problem with NT and we honestly don't really need it */
         /* Dashboard swerve drive */
 //        SmartDashboard.putData("Swerve Drive", new Sendable() {
@@ -141,8 +143,6 @@ public class SwerveTelemetry {
 //
 //                builder.addDoubleProperty("Back Right Angle", () -> m_moduleDirections[0].getAngle(), null);
 //                builder.addDoubleProperty("Back Right Velocity", () -> m_moduleSpeeds[0].getLength(), null);
-//
-//                builder.addDoubleProperty("Robot Angle", () -> state.Pose.getRotation().getDegrees(), null);
 //            }
 //        });
     }
