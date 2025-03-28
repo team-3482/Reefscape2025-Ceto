@@ -153,7 +153,7 @@ public class VisionSubsystem extends SubsystemBase {
         processor = reef = canAlign = false;
 
         if (recentVisionData()) {
-            int primaryTag = getPrimaryTagInView_MegaTag();
+            int primaryTag = getPrimaryTagInView();
             
             reef = TagSets.REEF_TAGS.contains(primaryTag);
             processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
@@ -485,10 +485,12 @@ public class VisionSubsystem extends SubsystemBase {
      * Gets the primary tag in view of either bottom limelights, with priority for the right one.
      * @return The tag ID.
      */
-    public int getPrimaryTagInView_MegaTag() {
-        return getPrimaryTagInView_MegaTag(LimelightConstants.BOTTOM_RIGHT_LL)
-            .or(() -> getPrimaryTagInView_MegaTag(LimelightConstants.BOTTOM_LEFT_LL))
-            .get().intValue();
+    public int getPrimaryTagInView() {
+        int id = getPrimaryTagInView(LimelightConstants.BOTTOM_RIGHT_LL);
+        if (id == -1) {
+            id = getPrimaryTagInView(LimelightConstants.BOTTOM_LEFT_LL);
+        }
+        return id;
     }
 
     /**
@@ -496,12 +498,8 @@ public class VisionSubsystem extends SubsystemBase {
      * @param limelight - The limelight to get the ID for.
      * @return The tag ID.
      */
-    private Optional<Integer> getPrimaryTagInView_MegaTag(String limelight) {
-        int id = (int) NetworkTableInstance.getDefault().getTable(limelight)
-            .getEntry("tid").getInteger(0l);
-        return id == 0 ? Optional.empty() : Optional.of(id);
+    private int getPrimaryTagInView(String limelight) {
+        return (int) NetworkTableInstance.getDefault().getTable(limelight)
+            .getEntry("tid").getInteger(-1);
     }
 }
-
-// TODO BOTTOM LEFT LL : Tune position
-// TODO LL : Check that odometry still works, aligning still works.
