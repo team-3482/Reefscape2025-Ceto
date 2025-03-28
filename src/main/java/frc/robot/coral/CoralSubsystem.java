@@ -87,11 +87,8 @@ public class CoralSubsystem extends SubsystemBase {
         this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
         this.shuffleboard_entry_backLaser.setBoolean(coralBack);
         
-        boolean coral = coralFront || coralBack;
-        
         Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
         Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
-        Logger.recordOutput("Coral/HasCoral", coral);
 
         // Avoids logging every loop
         if (this.state != this.lastLoggedState) {
@@ -99,7 +96,7 @@ public class CoralSubsystem extends SubsystemBase {
             this.lastLoggedState = this.state;
         }
 
-        if (coral && DriverStation.isEnabled()) {
+        if (coralFront && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
     }
@@ -202,7 +199,10 @@ public class CoralSubsystem extends SubsystemBase {
     /**
      * Returns a boolean value of whether there is a coral in the outtake
      * @return whether it has coral
+     * @deprecated The back laser can be broken by the elevator, thus it is a poor indicator of having coral.
+     * Use {@link CoralSubsystem#hasCoral_frontLaser()} only instead.
      */
+    @Deprecated(since = "28 March 2025", forRemoval = true)
     public boolean hasCoral() {
         return hasCoral_backLaser() || hasCoral_frontLaser();
     }
