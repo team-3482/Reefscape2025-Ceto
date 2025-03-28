@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Start Right To F"
+                  "pathName": "Start Right To F (L3A)"
                 }
               },
               {
@@ -55,7 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Right To D"
+                  "pathName": "Coral Right To D (L2A)"
                 }
               },
               {
@@ -99,13 +99,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Coral Right To C"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "MoveElevatorToL3Coral"
+                  "pathName": "Coral Right To C (L3C)"
                 }
               },
               {
