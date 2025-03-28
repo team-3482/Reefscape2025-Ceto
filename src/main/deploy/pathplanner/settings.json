@@ -11,8 +11,8 @@
   "autoFolders": [
     "Non-split (old, not for new algae)"
   ],
-  "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 4.25,
+  "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
@@ -23,7 +23,7 @@
   "driveGearing": 6.746,
   "maxDriveSpeed": 4.6,
   "driveMotorType": "krakenX60",
-  "driveCurrentLimit": 60.0,
+  "driveCurrentLimit": 80.0,
   "wheelCOF": 1.0,
   "flModuleX": 0.2794,
   "flModuleY": 0.2794,
@@ -38,6 +38,6 @@
   "robotFeatures": [
     "{\"name\":\"Battery\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.25,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.15},\"borderRadius\":0.01,\"strokeWidth\":0.01,\"filled\":true}}",
     "{\"name\":\"Elevator\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.125,\"y\":0.0},\"size\":{\"width\":0.5,\"length\":0.05},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}",
-    "{\"name\":\"Outtake\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.26,\"y\":0.0},\"size\":{\"width\":0.15,\"length\":0.175},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
+    "{\"name\":\"Outtake\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.26,\"y\":0.0},\"size\":{\"width\":0.13,\"length\":0.175},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
   ]
 }

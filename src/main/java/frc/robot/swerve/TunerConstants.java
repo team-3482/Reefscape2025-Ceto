@@ -50,11 +50,13 @@ public class TunerConstants {
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
     private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+        // TODO AUTO : See if increased speeds have provided significant advantages to driving
+        // TODO AUTO : Might be able to further push it in PathPlanner config settings !
         .withCurrentLimits(new CurrentLimitsConfigs()
             .withSupplyCurrentLimitEnable(true)
-            .withSupplyCurrentLimit(Amps.of(60)) // Default is 70
-            .withSupplyCurrentLowerTime(Seconds.of(1))
-            .withSupplyCurrentLowerLimit(Amps.of(35)) // Default is 40
+            .withSupplyCurrentLimit(Amps.of(80)) // Default is 70
+            .withSupplyCurrentLowerTime(Seconds.of(1)) // Default is 1
+            .withSupplyCurrentLowerLimit(Amps.of(40)) // Default is 40
         );
     private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
         .withCurrentLimits(
