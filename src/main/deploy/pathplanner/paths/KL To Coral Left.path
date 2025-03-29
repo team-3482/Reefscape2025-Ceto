@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.8529557673136976,
-        "y": 5.104404707654408
+        "x": 3.8415,
+        "y": 5.1365
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4468902051820587,
-        "y": 5.531512841528035
+        "x": 3.435434437868361,
+        "y": 5.563608133873627
       },
       "isLocked": false,
       "linkedName": "Reef KL"
@@ -58,10 +58,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 5.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

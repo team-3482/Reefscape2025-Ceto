@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 3.9998690296636723,
-        "y": 5.189017631332142
+        "x": 4.00725,
+        "y": 5.195
       },
       "prevControl": {
-        "x": 3.7260956578232083,
-        "y": 5.474638125563048
+        "x": 3.733476628159536,
+        "y": 5.480620494230906
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Clear L2 Algae",
-      "waypointRelativePos": 0.7804878048780476,
+      "waypointRelativePos": 0.6030769230769253,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -58,10 +58,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 5.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },

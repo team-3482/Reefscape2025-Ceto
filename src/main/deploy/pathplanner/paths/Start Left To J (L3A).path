@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 4.978941880073785,
-        "y": 5.184902261247603
+        "x": 4.974897540983607,
+        "y": 5.205788934426229
       },
       "prevControl": {
-        "x": 5.17109193782116,
-        "y": 5.373024458047896
+        "x": 5.167047598730981,
+        "y": 5.393911131226521
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "Clear L3 Algae",
-      "waypointRelativePos": 0.7703252032520328,
+      "waypointRelativePos": 0.6509401709401732,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -58,10 +58,10 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.25,
-    "maxAcceleration": 5.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
@@ -73,7 +73,7 @@
   "folder": "1. Start",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -135.0
   },
   "useDefaultConstraints": true
 }
