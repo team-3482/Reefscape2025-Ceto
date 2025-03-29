@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6636041119508362,
-        "y": 7.43802665794374
+        "x": 3.9697649929677277,
+        "y": 5.255456852693857
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5512784355261564,
-        "y": 6.401180773604343
+        "x": 3.534979121986825,
+        "y": 5.674189977842831
       },
       "isLocked": false,
-      "linkedName": "Coral Left"
+      "linkedName": "Reef K"
     },
     {
       "anchor": {
-        "x": 3.681495158353767,
-        "y": 5.096020956821784
+        "x": 1.6636041119508362,
+        "y": 7.43802665794374
       },
       "prevControl": {
-        "x": 3.359247395412766,
-        "y": 5.456035182954737
+        "x": 3.463780650174539,
+        "y": 5.737713889625498
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Reef L"
+      "linkedName": "Coral Left"
     }
   ],
   "rotationTargets": [],
@@ -33,13 +33,26 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Move Elevator to L3 Coral",
-      "waypointRelativePos": 0.5907692307692347,
+      "name": "Reset Elevator",
+      "waypointRelativePos": 0.17380952380952372,
       "endWaypointRelativePos": null,
       "command": {
-        "type": "named",
+        "type": "parallel",
         "data": {
-          "name": "MoveElevatorToL3Coral"
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToBottom"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DisableAlgae"
+              }
+            }
+          ]
         }
       }
     }
@@ -54,13 +67,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -55.0
   },
   "reversed": false,
-  "folder": "3. Coral Station to Reef",
+  "folder": "2. Reef to Coral Station",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -55.0
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

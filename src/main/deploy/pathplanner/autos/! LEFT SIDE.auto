@@ -17,6 +17,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "PIDAlignRight"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "MoveElevatorToL3Coral"
                 }
               },
@@ -42,7 +48,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "IJ To Coral Left"
+                  "pathName": "J To Coral Left"
                 }
               }
             ]
@@ -61,6 +67,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "PIDAlignLeft"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "MoveElevatorToL3Coral"
                 }
               },
@@ -86,7 +98,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "KL To Coral Left"
+                  "pathName": "K To Coral Left"
                 }
               }
             ]
@@ -100,6 +112,12 @@
                 "type": "path",
                 "data": {
                   "pathName": "Coral Left To L (L3C)"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PIDAlignRight"
                 }
               },
               {
