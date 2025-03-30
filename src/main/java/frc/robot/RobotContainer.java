@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -21,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.algae.AlgaeSubsystem;
-import frc.robot.auto.PIDAlignCommand;
+import frc.robot.auto.PIDAlignReefCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
@@ -239,21 +240,21 @@ public class RobotContainer {
             CommandGenerators.DisableAlgaeCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignCommand.Reef(1, false)
-                .withTimeout(3)
+            new PIDAlignReefCommand(1, false)
+                .withTimeout(1.5)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignCommand.Reef(-1, false)
-                .withTimeout(3)
+            new PIDAlignReefCommand(-1, false)
+                .withTimeout(1.5)
         );
         NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
-            new PIDAlignCommand.Reef(0, false)
-                .withTimeout(3)
+            new PIDAlignReefCommand(0, false)
+                .withTimeout(1.5)
         );
-        NamedCommands.registerCommand("PIDAlignProcessor",
-            new PIDAlignCommand.Processor()
-                .withTimeout(3)
-        );
+        // NamedCommands.registerCommand("PIDAlignProcessor",
+        //     new PIDAlignCommand.Processor()
+        //         .withTimeout(1.5)
+        // );
 
         // TODO AUTO : TRY "Unlimited" check on PP app for each path ?
     }
@@ -285,10 +286,10 @@ public class RobotContainer {
         // );
         this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignCommand.Reef(-1, true));
-        this.driverController.rightBumper().whileTrue(new PIDAlignCommand.Reef(1, true));
-        this.driverController.a().whileTrue(new PIDAlignCommand.Reef(0, false));
-        this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
+        this.driverController.leftBumper().whileTrue(new PIDAlignReefCommand(-1, true));
+        this.driverController.rightBumper().whileTrue(new PIDAlignReefCommand(1, true));
+        this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false));
+        // this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 
     /** Configures the button bindings of the operator controller. */

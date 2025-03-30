@@ -16,7 +16,9 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -27,12 +29,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.constants.AprilTagMap;
 import frc.robot.constants.LimelightConstants;
 
 import org.littletonrobotics.junction.Logger;
@@ -141,7 +145,7 @@ public class VisionSubsystem extends SubsystemBase {
         // The processing takes no longer than a regular robot cycle.
         // FPS will never be high enough to take advantage of every cycle,
         // but it's fine because repeat frames are entirely ignored (see heartbeats).
-        this.notifier.startPeriodic(0.02);
+        this.notifier.startPeriodic(0.01);
     }
 
     // This method will be called once per scheduler run
@@ -152,12 +156,24 @@ public class VisionSubsystem extends SubsystemBase {
         boolean processor, reef, canAlign;
         processor = reef = canAlign = false;
 
+        // TODO : Fix delay for aligning LED
+
         if (recentVisionData()) {
             int primaryTag = getPrimaryTagInView();
             
             reef = TagSets.REEF_TAGS.contains(primaryTag);
             processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
             canAlign = reef || processor;
+
+            SmartDashboard.putNumberArray(
+                "Primary Tag In View", 
+                VisionSubsystem.pose2dToArray(reef
+                    ? AprilTagMap.REEF.get(primaryTag).plus(new Transform2d(Translation2d.kZero, Rotation2d.kPi))
+                    : Pose2d.kZero)
+            );
+        }
+        else {
+            SmartDashboard.putNumberArray("Primary Tag In View", VisionSubsystem.pose2dToArray(Pose2d.kZero));
         }
         
         if (reef != this.lastReef) {
@@ -194,7 +210,7 @@ public class VisionSubsystem extends SubsystemBase {
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? 1 : 0.4
+                    recentVisionData() ? data.getRotationDeviation() : 0.2
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -202,11 +218,11 @@ public class VisionSubsystem extends SubsystemBase {
                 );
             }
 
-            if (data.canTrustPosition()) {
+            if (data.canTrustPosition() && data.canTrustRotation()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    recentVisionData() ? 0.7 : 0.1,
-                    recentVisionData() ? 0.7 : 0.1,
+                    recentVisionData() ? data.getPositionDeviation() : 0.2,
+                    recentVisionData() ? data.getPositionDeviation() : 0.2,
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -215,11 +231,15 @@ public class VisionSubsystem extends SubsystemBase {
                 );
             }
 
+            SmartDashboard.putNumberArray(data.name + " pos2", VisionSubsystem.pose2dToArray(data.MegaTag2.pose));
+            SmartDashboard.putNumberArray(data.name + " pos", VisionSubsystem.pose2dToArray(data.MegaTag.pose));
+
             hasRecentVisionData(
                 data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
                 data.canTrustRotation() ? data.MegaTag.pose.getRotation() : null
             );
         }
+
         // This method is suprprisingly efficient, generally below 1 ms.
         optimizeLimelights();
     }
@@ -358,21 +378,21 @@ public class VisionSubsystem extends SubsystemBase {
             if (DriverStation.isDisabled()) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 1) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
-            }
-            else if (limelightData.MegaTag2.avgTagDist < 2) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
-            }
-            else if (limelightData.MegaTag2.avgTagDist < 3) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
-            }
+            // else if (limelightData.MegaTag2.avgTagDist < 1) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
+            // }
+            // else if (limelightData.MegaTag2.avgTagDist < 2) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
+            // }
+            // else if (limelightData.MegaTag2.avgTagDist < 3) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
+            // }
             else {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
             }
 
             // Smart cropping around on-screen AprilTags
-            if (limelightData.leftX == -1) {
+            if (limelightData.leftX == -1 || limelightData.MegaTag2.avgTagDist < 0.5) {
                 LimelightHelpers.setCropWindow(
                     limelightData.name,
                     LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
@@ -386,30 +406,26 @@ public class VisionSubsystem extends SubsystemBase {
                 double rightCrop = limelightData.rightX / (LimelightConstants.RES_X / 2) - 1;
                 double bottomCrop = limelightData.bottomY / (LimelightConstants.RES_Y / 2) - 1;
                 double topCrop = limelightData.topY / (LimelightConstants.RES_Y / 2) - 1;
-                
-                // Commented out because we will not be seeing more than one tag at once with the bottom LLs this season
-                // if (
-                //     limelightData.MegaTag2.tagCount == 1
-                //     && (17 <= limelightData.MegaTag2.rawFiducials[0].id
-                //         || (6 <= limelightData.MegaTag2.rawFiducials[0].id
-                //             && limelightData.MegaTag2.rawFiducials[0].id <= 11))
-                // ) {
-                //     leftCrop -= 1.4 / limelightData.MegaTag2.avgTagDist;
-                //     rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
-                // }
-                // else {
-                leftCrop -= LimelightConstants.BOUNDING_BOX;
-                rightCrop += LimelightConstants.BOUNDING_BOX;
 
-                // }
+                // Remember, LL data has latency !
+                // If the robot is moving, a crop will happen too late and could be too small thus losing data when it is applied.
+                ChassisSpeeds robotSpeeds = SwerveSubsystem.getInstance().getState().Speeds;
+                double speed = Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+                double speedAdjustment = speed >= 0.5 ? LimelightConstants.BOUNDING_BOX : 0;
+                double sideAdjustment = Math.abs(robotSpeeds.omegaRadiansPerSecond) >= Math.toRadians(25)
+                    ? Math.abs(robotSpeeds.omegaRadiansPerSecond) * LimelightConstants.BOUNDING_BOX / (0.44 * 2)
+                    : 0;
 
-                if (DriverStation.isAutonomous()) {
+                leftCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
+                rightCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
+
+                if (DriverStation.isAutonomous() && limelightData.MegaTag2.avgTagDist > 0.75) {
                     leftCrop = -1;
                     rightCrop = 1;
                 }
                 
-                bottomCrop -= LimelightConstants.BOUNDING_BOX;
-                topCrop += LimelightConstants.BOUNDING_BOX;
+                bottomCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment;
+                topCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment;
 
                 LimelightHelpers.setCropWindow(limelightData.name, leftCrop, rightCrop, bottomCrop, topCrop);
             }
@@ -471,7 +487,7 @@ public class VisionSubsystem extends SubsystemBase {
         double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(limelight);
 
         // 0, 0, 0
-        if (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0) {
+        if (poseArray.length == 0 || (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0)) {
             return Optional.empty();
         }
 
@@ -502,6 +518,17 @@ public class VisionSubsystem extends SubsystemBase {
         return (int) NetworkTableInstance.getDefault().getTable(limelight)
             .getEntry("tid").getInteger(-1);
     }
-}
 
-// BOTTOM LEFT LL : Tune to robot position better :(
+    /**
+     * Converts a Pose2d to the form [x, y, yaw]. The yaw is in degrees for legibility.
+     * @param pose - The pose to process.
+     * @return The array.
+     */
+    public static double[] pose2dToArray(Pose2d pose) {
+        return new double[] {
+            pose.getX(),
+            pose.getY(),
+            pose.getRotation().getDegrees()
+        };
+    }
+}

@@ -17,7 +17,7 @@ public final class LimelightConstants {
     public static final String BOTTOM_LEFT_LL = "limelight-euryale";
 
     /** The distance within which to use Limelight data in meters. This is measured from tag to camera.*/
-    public static final int TRUST_TAG_DISTANCE = 10;
+    public static final double TRUST_TAG_DISTANCE = 10;
 
     /**
      * The time limit for considering data to be recent in seconds.
