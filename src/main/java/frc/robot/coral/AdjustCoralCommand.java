@@ -6,11 +6,14 @@ package frc.robot.coral;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.led.StatusColors;
+import frc.robot.constants.Constants.ScoringConstants;
+import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.led.LEDSubsystem;
 
 /** A command that adjusts the coral in case it has been intook too far. */
 public class AdjustCoralCommand extends Command {
     private boolean atBackOnce = false;
+    private boolean tooHigh = false;
 
     /** Creates a new AdjustCoralCommand. */
     public AdjustCoralCommand() {
@@ -22,6 +25,9 @@ public class AdjustCoralCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        this.tooHigh = ElevatorSubsystem.getInstance().getPosition() >= ScoringConstants.IDLE_HEIGHT;
+        if (this.tooHigh) return;
+
         this.atBackOnce = false;
         CoralSubsystem.getInstance().reverseIntake(true);
     }
@@ -29,6 +35,8 @@ public class AdjustCoralCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        if (this.tooHigh) return;
+
         if (!this.atBackOnce && CoralSubsystem.getInstance().hasCoral_backLaser()) {
             this.atBackOnce = true;
             CoralSubsystem.getInstance().intake(true);
@@ -39,14 +47,16 @@ public class AdjustCoralCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         CoralSubsystem.getInstance().stop();
-        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
+        LEDSubsystem.getInstance().setColor(interrupted || this.tooHigh ? StatusColors.ERROR : StatusColors.OK);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.atBackOnce
+        return this.tooHigh || (
+            this.atBackOnce
             && CoralSubsystem.getInstance().hasCoral_frontLaser()
-            && !CoralSubsystem.getInstance().hasCoral_backLaser();
+            && !CoralSubsystem.getInstance().hasCoral_backLaser()
+        );
     }
 }
