@@ -72,7 +72,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        SignalLogger.stop();
+        // SignalLogger.stop();
         // Blink like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        SignalLogger.start();
+        // SignalLogger.start();
         LEDSubsystem.getInstance().setColor(StatusColors.OFF);
     }
 
