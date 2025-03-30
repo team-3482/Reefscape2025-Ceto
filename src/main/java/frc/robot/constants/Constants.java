@@ -69,7 +69,9 @@ public final class Constants {
         public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
         public static final Set<Integer> EMPTY_SET = Set.of();
         
+        @Deprecated
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
+        @Deprecated
         public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
 
     }

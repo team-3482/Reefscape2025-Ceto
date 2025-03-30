@@ -8,12 +8,13 @@ import java.util.Map;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.constants.Constants.AligningConstants;
 
 /** Every Reef Tag's position, hardcoded :) Gotten from Limelight's fmap, turned the 4x4 matrixes back into 2d poses. */
 public final class AprilTagMap {
-    public static final Map<Integer, Pose2d> REEF = Map.ofEntries(
+    private static final Map<Integer, Pose2d> REEF = Map.ofEntries(
         // Red side
         Map.entry( 6, new Pose2d(new Translation2d(13.474446, 3.306318), Rotation2d.fromDegrees(-60))),
         Map.entry( 7, new Pose2d(new Translation2d(13.890498, 4.0259  ), Rotation2d.fromDegrees(0))),
@@ -31,14 +32,43 @@ public final class AprilTagMap {
         Map.entry(22, new Pose2d(new Translation2d(4.90474 , 3.306318), Rotation2d.fromDegrees(-60)))
     );
 
+    private static final Transform2d FLIP = new Transform2d(Translation2d.kZero, Rotation2d.k180deg);
+
+    /**
+     * Gets a pose for a tag from an ID.
+     * @param id - The ID to query.
+     * @param flip - Whether to return the pose with the position +180.
+     * @return The pose if the ID is valid, {@link Pose2d.kZero} if invalid.
+     */
+    public static Pose2d getPoseFromID(int id, boolean flip) {
+        if (!AprilTagMap.REEF.containsKey(id)) {
+            return Pose2d.kZero;
+        }
+        else if (flip) {
+            return AprilTagMap.REEF.get(id).transformBy(AprilTagMap.FLIP);
+        }
+        else {
+            return AprilTagMap.REEF.get(id);
+        }
+    }
+
+    /**
+     * Gets a pose for a tag from an ID.
+     * @param id - The ID to query.
+     * @return The pose if the ID is valid, {@link Pose2d.kZero} if invalid.
+     */
+    public static Pose2d getPoseFromID(int id) {
+        return AprilTagMap.getPoseFromID(id, false);
+    }
+
     /**
      * Calculates the position to align to for this tag.
      * @param id - The id of the tag.
      * @param direction - The direction to align, robot-relative left or right (-1, 0, 1).
      * @return The position. If the tag is not a REEF tag, returns {@link Pose2d.kZero}.
      */
-    public static final Pose2d calculateReefAlignedPosition(int id, int direction) {
-        if (!AprilTagMap.REEF.keySet().contains(id)) return Pose2d.kZero;
+    public static Pose2d calculateReefAlignedPosition(int id, int direction) {
+        if (!AprilTagMap.REEF.containsKey(id)) return Pose2d.kZero;
 
         Pose2d tag = AprilTagMap.REEF.get(id);
         Rotation2d perpRot = tag.getRotation();

@@ -16,7 +16,6 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleArrayEntry;
@@ -81,16 +80,6 @@ public class VisionSubsystem extends SubsystemBase {
         .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
         .withSize(5, 3)
         .withPosition(1, 2);
-    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
-        .add("Processor Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 1)
-        .getEntry();
     private GenericEntry shuffleboardReefInView = shuffleboardLayout
         .add("Reef Align", false)
         .withWidget(BuiltInWidgets.kBooleanBox)
@@ -103,8 +92,6 @@ public class VisionSubsystem extends SubsystemBase {
         .getEntry();
     
     private boolean lastReef = false;
-    private boolean lastProcessor = false;
-    private boolean lastCanAlign = false;
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -153,45 +140,24 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
         // These methods are here because they are NOT thread-safe
-        boolean processor, reef, canAlign;
-        processor = reef = canAlign = false;
 
         // TODO : Fix delay for aligning LED
+        
+        int primaryTag = getPrimaryTagInView();
+        boolean reef = TagSets.REEF_TAGS.contains(primaryTag);
 
-        if (recentVisionData()) {
-            int primaryTag = getPrimaryTagInView();
-            
-            reef = TagSets.REEF_TAGS.contains(primaryTag);
-            processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
-            canAlign = reef || processor;
-
-            SmartDashboard.putNumberArray(
-                "Primary Tag In View", 
-                VisionSubsystem.pose2dToArray(reef
-                    ? AprilTagMap.REEF.get(primaryTag).plus(new Transform2d(Translation2d.kZero, Rotation2d.kPi))
-                    : Pose2d.kZero)
-            );
-        }
-        else {
-            SmartDashboard.putNumberArray("Primary Tag In View", VisionSubsystem.pose2dToArray(Pose2d.kZero));
-        }
+        SmartDashboard.putNumberArray(
+            "Primary Tag In View", 
+            VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
+        );
         
         if (reef != this.lastReef) {
             this.shuffleboardReefInView.setBoolean(reef);
             Logger.recordOutput("Vision/ReefInView", reef);
             this.lastReef = reef;
         }
-        if (processor != this.lastProcessor) {
-            this.shuffleboardProcessorInView.setBoolean(processor);
-            Logger.recordOutput("Vision/ProcessorInView", processor);
-            this.lastProcessor = processor;
-        }
-        if (canAlign != this.lastCanAlign) {
-            Logger.recordOutput("Vision/canAlign", processor || reef);
-            this.lastCanAlign = canAlign;
-        }
         
-        if (canAlign && DriverStation.isEnabled()) {
+        if (reef && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
         }
     }
