@@ -10,7 +10,7 @@
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.25,
-  "defaultMaxAccel": 6.5,
+  "defaultMaxAccel": 7.0,
   "defaultMaxAngVel": 360.0,
   "defaultMaxAngAccel": 540.0,
   "defaultNominalVoltage": 12.0,
