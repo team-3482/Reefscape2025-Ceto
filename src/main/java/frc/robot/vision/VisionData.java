@@ -1,6 +1,8 @@
 package frc.robot.vision;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.LimelightConstants;
 
 /**
@@ -52,6 +54,13 @@ public class VisionData {
         this.rightX = rightX;
         this.bottomY = bottomY;
         this.topY = topY;
+
+        if (this.MegaTag2 != null) {
+            SmartDashboard.putNumber("Avg Tag Dist " + this.name, this.MegaTag2.avgTagDist);
+        }
+        else {
+            SmartDashboard.putNumber("Avg Tag Dist " + this.name, 0);
+        }
     }
 
     /**
@@ -62,11 +71,12 @@ public class VisionData {
         if (this.canTrustRotation == null) {
             this.canTrustRotation = 
                 this.MegaTag != null && this.MegaTag2 != null
-                && (
-                    (this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
-                    || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_TAG_DISTANCE)
-                    // Trust any data when disabled, so that it can set initial position / rotation.
-                    || (this.MegaTag.tagCount > 0 && DriverStation.isDisabled())
+                && (this.MegaTag.tagCount > 0
+                    && (
+                        this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_TAG_DISTANCE
+                        // Trust any data when disabled, so that it can set initial position / rotation.
+                        || DriverStation.isDisabled()
+                    )
                 );
         }
         return this.canTrustRotation;
@@ -92,13 +102,17 @@ public class VisionData {
         return this.canTrustPosition;
     }
 
-    public double getPositionDeviation() {
-        double d = 0.6 * Math.exp(this.MegaTag2.avgTagDist) - 0.6;
-        return Math.max(0.8, d);
+    public double calculatePositionDeviation() {
+        // double d = 2 * (0.6 * Math.exp(this.MegaTag2.avgTagDist) - 0.6);
+        double d = this.MegaTag2.avgTagDist <= 1.5 ? 0.1 : 1;
+        return d;
     }
 
-    public double getRotationDeviation() {
-        double d = 0.6 * Math.exp(this.MegaTag.avgTagDist) - 0.6;
-        return Math.max(1, d);
+    public double calculateRotationDeviation() {
+        // double d = 2 * (0.6 * Math.exp(this.MegaTag.avgTagDist) - 0.6);
+        double d = this.MegaTag2.avgTagDist <= 1.5
+            ? Units.degreesToRadians(5)
+            : Units.degreesToRadians(65);
+        return d;
     }
 }

@@ -17,13 +17,15 @@ public final class LimelightConstants {
     public static final String BOTTOM_LEFT_LL = "limelight-euryale";
 
     /** The distance within which to use Limelight data in meters. This is measured from tag to camera.*/
-    public static final double TRUST_TAG_DISTANCE = 10;
+    public static final double TRUST_TAG_DISTANCE = 1.5;
 
     /**
      * The time limit for considering data to be recent in seconds.
      * @see {@link VisionSubsystem#recentVisionData()}
      */
     public static final double RECENT_DATA_CUTOFF = 2.5;
+    public static final double HIGH_ACCEL_RECENCY = 1.5;
+    public static final double HIGH_ACCEL_CUTOFF = 2.5;
 
     /** All valid tag IDs (used for tag filtering) */
     public static final int[] ALL_TAG_IDS = new int[]{

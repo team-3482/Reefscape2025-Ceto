@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -73,6 +74,8 @@ public class VisionSubsystem extends SubsystemBase {
      * but this was the quickest solution.
      */
     private final Timer lastDataTimer = new Timer();
+    private final Timer highAccelTimer = new Timer();
+    private boolean experiencedHighAccel = false;
 
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -88,10 +91,20 @@ public class VisionSubsystem extends SubsystemBase {
             "colorWhenFalse", StatusColors.OFF.color.toHexString()
         ))
         .withSize(3, 1)
+        .withPosition(0, 0)
+        .getEntry();
+    private GenericEntry shuffleboardRecentVisionData = shuffleboardLayout
+        .add("Recent Vision Data", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withSize(3, 1)
+        .withPosition(0, 1)
+        .getEntry();
+    private GenericEntry shuffleboardHighAccel = shuffleboardLayout
+        .add("Recent High Acceleration", false)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .withSize(3, 1)
         .withPosition(0, 2)
         .getEntry();
-    
-    private boolean lastReef = false;
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -140,8 +153,6 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
         // These methods are here because they are NOT thread-safe
-
-        // TODO : Fix delay for aligning LED
         
         int primaryTag = getPrimaryTagInView();
         boolean reef = TagSets.REEF_TAGS.contains(primaryTag);
@@ -150,12 +161,14 @@ public class VisionSubsystem extends SubsystemBase {
             "Primary Tag In View", 
             VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
         );
-        
-        if (reef != this.lastReef) {
-            this.shuffleboardReefInView.setBoolean(reef);
-            Logger.recordOutput("Vision/ReefInView", reef);
-            this.lastReef = reef;
-        }
+
+        SmartDashboard.putBoolean("Recent Vision Data ", recentVisionData());
+
+        this.shuffleboardReefInView.setBoolean(reef);
+        Logger.recordOutput("Vision/ReefInView", reef);
+
+        this.shuffleboardHighAccel.setBoolean(experiencedHighAccel());
+        this.shuffleboardRecentVisionData.setBoolean(recentVisionData());
         
         if (reef && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
@@ -166,17 +179,32 @@ public class VisionSubsystem extends SubsystemBase {
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
     private void notifierLoop() {
+        hasExperiencedHighAccel();
+        boolean accurateVisionData = hasAccurateVisionData();
+
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
 
+            SmartDashboard.putBoolean("can trust rotation " + data.name,
+                data.canTrustRotation());
+            SmartDashboard.putBoolean("can trust position " + data.name,
+                data.canTrustPosition());
+
             if (data.canTrustRotation()) {
+                double angularDeviation = Math.min(
+                    DriverStation.isDisabled() ? Units.degreesToRadians(10) : data.calculateRotationDeviation(),
+                    accurateVisionData ? 9999999 : Units.degreesToRadians(10)
+                );
+
+                SmartDashboard.putNumber("Angular Deviation" + data.name, angularDeviation);
+                
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? data.getRotationDeviation() : 0.2
+                    angularDeviation
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -184,11 +212,19 @@ public class VisionSubsystem extends SubsystemBase {
                 );
             }
 
-            if (data.canTrustPosition() && data.canTrustRotation()) {
+            if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
+                double linearDeviation = Math.min(
+                    DriverStation.isDisabled() ? 0.5 : data.calculatePositionDeviation(),
+                    accurateVisionData ? 9999999 : 0.5
+                );
+
+                SmartDashboard.putNumber("Linear Deviation" + data.name, linearDeviation);
+
+
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    recentVisionData() ? data.getPositionDeviation() : 0.2,
-                    recentVisionData() ? data.getPositionDeviation() : 0.2,
+                    linearDeviation,
+                    linearDeviation,
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -196,9 +232,6 @@ public class VisionSubsystem extends SubsystemBase {
                     Utils.fpgaToCurrentTime(data.MegaTag2.timestampSeconds)
                 );
             }
-
-            SmartDashboard.putNumberArray(data.name + " pos2", VisionSubsystem.pose2dToArray(data.MegaTag2.pose));
-            SmartDashboard.putNumberArray(data.name + " pos", VisionSubsystem.pose2dToArray(data.MegaTag.pose));
 
             hasRecentVisionData(
                 data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
@@ -385,10 +418,10 @@ public class VisionSubsystem extends SubsystemBase {
                 leftCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
                 rightCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
 
-                if (DriverStation.isAutonomous() && limelightData.MegaTag2.avgTagDist > 0.75) {
-                    leftCrop = -1;
-                    rightCrop = 1;
-                }
+                // if (DriverStation.isAutonomous() && limelightData.MegaTag2.avgTagDist > 0.75) {
+                //     leftCrop = -1;
+                //     rightCrop = 1;
+                // }
                 
                 bottomCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment;
                 topCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment;
@@ -402,7 +435,7 @@ public class VisionSubsystem extends SubsystemBase {
      * Returns if vision data has been processed in the last {@link LimelightConstants#RECENT_DATA_CUTOFF}.
      * @return If there is recent vision data.
      */
-    public boolean recentVisionData() {
+    private boolean recentVisionData() {
         return !this.lastDataTimer.hasElapsed(LimelightConstants.RECENT_DATA_CUTOFF);
     }
 
@@ -416,7 +449,7 @@ public class VisionSubsystem extends SubsystemBase {
         Pose2d odometryPose = SwerveSubsystem.getInstance().getState().Pose;
 
         boolean validTranslation = translation == null ? false
-            : odometryPose.getTranslation().getDistance(translation) <= 0.3;
+            : odometryPose.getTranslation().getDistance(translation) <= 0.15;
         
         boolean validRotation = rotation != null;
         if (validRotation) {
@@ -429,6 +462,40 @@ public class VisionSubsystem extends SubsystemBase {
         if (validTranslation && validRotation) {
             this.lastDataTimer.restart();
         }
+    }
+
+    /**
+     * Gets whether there was a period of high acceleration recently.
+     * @return Whether there was a period of high acceleration recently.
+     */
+    private boolean experiencedHighAccel() {
+        return this.experiencedHighAccel;
+    }
+
+    /**
+     * Calculates the current acceleration and updates the boolean for recent high acceleration
+     * if it is above the cutoff for high acceleration.
+     */
+    private void hasExperiencedHighAccel() {
+        double accel = SwerveSubsystem.getInstance().getAcceleration();
+        boolean newHighAccel = accel > LimelightConstants.HIGH_ACCEL_CUTOFF;
+        if (newHighAccel) {
+            this.experiencedHighAccel = true;
+            this.highAccelTimer.restart();
+        }
+        else if (this.highAccelTimer.hasElapsed(LimelightConstants.HIGH_ACCEL_RECENCY)) {
+            this.experiencedHighAccel = false;
+            this.highAccelTimer.stop();
+            this.highAccelTimer.reset();
+        }
+    }
+
+    /**
+     * Checks if there is recent vision data and no high acceleration.
+     * @return If there is accurate vision data.
+     */
+    public boolean hasAccurateVisionData() {
+        return recentVisionData() && !experiencedHighAccel();
     }
 
     /**
