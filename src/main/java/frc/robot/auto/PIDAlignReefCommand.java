@@ -155,7 +155,7 @@ public class PIDAlignReefCommand extends Command {
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
 
-        System.out.println("Time taken to align : " + this.timer.get());
+        System.out.println("\n\nTime taken to align : " + this.timer.get() + "\n\n");
     }
 
     // Returns true when the command should end.

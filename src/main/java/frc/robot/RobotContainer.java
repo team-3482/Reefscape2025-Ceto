@@ -240,15 +240,15 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("PIDAlignRightReef",
             new PIDAlignReefCommand(1, false)
-                .withTimeout(1.5)
+                // .withTimeout(1.5)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
             new PIDAlignReefCommand(-1, false)
-                .withTimeout(1.5)
+                // .withTimeout(1.5)
         );
         NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
             new PIDAlignReefCommand(0, false)
-                .withTimeout(1.5)
+                // .withTimeout(1.5)
         );
         // NamedCommands.registerCommand("PIDAlignProcessor",
         //     new PIDAlignCommand.Processor()

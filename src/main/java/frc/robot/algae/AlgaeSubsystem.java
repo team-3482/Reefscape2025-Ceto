@@ -55,16 +55,15 @@ public class AlgaeSubsystem extends SubsystemBase {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
         configuration.Feedback.SensorToMechanismRatio = AlgaeConstants.MECHANISM_RATIO;
 
-        configuration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configuration.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        // TODO ALGAE : Current limits
         CurrentLimitsConfigs currentLimitsConfigs = configuration.CurrentLimits;
         currentLimitsConfigs.StatorCurrentLimitEnable = true;
-        currentLimitsConfigs.StatorCurrentLimit = 180;
+        currentLimitsConfigs.StatorCurrentLimit = 100;
         currentLimitsConfigs.SupplyCurrentLimitEnable = true;
-        currentLimitsConfigs.SupplyCurrentLimit = 60;
-        currentLimitsConfigs.SupplyCurrentLowerTime = 0.75;
-        currentLimitsConfigs.SupplyCurrentLowerLimit = 25;
+        currentLimitsConfigs.SupplyCurrentLimit = 50;
+        currentLimitsConfigs.SupplyCurrentLowerTime = 0.6;
+        currentLimitsConfigs.SupplyCurrentLowerLimit = 20;
 
         configuration.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         this.algaeMotor.getConfigurator().apply(configuration);
