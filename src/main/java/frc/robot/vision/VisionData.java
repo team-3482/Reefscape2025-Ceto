@@ -1,8 +1,6 @@
 package frc.robot.vision;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.constants.LimelightConstants;
 
 /**
@@ -54,13 +52,6 @@ public class VisionData {
         this.rightX = rightX;
         this.bottomY = bottomY;
         this.topY = topY;
-
-        if (this.MegaTag2 != null) {
-            SmartDashboard.putNumber("Avg Tag Dist " + this.name, this.MegaTag2.avgTagDist);
-        }
-        else {
-            SmartDashboard.putNumber("Avg Tag Dist " + this.name, 0);
-        }
     }
 
     /**
@@ -73,7 +64,7 @@ public class VisionData {
                 this.MegaTag != null && this.MegaTag2 != null
                 && (this.MegaTag.tagCount > 0
                     && (
-                        this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_TAG_DISTANCE
+                        this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE
                         // Trust any data when disabled, so that it can set initial position / rotation.
                         || DriverStation.isDisabled()
                     )
@@ -83,7 +74,7 @@ public class VisionData {
     }
 
     /**
-     * Checks if the average tag distance is within {@link LimelightConstants#TRUST_TAG_DISTANCE} of the robot.
+     * Checks if the average tag distance is within {@link LimelightConstants#REEF_TRUST_RANGE} of the robot.
      * @return Whether position data can be trusted.
      */
     public boolean canTrustPosition() {
@@ -93,26 +84,12 @@ public class VisionData {
                 && (
                     this.MegaTag2.tagCount > 0 
                     && (
-                        this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE
+                        this.MegaTag2.avgTagDist < LimelightConstants.REEF_TRUST_RANGE
                         // Trust any data when disabled, so that it can set initial position / rotation.
                         || DriverStation.isDisabled()
                     )
                 );
         }
         return this.canTrustPosition;
-    }
-
-    public double calculatePositionDeviation() {
-        // double d = 2 * (0.6 * Math.exp(this.MegaTag2.avgTagDist) - 0.6);
-        double d = this.MegaTag2.avgTagDist <= 1.5 ? 0.1 : 1;
-        return d;
-    }
-
-    public double calculateRotationDeviation() {
-        // double d = 2 * (0.6 * Math.exp(this.MegaTag.avgTagDist) - 0.6);
-        double d = this.MegaTag2.avgTagDist <= 1.5
-            ? Units.degreesToRadians(5)
-            : Units.degreesToRadians(65);
-        return d;
     }
 }

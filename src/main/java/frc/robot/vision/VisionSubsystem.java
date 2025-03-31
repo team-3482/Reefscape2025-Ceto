@@ -68,14 +68,12 @@ public class VisionSubsystem extends SubsystemBase {
     private long lastHeartbeatBottomRightLL = 0;
     /** Last heartbeat of the back LL (updated every frame) */
     private long lastHeartbeatBottomLeftLL = 0;
-    /**
-     * Timer used to track when the cameras last got data.
-     * @apiNote It would probably be better to track distance traveled instead,
-     * but this was the quickest solution.
-     */
-    private final Timer lastDataTimer = new Timer();
-    private final Timer highAccelTimer = new Timer();
-    private boolean experiencedHighAccel = false;
+    
+    @SuppressWarnings("unused")
+    private boolean[] withinReefRanges = new boolean[] { false, false};
+    /** Used to prevent resetting position over-and-over when barely over the range, by adding a timeout before resetting again. */
+    @SuppressWarnings("unused")
+    private Timer reefTimer = new Timer();
 
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
@@ -92,18 +90,6 @@ public class VisionSubsystem extends SubsystemBase {
         ))
         .withSize(3, 1)
         .withPosition(0, 0)
-        .getEntry();
-    private GenericEntry shuffleboardRecentVisionData = shuffleboardLayout
-        .add("Recent Vision Data", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(3, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    private GenericEntry shuffleboardHighAccel = shuffleboardLayout
-        .add("Recent High Acceleration", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(3, 1)
-        .withPosition(0, 2)
         .getEntry();
 
     /** Creates a new VisionSubsystem. */
@@ -138,8 +124,6 @@ public class VisionSubsystem extends SubsystemBase {
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_RIGHT_LL, LimelightConstants.ALL_TAG_IDS);
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LEFT_LL, LimelightConstants.ALL_TAG_IDS);
 
-        this.lastDataTimer.start();
-
         this.notifier = new Notifier(this::notifierLoop);
         this.notifier.setName("Vision Notifier");
         // The processing takes no longer than a regular robot cycle.
@@ -162,49 +146,69 @@ public class VisionSubsystem extends SubsystemBase {
             VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
         );
 
-        SmartDashboard.putBoolean("Recent Vision Data ", recentVisionData());
-
         this.shuffleboardReefInView.setBoolean(reef);
         Logger.recordOutput("Vision/ReefInView", reef);
-
-        this.shuffleboardHighAccel.setBoolean(experiencedHighAccel());
-        this.shuffleboardRecentVisionData.setBoolean(recentVisionData());
         
         if (reef && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
         }
+
+        // Resetting odometry near reef logic
+        /*
+        double firstLLDist = this.limelightDatas[0] != null && this.limelightDatas[0].MegaTag2 != null
+            ? this.limelightDatas[0].MegaTag2.avgTagDist : Double.MAX_VALUE;
+        // When there is no data, the avg dist is 0, which we can't consider to be near the reef because it is unknown
+        if (firstLLDist == 0) firstLLDist = Double.MAX_VALUE;
+        double secondLLDist = this.limelightDatas[1] != null && this.limelightDatas[1].MegaTag2 != null
+            ? this.limelightDatas[1].MegaTag2.avgTagDist : Double.MAX_VALUE;
+        if (secondLLDist == 0) secondLLDist = Double.MAX_VALUE;
+
+        boolean firstLLInRange = firstLLDist < LimelightConstants.REEF_TRUST_RANGE;
+        boolean secondLLInRange = secondLLDist < LimelightConstants.REEF_TRUST_RANGE;
+
+        // Do nothing if we have already reset for one LL, and we are still within range for at least one LL.
+        if ((this.withinReefRanges[0] || this.withinReefRanges[1]) && (firstLLInRange || secondLLInRange)) {
+            this.reefTimer.restart();
+            SmartDashboard.putBoolean("Reset Pose", false);
+        }
+        // If we were out of range and are now in range, reset odometry.
+        // Only do this if we have been out of range for a certain amount of time.
+        else if (
+            (!this.withinReefRanges[0] && !this.withinReefRanges[1])
+            && (firstLLInRange || secondLLInRange)
+            && this.reefTimer.hasElapsed(0.25)
+        ) {
+            Pose2d newPose = getPose2d();
+            if (newPose == Pose2d.kZero) {
+                // Could not reset this loop, try again next loop as if we weren't in range.
+                this.withinReefRanges = new boolean[] { false, false };
+                return;
+            }
+            this.reefTimer.restart();
+            SwerveSubsystem.getInstance().resetPose(getPose2d());
+            SmartDashboard.putBoolean("Reset Pose", true);
+        }
+
+        this.withinReefRanges = new boolean[] { firstLLInRange, secondLLInRange };
+        */
+        // End logic (DO NOT ADD CODE BELOW OR IN THIS LOGIC because the function may return early !)
     }
 
     /**
      * This method is used in conjunction with a Notifier to run vision processing on a separate thread.
      */
     private void notifierLoop() {
-        hasExperiencedHighAccel();
-        boolean accurateVisionData = hasAccurateVisionData();
-
         // This loop generally updates data in about 6 ms, but may double or triple for no apparent reason.
         // This causes loop overrun warnings, however, it doesn't seem to be due to inefficient code and thus can be ignored.
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
 
-            SmartDashboard.putBoolean("can trust rotation " + data.name,
-                data.canTrustRotation());
-            SmartDashboard.putBoolean("can trust position " + data.name,
-                data.canTrustPosition());
-
             if (data.canTrustRotation()) {
-                double angularDeviation = Math.min(
-                    DriverStation.isDisabled() ? Units.degreesToRadians(10) : data.calculateRotationDeviation(),
-                    accurateVisionData ? 9999999 : Units.degreesToRadians(10)
-                );
-
-                SmartDashboard.putNumber("Angular Deviation" + data.name, angularDeviation);
-                
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    angularDeviation
+                    DriverStation.isAutonomous() ? Units.degreesToRadians(10) : Units.degreesToRadians(20)
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -214,17 +218,9 @@ public class VisionSubsystem extends SubsystemBase {
 
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
-                double linearDeviation = Math.min(
-                    DriverStation.isDisabled() ? 0.5 : data.calculatePositionDeviation(),
-                    accurateVisionData ? 9999999 : 0.5
-                );
-
-                SmartDashboard.putNumber("Linear Deviation" + data.name, linearDeviation);
-
-
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    linearDeviation,
-                    linearDeviation,
+                    DriverStation.isAutonomous() ? 0.2 : 0.3,
+                    DriverStation.isAutonomous() ? 0.2 : 0.3,
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -232,11 +228,6 @@ public class VisionSubsystem extends SubsystemBase {
                     Utils.fpgaToCurrentTime(data.MegaTag2.timestampSeconds)
                 );
             }
-
-            hasRecentVisionData(
-                data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
-                data.canTrustRotation() ? data.MegaTag.pose.getRotation() : null
-            );
         }
 
         // This method is suprprisingly efficient, generally below 1 ms.
@@ -281,6 +272,11 @@ public class VisionSubsystem extends SubsystemBase {
         return this.limelightDatas;
     }
 
+    /**
+     * Helper that creates the VisionData object for a limelight.
+     * @param limelight - The limelight to process data for.
+     * @return The VisionData.
+     */
     private VisionData getVisionData(String limelight) {
         LimelightHelpers.PoseEstimate mt = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
@@ -432,73 +428,6 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns if vision data has been processed in the last {@link LimelightConstants#RECENT_DATA_CUTOFF}.
-     * @return If there is recent vision data.
-     */
-    private boolean recentVisionData() {
-        return !this.lastDataTimer.hasElapsed(LimelightConstants.RECENT_DATA_CUTOFF);
-    }
-
-    /**
-     * A method that restarts the timer if there is recent data.
-     * @param translation - The estimated translation.
-     * @param rotation - The estimated rotation.
-     * @apiNote If either is {@code null}, it will be ignored.
-     */
-    private void hasRecentVisionData(Translation2d translation, Rotation2d rotation) {
-        Pose2d odometryPose = SwerveSubsystem.getInstance().getState().Pose;
-
-        boolean validTranslation = translation == null ? false
-            : odometryPose.getTranslation().getDistance(translation) <= 0.15;
-        
-        boolean validRotation = rotation != null;
-        if (validRotation) {
-            double oAngle = odometryPose.getRotation().getDegrees();
-            double lAngle = rotation.getDegrees();
-            double minAngle = Math.min(360 - Math.abs(oAngle - lAngle), Math.abs(oAngle - lAngle));
-            validRotation = minAngle < 10;
-        }
-
-        if (validTranslation && validRotation) {
-            this.lastDataTimer.restart();
-        }
-    }
-
-    /**
-     * Gets whether there was a period of high acceleration recently.
-     * @return Whether there was a period of high acceleration recently.
-     */
-    private boolean experiencedHighAccel() {
-        return this.experiencedHighAccel;
-    }
-
-    /**
-     * Calculates the current acceleration and updates the boolean for recent high acceleration
-     * if it is above the cutoff for high acceleration.
-     */
-    private void hasExperiencedHighAccel() {
-        double accel = SwerveSubsystem.getInstance().getAcceleration();
-        boolean newHighAccel = accel > LimelightConstants.HIGH_ACCEL_CUTOFF;
-        if (newHighAccel) {
-            this.experiencedHighAccel = true;
-            this.highAccelTimer.restart();
-        }
-        else if (this.highAccelTimer.hasElapsed(LimelightConstants.HIGH_ACCEL_RECENCY)) {
-            this.experiencedHighAccel = false;
-            this.highAccelTimer.stop();
-            this.highAccelTimer.reset();
-        }
-    }
-
-    /**
-     * Checks if there is recent vision data and no high acceleration.
-     * @return If there is accurate vision data.
-     */
-    public boolean hasAccurateVisionData() {
-        return recentVisionData() && !experiencedHighAccel();
-    }
-
-    /**
      * Gets the robot position according to the Limelight in target-space (the target is at the origin).
      * @return The robot position.
      * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom right one.
@@ -550,6 +479,60 @@ public class VisionSubsystem extends SubsystemBase {
     private int getPrimaryTagInView(String limelight) {
         return (int) NetworkTableInstance.getDefault().getTable(limelight)
             .getEntry("tid").getInteger(-1);
+    }
+
+    public static class Pose2dAndTimestamp {
+        public static final VisionSubsystem.Pose2dAndTimestamp kZero =
+            new VisionSubsystem.Pose2dAndTimestamp(Pose2d.kZero, 0);
+        public final Pose2d pose2d;
+        public final double timestampSeconds;
+
+        public Pose2dAndTimestamp(Pose2d pose2d, double timestampSeconds) {
+            this.pose2d = pose2d;
+            this.timestampSeconds = timestampSeconds;
+        }
+    }
+
+    /**
+     * Gets the current Pose2d. If one Limelight has data, it uses that one. If both do, it uses the one with the most recent data.
+     * @return The current Pose2d. If no data, Pose2d.kZero.
+     * @apiNote Does NOT filter for accuracy based on distance, etc. This is raw data at the instant the method was called.
+     * This method is not ideal, because Limelights have a significant latency to position updates.
+     */
+    public VisionSubsystem.Pose2dAndTimestamp getPose2d() {
+        VisionData leftLL = getVisionData(LimelightConstants.BOTTOM_LEFT_LL);
+        VisionData rightLL = getVisionData(LimelightConstants.BOTTOM_RIGHT_LL);
+
+        Pose2d leftPose, rightPose;
+        leftPose = rightPose = null;
+
+        if (
+            leftLL.MegaTag2 != null && leftLL.MegaTag2.tagCount > 0
+            && leftLL.MegaTag != null && leftLL.MegaTag.tagCount > 0
+        ) {
+            leftPose = new Pose2d(
+                leftLL.MegaTag2.pose.getTranslation(),
+                leftLL.MegaTag.pose.getRotation()
+            );
+        }
+
+        if (
+            rightLL.MegaTag2 != null && rightLL.MegaTag2.tagCount > 0
+            && rightLL.MegaTag != null && rightLL.MegaTag.tagCount > 0
+        ) {
+            rightPose = new Pose2d(
+                rightLL.MegaTag2.pose.getTranslation(),
+                rightLL.MegaTag.pose.getRotation()
+            );
+        }
+
+        if (leftPose == null && rightPose == null) return VisionSubsystem.Pose2dAndTimestamp.kZero;
+        else if (leftPose == null) return new VisionSubsystem.Pose2dAndTimestamp(rightPose, rightLL.MegaTag2.timestampSeconds);
+        else if (rightPose == null) return new VisionSubsystem.Pose2dAndTimestamp(leftPose, leftLL.MegaTag2.timestampSeconds);
+
+        return leftLL.MegaTag2.timestampSeconds < rightLL.MegaTag2.timestampSeconds
+            ? new VisionSubsystem.Pose2dAndTimestamp(leftPose, leftLL.MegaTag2.timestampSeconds)
+            : new VisionSubsystem.Pose2dAndTimestamp(rightPose, rightLL.MegaTag2.timestampSeconds);
     }
 
     /**

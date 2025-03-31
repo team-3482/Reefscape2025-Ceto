@@ -4,8 +4,6 @@
 
 package frc.robot.constants;
 
-import frc.robot.vision.VisionSubsystem;
-
 /** Constants for Limelight-related code. */
 public final class LimelightConstants {
     /** Enables publishing of the CameraFeeds to Shuffleboard on startup. */
@@ -16,16 +14,11 @@ public final class LimelightConstants {
     /** Top Limelight (Processor/Barge). */
     public static final String BOTTOM_LEFT_LL = "limelight-euryale";
 
-    /** The distance within which to use Limelight data in meters. This is measured from tag to camera.*/
-    public static final double TRUST_TAG_DISTANCE = 1.5;
-
     /**
-     * The time limit for considering data to be recent in seconds.
-     * @see {@link VisionSubsystem#recentVisionData()}
+     * The distance within which to use Limelight data in meters. This is measured from tag to camera.
+     * When entering this range, the VisionSubsystem will reset the odometry to the current LL pose.
      */
-    public static final double RECENT_DATA_CUTOFF = 2.5;
-    public static final double HIGH_ACCEL_RECENCY = 1.5;
-    public static final double HIGH_ACCEL_CUTOFF = 2.5;
+    public static final double REEF_TRUST_RANGE = 1.5;
 
     /** All valid tag IDs (used for tag filtering) */
     public static final int[] ALL_TAG_IDS = new int[]{

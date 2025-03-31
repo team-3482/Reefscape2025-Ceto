@@ -6,6 +6,7 @@
 
 package frc.robot.auto;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -77,6 +79,10 @@ public class PIDAlignReefCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        if (DriverStation.isAutonomous()) {
+            waitForLimelights();
+        }
+
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
         this.targetPose = AprilTagMap.calculateReefAlignedPosition(
             this.targetID,
@@ -185,5 +191,17 @@ public class PIDAlignReefCommand extends Command {
             ),
             this.targetPose.getRotation().minus(robotPose.getRotation())
         );
+    }
+
+    /** 
+     * I hate limelights and everything that they stand for.
+     * Going band for band with Chromebooks for slowest processing imaginable.
+     */
+    private void waitForLimelights() {
+        double startTime = Utils.getSystemTimeSeconds();
+        while (SwerveSubsystem.getInstance().getState().Pose.getTranslation().getDistance(
+            VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()) > 0.05
+        ) { /* Do nothing :( */ }
+        System.out.println("Wasted " + (Utils.getSystemTimeSeconds() - startTime) + " seconds waiting for Limelights");
     }
 }
