@@ -3,28 +3,25 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "IntakeToReef",
-    "End",
-    "ReefToIntake",
-    "Start"
+    "1. Start",
+    "2. Reef to Coral Station",
+    "3. Coral Station to Reef",
+    "4. End"
   ],
-  "autoFolders": [
-    "Drop Algae",
-    "Hold Algae"
-  ],
-  "defaultMaxVel": 3.5,
-  "defaultMaxAccel": 3.0,
-  "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 720.0,
+  "autoFolders": [],
+  "defaultMaxVel": 4.25,
+  "defaultMaxAccel": 7.0,
+  "defaultMaxAngVel": 360.0,
+  "defaultMaxAngAccel": 540.0,
   "defaultNominalVoltage": 12.0,
-  "robotMass": 47.56,
-  "robotMOI": 3.8418,
+  "robotMass": 50.0,
+  "robotMOI": 3.842,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.051,
   "driveGearing": 6.746,
   "maxDriveSpeed": 4.6,
   "driveMotorType": "krakenX60",
-  "driveCurrentLimit": 80.0,
+  "driveCurrentLimit": 70.0,
   "wheelCOF": 1.0,
   "flModuleX": 0.2794,
   "flModuleY": 0.2794,
@@ -37,8 +34,8 @@
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
   "robotFeatures": [
-    "{\"name\":\"Battery\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.25,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.15},\"borderRadius\":0.01,\"strokeWidth\":0.01,\"filled\":true}}",
+    "{\"name\":\"Battery\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":-0.25,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.15},\"borderRadius\":0.01,\"strokeWidth\":0.01,\"filled\":true}}",
     "{\"name\":\"Elevator\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.125,\"y\":0.0},\"size\":{\"width\":0.5,\"length\":0.05},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}",
-    "{\"name\":\"Rectangle\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.433,\"y\":0.0},\"size\":{\"width\":0.2,\"length\":0.2},\"borderRadius\":0.025,\"strokeWidth\":0.015,\"filled\":false}}"
+    "{\"name\":\"Outtake\",\"type\":\"rounded_rect\",\"data\":{\"center\":{\"x\":0.26,\"y\":0.0},\"size\":{\"width\":0.13,\"length\":0.175},\"borderRadius\":0.0,\"strokeWidth\":0.01,\"filled\":false}}"
   ]
 }

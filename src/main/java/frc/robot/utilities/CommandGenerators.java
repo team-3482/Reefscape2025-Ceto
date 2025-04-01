@@ -6,10 +6,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.robot.algae.AlgaeSubsystem;
-import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.elevator.MoveElevatorCommand;
-import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.swerve.SwerveSubsystem;
 
 /**
@@ -72,37 +68,22 @@ public final class CommandGenerators {
     //
     //
     /**
-     * A command that intakes the algae for a certain amount of time before holding.
+     * A command that outtakes the algae.
      * @return The command.
      */
-    public static Command IntakeAlgaeAndHoldCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().intake())
-            .andThen(Commands.waitSeconds(0.7))
-            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().hold()));
+    public static Command EnableAlgaeCommand() {
+        return AlgaeSubsystem.getInstance().runOnce(
+            () -> AlgaeSubsystem.getInstance().enable()
+        );
     }
 
     /**
-     * A command that outtakes the algae for a certain amount of time before stopping.
+     * A command that stops the algae.
      * @return The command.
      */
-    public static Command OuttakeAlgaeAndStopCommand() {
-        return AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().outtake())
-            .andThen(Commands.waitSeconds(1))
-            .andThen(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
-    }
-
-    /**
-     * A command that moves the elevator up to release the algae and re-zero.
-     * @return The command.
-     */
-    public static Command InitialElevatorLiftAndZeroCommand() {
-        return Commands.sequence(
-            // Just in case it has been booted before the algae was put down,
-            // and the position is already correct (should be rare though because it wastes battery)
-            ElevatorSubsystem.getInstance().runOnce(() -> ElevatorSubsystem.getInstance().setPosition(0)),
-            new MoveElevatorCommand(ScoringConstants.L1_CORAL, false, false),
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false),
-            new ZeroElevatorCommand()
+    public static Command DisableAlgaeCommand() {
+        return AlgaeSubsystem.getInstance().runOnce(
+            () -> AlgaeSubsystem.getInstance().stop()
         );
     }
 }

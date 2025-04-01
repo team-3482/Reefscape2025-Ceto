@@ -1,0 +1,98 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.226639344262295,
+        "y": 5.397592213114754
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.017088416727378,
+        "y": 5.549371862682059
+      },
+      "isLocked": false,
+      "linkedName": "Reef J"
+    },
+    {
+      "anchor": {
+        "x": 1.69,
+        "y": 7.36357581967213
+      },
+      "prevControl": {
+        "x": 1.9355342753069087,
+        "y": 7.120025375450121
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Coral Left"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2985971943887777,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.699460916442051,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Reset Elevator",
+      "waypointRelativePos": 0.19285714285714262,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToBottom"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "DisableAlgae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": true
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "2. Reef to Coral Station",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

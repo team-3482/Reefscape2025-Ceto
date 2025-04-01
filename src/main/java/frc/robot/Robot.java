@@ -5,27 +5,26 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import com.pathplanner.lib.commands.FollowPathCommand;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.net.PortForwarder;
+import java.io.File;
+
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.*;
+import frc.robot.constants.Constants;
+import frc.robot.utilities.Elastic;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-
-import frc.robot.constants.Constants.DashboardTabNames;
-import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
-import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.utilities.Elastic;
-import frc.robot.vision.VisionSubsystem;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -93,7 +92,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        SignalLogger.stop();
+        // SignalLogger.stop();
         // Blink like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
@@ -103,7 +102,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        SignalLogger.start();
+        // SignalLogger.start();
         LEDSubsystem.getInstance().setColor(StatusColors.OFF);
     }
 
@@ -121,7 +120,7 @@ public class Robot extends LoggedRobot {
             LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
 
-        Elastic.selectTab(DashboardTabNames.AUTON);
+        Elastic.selectTab(Constants.DashboardTabNames.AUTON);
     }
 
     @Override
@@ -137,22 +136,22 @@ public class Robot extends LoggedRobot {
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
 
-        Elastic.selectTab(DashboardTabNames.TELEOP);
+        Elastic.selectTab(Constants.DashboardTabNames.TELEOP);
     }
 
     @Override
     public void teleopPeriodic() {
-        if (
-            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
-            TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
-        ) {
-            CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-            SwerveSubsystem.getInstance().setControl(
-                new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
-                    new ChassisSpeeds(-2, 0, 0)
-                )
-            );
-        }
+        // if (
+        //     DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
+        //     TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
+        // ) {
+        //     CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
+        //     SwerveSubsystem.getInstance().setControl(
+        //         new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
+        //             new ChassisSpeeds(-2, 0, 0)
+        //         )
+        //     );
+        // }
     }
 
     @Override

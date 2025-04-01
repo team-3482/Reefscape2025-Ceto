@@ -20,16 +20,17 @@ This code is for team 3482's on-season robot, Ceto.
 
 <hr>
 
-## Capabilities 
-
-Scouts, look here!
+## Capabilities - Scouts, look here!
 
 ### Reef
 
-| Task  | L1 | L2 | L3 | L4 |
-|-------|:--:|:--:|:--:|:--:|
-| Coral | ✅ | ✅ | ✅ | ❌ |
-| Algae | -  | ✅ | ❌ | -  |
+| Task         | L1 | L2 | L3 | L4 |
+|--------------|:--:|:--:|:--:|:--:|
+| Score Coral  | ✅ | ✅ | ✅ | ❌ |
+| Remove Algae | -  | ✅ | ✅ | -  |
+
+⚠️ `Coral` is sourced from `Coral Stations`, not the ground.<br>
+⚠️ `Algae` is removed from the reef and ejected directly onto the ground.
 
 ### Barge
 
@@ -42,23 +43,17 @@ Scouts, look here!
 | Task                       | Capable |
 |----------------------------|:-------:|
 | Leave Starting Line (Auto) |   ✅    |
-| Processor                  |   ✅    |
+| Processor                  |   ❌    |
 
-<br>
+🛈 `Ceto` scores **3** `L3 Coral` during the Autonomous period on the left or right side.<br>
+It is also capable of scoring **1** `L3 Coral` starting from the middle and staying out of the way of other autons.<br>
+`Ceto` autonomously removes algae from any side of the reef it scores on.
 
-🛈 `Ceto` is capable of scoring 2 `L3 (or lower) Coral` in the Autonomous period on the left or right side. It can either score 1 `Algae` once Teleop starts, or discard it to start Teleop at a `Coral Station`.<br>
-<sub>It is also capable of scoring 1 `L3 (or lower) Coral` if starting from the middle and staying out of the way of alliance bots running autons on the left or right, if requested.</sub>
+### Design
 
-
-⚠️ The `Coral` subsystem can only intake from the `Coral Stations`, and not the ground.
-
-⚠️ The `Algae` subsystem can only intake from the `Reef`, and not the ground.
-
-<br>
-
-|  Dimensions  | Height |   Swerve   |      Vison      | Top Speed |
-|--------------|--------|------------|-----------------|-----------|
-| 27x27 in     | 35 in  | Kraken X60 | 2x Limelight 3G | 4.0 m/s   |
+|  Dimensions  | Height |   Swerve   |      Vison      | Top Speed |           Sensors            |
+|--------------|--------|------------|-----------------|-----------| -----------------------------|
+| 27 x 27 in   | 35 in  | Kraken X60 | 2x Limelight 3G | 4.0 m/s   | Beam-break, CTRE Talon tachs |
 
 If you have any additional questions about `Ceto`, feel free to talk to us!
 
@@ -68,45 +63,39 @@ If you have any additional questions about `Ceto`, feel free to talk to us!
 
 ### LED Status Codes
 
-| Color     | Status                     |
-|-----------|----------------------------|
-| ⚫ Off    | Standby                    |
-| 🔴 Red    | Error                      |
-| 🟠 Orange | Disabled                   |
-| 🟢 Green  | OK                         |
-| 🔵 Blue   | Reef/Processor Tag In View |
-| ⚪ White  | Has Coral                  |
+| Color     | Status            |
+|-----------|-------------------|
+| ⚫ Off    | Standby (enabled) |
+| 🔴 Red    | Error             |
+| 🟠 Orange | Disabled          |
+| 🟢 Green  | Completed OK      |
+| 🔵 Blue   | Reef Tag In View  |
+| ⚪ White  | Has Coral         |
 
 ### Autonomous Paths
 
-![Path](https://github.com/user-attachments/assets/75e373d9-f89a-46b4-9048-9185e126dbae)
+![Path](https://github.com/user-attachments/assets/861d3a10-e58d-4d72-9f47-eeee0bc79f18)
 
 This shows our preferred autonomous path. It can be ran on the left or right side.
-`Ceto` is capable of scoring 2 `L3 Coral` and either picking up, or discarding 1 `Algae`, in about ~13.5 seconds
+`Ceto` is capable of scoring 3 `L3 Coral` in 14±0.5 seconds consistently. It removes Algae automatically.
 
-#### Drop Algae 
+First coral
+1. Starting Line -> `J`
+2. Remove `L3 Algae` & score `L3 Coral`
+3. `J` -> `Coral Station` and intake
 
-1. Starting Line -> `KL` or `CD`
-2. Score `Coral` on `K` or `D`
-3. Pick up `Algae`
-4. Drive to `Coral Station` and drop `Algae` halfway through
-5. Intake `Coral`
-6. Drive back to `KL` or `CD`
-7. Score `Coral` on `L` or `C`
-8. Drive back to `Coral Station` to be ready for Teleop
+Second coral
+1. `Coral station` -> `K`
+2. Remove `L2 Algae` & score `L3 Coral`
+3. `K` -> `Coral Station` and intake
 
-#### Hold Algae
+Third coral
+1. `Coral station` -> `L`
+2. Score `L3 Coral`<br>
+This runs during any leftover time during auton : 
+3. `L` -> `Coral Station` and intake
 
-1. Starting Line -> `KL` or `CD`
-2. Score `Coral` on `K` or `D`
-3. Drive to `Coral Station`
-4. Intake `Coral`
-5. Drive back to `KL` or `CD`
-6. Score `Coral` on `L` or `C`
-7. Pick up `Algae`
-8. Drive to `Barge` to be ready for Teleop
-
-https://github.com/user-attachments/assets/2b92c98b-00dd-4389-8422-ad95c4a4d2f4
+https://github.com/user-attachments/assets/74acafa7-0642-4a69-975c-721236e07aed
 
 ### Controls
 

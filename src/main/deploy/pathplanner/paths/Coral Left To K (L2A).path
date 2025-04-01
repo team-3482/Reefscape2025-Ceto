@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.690266393442623,
+        "y": 7.36357581967213
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.8012432369144893,
+        "y": 6.38427534787739
+      },
+      "isLocked": false,
+      "linkedName": "Coral Left"
+    },
+    {
+      "anchor": {
+        "x": 3.74,
+        "y": 5.397592213114754
+      },
+      "prevControl": {
+        "x": 3.5473483880018173,
+        "y": 5.55692003992006
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef K"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6976639712488804,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Clear L2 Algae",
+      "waypointRelativePos": 0.5359389038634336,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToL2Algae"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableAlgae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": true
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "3. Coral Station to Reef",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -55.0
+  },
+  "useDefaultConstraints": true
+}

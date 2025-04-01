@@ -1,0 +1,93 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.69,
+        "y": 0.691
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1431029998599147,
+        "y": 1.1055455003915446
+      },
+      "isLocked": false,
+      "linkedName": "Coral Right"
+    },
+    {
+      "anchor": {
+        "x": 3.74,
+        "y": 2.654
+      },
+      "prevControl": {
+        "x": 3.35310950117986,
+        "y": 2.2878903894993132
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef D"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Clear L2 Algae",
+      "waypointRelativePos": 0.6000000000000001,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToL2Algae"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableAlgae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": true
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 59.99999999999999
+  },
+  "reversed": false,
+  "folder": "3. Coral Station to Reef",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 55.0
+  },
+  "useDefaultConstraints": true
+}

@@ -3,6 +3,7 @@ package frc.robot.swerve;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -12,9 +13,13 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +28,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import java.util.function.Supplier;
 
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.*;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -58,6 +62,9 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    private LinearFilter xAccelFilter = LinearFilter.movingAverage(10);
+    private LinearFilter yAccelFilter = LinearFilter.movingAverage(10);
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     @SuppressWarnings("unused")
@@ -136,8 +143,12 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             TalonFX::new,
             TalonFX::new,
             CANcoder::new,
-
             TunerConstants.DrivetrainConstants,
+
+            0,
+            VecBuilder.fill(0.03, 0.03, Units.degreesToRadians(1)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(50)),
+
             TunerConstants.FrontLeft,
             TunerConstants.FrontRight,
             TunerConstants.BackLeft,
@@ -149,6 +160,9 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        getPigeon2().getAccelerationX().setUpdateFrequency(Hertz.of(50));
+        getPigeon2().getAccelerationY().setUpdateFrequency(Hertz.of(50));
     }
 
     private void configureAutoBuilder() {
@@ -231,6 +245,11 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
+        Pigeon2 pigeon = getPigeon2();
+        // The Pigeon measures accelerations in Gs (1 G = 9.81 m/s^2)
+        this.xAccelFilter.calculate(pigeon.getAccelerationX().getValueAsDouble() * 9.80665);
+        this.yAccelFilter.calculate(pigeon.getAccelerationY().getValueAsDouble() * 9.80665);
     }
 
     private void startSimThread() {
@@ -246,5 +265,16 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             updateSimState(deltaTime, RobotController.getBatteryVoltage());
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
+    }
+
+    /**
+     * Gets the Math.hypot(x, y) accelerations from the Pigeon2.
+     * @return The acceleration.
+     */
+    public double getAcceleration() {
+        double accel = Math.hypot(this.xAccelFilter.lastValue(), this.yAccelFilter.lastValue());
+
+        SmartDashboard.putNumber("Acceleration", accel);
+        return accel;
     }
 }
