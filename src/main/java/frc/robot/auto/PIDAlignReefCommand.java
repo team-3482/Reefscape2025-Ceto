@@ -79,9 +79,7 @@ public class PIDAlignReefCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        if (DriverStation.isAutonomous()) {
-            waitForLimelights();
-        }
+        waitForLimelights();
 
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
         this.targetPose = AprilTagMap.calculateReefAlignedPosition(
@@ -93,7 +91,6 @@ public class PIDAlignReefCommand extends Command {
         if (this.targetPose.getTranslation().getDistance(currentPose.getTranslation()) >= 2) {
             this.targetPose = Pose2d.kZero;
         }
-
         
         SmartDashboard.putNumberArray("Aligning Target Pose", VisionSubsystem.pose2dToArray(this.targetPose));
         
@@ -198,10 +195,16 @@ public class PIDAlignReefCommand extends Command {
      * Going band for band with Chromebooks for slowest processing imaginable.
      */
     private void waitForLimelights() {
+        VisionSubsystem.getInstance().waitingForLimelights = true;
+
         double startTime = Utils.getSystemTimeSeconds();
         while (SwerveSubsystem.getInstance().getState().Pose.getTranslation().getDistance(
-            VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()) > 0.05
-        ) { /* Do nothing :( */ }
+            VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()) > 0.03
+        ) {
+            if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
+        }
         System.out.println("Wasted " + (Utils.getSystemTimeSeconds() - startTime) + " seconds waiting for Limelights");
+
+        VisionSubsystem.getInstance().waitingForLimelights = false;
     }
 }

@@ -19,6 +19,7 @@ public final class LimelightConstants {
      * When entering this range, the VisionSubsystem will reset the odometry to the current LL pose.
      */
     public static final double REEF_TRUST_RANGE = 1.5;
+    public static final double TRUST_RANGE = 5;
 
     /** All valid tag IDs (used for tag filtering) */
     public static final int[] ALL_TAG_IDS = new int[]{

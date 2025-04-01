@@ -1,5 +1,6 @@
 package frc.robot.vision;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.constants.LimelightConstants;
 
@@ -64,7 +65,7 @@ public class VisionData {
                 this.MegaTag != null && this.MegaTag2 != null
                 && (this.MegaTag.tagCount > 0
                     && (
-                        this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE
+                        this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_RANGE
                         // Trust any data when disabled, so that it can set initial position / rotation.
                         || DriverStation.isDisabled()
                     )
@@ -84,12 +85,36 @@ public class VisionData {
                 && (
                     this.MegaTag2.tagCount > 0 
                     && (
-                        this.MegaTag2.avgTagDist < LimelightConstants.REEF_TRUST_RANGE
+                        this.MegaTag2.avgTagDist < LimelightConstants.TRUST_RANGE
                         // Trust any data when disabled, so that it can set initial position / rotation.
                         || DriverStation.isDisabled()
                     )
                 );
         }
         return this.canTrustPosition;
+    }
+
+    public double calculatePositionDeviation() {
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
+            return 0.3;
+        }
+        else if (this.MegaTag2.avgTagDist <= 3 || DriverStation.isDisabled()) {
+            return 1;
+        }
+        else if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
+            return 2;
+        }
+        else {
+            return 9999999;
+        }
+    }
+
+    public double calculateRotationDeviation() {
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE || DriverStation.isDisabled()) {
+            return Units.degreesToRadians(25);
+        }
+        else {
+            return 9999999;
+        }
     }
 }

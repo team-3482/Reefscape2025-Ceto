@@ -75,6 +75,9 @@ public class VisionSubsystem extends SubsystemBase {
     @SuppressWarnings("unused")
     private Timer reefTimer = new Timer();
 
+    /** Not ideal but the easiest implementation. */
+    public volatile boolean waitingForLimelights = false;
+
     /* Shuffleboard */
     private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
         .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
@@ -208,7 +211,9 @@ public class VisionSubsystem extends SubsystemBase {
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    DriverStation.isAutonomous() ? Units.degreesToRadians(10) : Units.degreesToRadians(20)
+                    this.waitingForLimelights
+                        ? Units.degreesToRadians(15)
+                        : data.calculateRotationDeviation()
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -219,8 +224,8 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    DriverStation.isAutonomous() ? 0.2 : 0.3,
-                    DriverStation.isAutonomous() ? 0.2 : 0.3,
+                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
