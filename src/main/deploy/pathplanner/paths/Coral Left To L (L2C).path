@@ -1,0 +1,80 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.690266393442623,
+        "y": 7.36357581967213
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5961256967169977,
+        "y": 6.31500471371302
+      },
+      "isLocked": false,
+      "linkedName": "Coral Left"
+    },
+    {
+      "anchor": {
+        "x": 3.5723360655737704,
+        "y": 5.301690573770491
+      },
+      "prevControl": {
+        "x": 3.331049021698174,
+        "y": 5.570561674747888
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef L"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.69766397124887,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Move Elevator to L2 Coral",
+      "waypointRelativePos": 0.5907692307692347,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "MoveElevatorToL2Coral"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": true
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "3. Coral Station to Reef",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": -55.0
+  },
+  "useDefaultConstraints": true
+}
