@@ -42,7 +42,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "EF To Coral Right"
+                  "pathName": "F To Coral Right"
                 }
               }
             ]
@@ -86,7 +86,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CD To Coral Right"
+                  "pathName": "D To Coral Right"
                 }
               }
             ]
@@ -106,6 +106,25 @@
                 "type": "named",
                 "data": {
                   "name": "OuttakeCoral"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeCoral"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "C To Coral Right"
                 }
               }
             ]

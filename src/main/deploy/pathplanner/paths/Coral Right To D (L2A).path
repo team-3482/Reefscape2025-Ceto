@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6245420011888383,
-        "y": 0.6079411804969095
+        "x": 1.69,
+        "y": 0.691
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.513867535296258,
-        "y": 2.379200692116086
+        "x": 2.1431029998599147,
+        "y": 1.1055455003915446
       },
       "isLocked": false,
       "linkedName": "Coral Right"
     },
     {
       "anchor": {
-        "x": 4.001221028706579,
-        "y": 2.859223327441456
+        "x": 3.74,
+        "y": 2.654
       },
       "prevControl": {
-        "x": 3.0330440365983993,
-        "y": 1.9648489570357768
+        "x": 3.35310950117986,
+        "y": 2.2878903894993132
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,12 +29,26 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.75,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 540.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "Clear L2 Algae",
-      "waypointRelativePos": 0.884146341463418,
+      "waypointRelativePos": 0.6000000000000001,
       "endWaypointRelativePos": null,
       "command": {
         "type": "parallel",
@@ -63,7 +77,7 @@
     "maxAngularVelocity": 360.0,
     "maxAngularAcceleration": 540.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0.0,

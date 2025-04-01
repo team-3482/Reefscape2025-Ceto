@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "PIDAlignLeftReef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "MoveElevatorToL3Coral"
           }
         },
@@ -20,6 +26,12 @@
           "type": "named",
           "data": {
             "name": "OuttakeCoral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
           }
         },
         {
