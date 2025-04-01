@@ -4,14 +4,12 @@
 
 package frc.robot.vision;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
-
 import com.ctre.phoenix6.Utils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,19 +18,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+
 import frc.robot.constants.Constants.TagSets;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
@@ -40,6 +34,9 @@ import frc.robot.constants.AprilTagMap;
 import frc.robot.constants.LimelightConstants;
 
 import org.littletonrobotics.junction.Logger;
+
+import java.util.Iterator;
+import java.util.Optional;
 
 /** 
  * A class that manages AprilTag Limelights for vision.
@@ -78,23 +75,6 @@ public class VisionSubsystem extends SubsystemBase {
     /** Not ideal but the easiest implementation. */
     public volatile boolean waitingForLimelights = false;
 
-    /* Shuffleboard */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(5, 3)
-        .withPosition(1, 2);
-    private GenericEntry shuffleboardReefInView = shuffleboardLayout
-        .add("Reef Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 0)
-        .getEntry();
-
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
         super("VisionSubsystem");
@@ -110,18 +90,8 @@ public class VisionSubsystem extends SubsystemBase {
                 "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LEFT_LL, bottomLeftLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 0);
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_RIGHT_LL, bottomRightLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 4);
+            CameraServer.startAutomaticCapture(bottomLeftLLCamera);
+            CameraServer.startAutomaticCapture(bottomRightLLCamera);
         }
 
         LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_RIGHT_LL, LimelightConstants.ALL_TAG_IDS);
@@ -149,7 +119,7 @@ public class VisionSubsystem extends SubsystemBase {
             VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
         );
 
-        this.shuffleboardReefInView.setBoolean(reef);
+        SmartDashboard.putBoolean("Vision/ReefInView", reef);
         Logger.recordOutput("Vision/ReefInView", reef);
         
         if (reef && DriverStation.isEnabled()) {

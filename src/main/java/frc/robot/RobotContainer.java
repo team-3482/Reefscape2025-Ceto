@@ -4,27 +4,26 @@
 
 package frc.robot;
 
-import java.util.Map;
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.auto.PIDAlignReefCommand;
 import frc.robot.constants.Constants.ControllerConstants;
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.coral.AdjustCoralCommand;
 import frc.robot.coral.CoralSubsystem;
 import frc.robot.coral.IntakeCoralCommand;
@@ -32,6 +31,8 @@ import frc.robot.coral.OuttakeCoralCommand;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ZeroElevatorCommand;
+import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 import frc.robot.swerve.OscillateXDirectionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
@@ -39,6 +40,9 @@ import frc.robot.swerve.TunerConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.VisionSubsystem;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class RobotContainer {
     // Thread-safe singleton design pattern.
@@ -81,13 +85,10 @@ public class RobotContainer {
         // Register named commands for Pathplanner (always do this after subsystem initialization)
         registerNamedCommands();
 
-        this.autoChooser = AutoBuilder.buildAutoChooser();
-        this.autoChooser.onChange((Command autoCommand) -> {this.auton = autoCommand;}); // Default auto will be Commands.none()
-        Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-            .add("Auto Chooser", autoChooser)
-            .withWidget(BuiltInWidgets.kComboBoxChooser)
-            .withSize(5, 2)
-            .withPosition(1, 0);
+        this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
+        SmartDashboard.putData("Auto Chooser", this.autoChooser);
+        SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
+        SmartDashboard.putData("Power Distribution", new PowerDistribution(1, PowerDistribution.ModuleType.kRev));
     }
 
     /**

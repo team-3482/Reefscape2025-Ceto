@@ -6,10 +6,11 @@ package frc.robot.coral;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.led.StatusColors;
+
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 /** A command that ejects the coral and stops a short time after. */
 public class OuttakeCoralCommand extends Command {

@@ -8,10 +8,11 @@ import java.util.Set;
 
 /** Constants used throughout the code that are not categorized in other constants files. */
 public final class Constants {
-    /** Tab names in Shuffleboard. */
-    public static final class ShuffleboardTabNames {
-        public static final String DEFAULT = "Competition";
-        public static final String UTILITIES = "Utilities";
+    /** Tab names in Elastic. */
+    public static final class DashboardTabNames {
+        public static final String TELEOP = "Teleoperated";
+        public static final String AUTON = "Autonomous";
+        public static final String DEV = "Dev";
     }
 
     /** Constants for the controller and any controller related assignments. */

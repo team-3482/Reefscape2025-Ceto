@@ -1,21 +1,18 @@
 package frc.robot.led;
 
-import java.util.Map;
-
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+
 import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 import org.littletonrobotics.junction.Logger;
+
+import java.util.Map;
 
 public class LEDSubsystem extends SubsystemBase {
     // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
@@ -38,25 +35,6 @@ public class LEDSubsystem extends SubsystemBase {
 
     private final Timer stickyTimer = new Timer();
 
-    private SimpleWidget shuffleboard_widget1 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .add("LED 1", false);
-    private SimpleWidget shuffleboard_widget2 = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .add("LED 2", false);
-    @SuppressWarnings("unused")
-    private GenericEntry shuffleboard_entry1 = shuffleboard_widget1
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-        .withSize(1, 8)
-        .withPosition(0, 0)
-        .getEntry();
-    @SuppressWarnings("unused")
-    private GenericEntry shuffleboard_entry2 = shuffleboard_widget2
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "black"))
-        .withSize(1, 8)
-        .withPosition(18, 0)
-        .getEntry();
-
     /** Creates a new LEDSubsystem. */
     private LEDSubsystem() {
         super("LEDSubsystem");
@@ -66,6 +44,9 @@ public class LEDSubsystem extends SubsystemBase {
         this.LEDStrip.start();
 
         this.blinkTimer.start();
+
+        SmartDashboard.putString("LED", StatusColors.OFF.color.toHexString());
+
     }
 
     // This method will be called once per scheduler run
@@ -127,14 +108,14 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkColor = this.currentColor = newColor;
         }
 
-        updateShuffleboardsAndLogs(newColor);
+        updateDashboardAndLogs(newColor);
     }
 
     /**
-     * Updates Shuffleboard and AdvantageScope logs.
+     * Updates Dashboard and AdvantageScope logs.
      * @param newColor - The new color to use.
      */
-    private void updateShuffleboardsAndLogs(StatusColors newColor) {
+    private void updateDashboardAndLogs(StatusColors newColor) {
         if (newColor == this.currentColor) return;
         
         String hexString = newColor.color.toHexString();
@@ -144,11 +125,10 @@ public class LEDSubsystem extends SubsystemBase {
             // in red, which could confuse the driver. Thus, it has to be modified to orange.
             newColor.equals(StatusColors.RSL) ? Color.kDarkOrange.toHexString() : hexString);
 
-        this.shuffleboard_widget1.withProperties(properties);
-        this.shuffleboard_widget2.withProperties(properties);
-
         Logger.recordOutput("LED/Status", newColor);
         Logger.recordOutput("LED/Color", hexString);
+
+        SmartDashboard.putString("LED", hexString);
     }
 
     /**

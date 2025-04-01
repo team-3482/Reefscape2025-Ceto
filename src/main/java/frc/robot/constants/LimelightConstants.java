@@ -6,7 +6,7 @@ package frc.robot.constants;
 
 /** Constants for Limelight-related code. */
 public final class LimelightConstants {
-    /** Enables publishing of the CameraFeeds to Shuffleboard on startup. */
+    /** Enables publishing of the CameraFeeds to dashboard on startup. */
     public static final boolean PUBLISH_CAMERA_FEEDS = true;
     
     /** Bottom Limelight (Reef). */

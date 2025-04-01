@@ -1,13 +1,6 @@
 package frc.robot.elevator;
 
-import java.util.Map;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -19,21 +12,18 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants;
-import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.constants.PhysicalConstants.ElevatorConstants.ElevatorSlot0Gains;
+import frc.robot.constants.PhysicalConstants.RobotConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that moves the elevator up and down using MotionMagic. */
@@ -58,54 +48,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final VoltageOut voltageOut = new VoltageOut(0);
     private final Follower FOLLOW_RIGHT = new Follower(ElevatorConstants.RIGHT_MOTOR_ID, true);
     private final Follower FOLLOW_LEFT = new Follower(ElevatorConstants.LEFT_MOTOR_ID, true);
-
-    /** Shuffleboard stuff */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("ElevatorSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 6, "Label position", "TOP"))
-        .withSize(5, 8)
-        .withPosition(13, 0);
-    private GenericEntry shuffleboardPositionNumberBar = shuffleboardLayout
-        .add("Elevator Position (meters)", 0)
-        .withWidget(BuiltInWidgets.kNumberBar)
-        .withProperties(Map.of("Min", ScoringConstants.BOTTOM_HEIGHT, "Max", ScoringConstants.MAX_HEIGHT, "Num tick marks", 0))
-        .withSize(5, 2)
-        .withPosition(0, 0)
-        .getEntry();
-    private GenericEntry shuffleboardToggleInput = shuffleboardLayout
-        .add("Toggle Shuffleboard Input Slider", false)
-        .withWidget(BuiltInWidgets.kToggleButton)
-        .withSize(5, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    private GenericEntry shuffleboardSliderInput = shuffleboardLayout
-        .add("Set Elevator Position (meters)", 0)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("Min", ScoringConstants.BOTTOM_HEIGHT, "Max", ScoringConstants.MAX_HEIGHT, "Block increment", 0.01))
-        .withSize(5, 2)
-        .withPosition(0, 2)
-        .getEntry();
-    private GenericEntry shuffleboardStageThreeTopSensor = shuffleboardLayout
-        .add("Stage Three Top Sensor", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(5, 1)
-        .withPosition(0, 3)
-        .getEntry();
-    private GenericEntry shuffleboardStageTwoTopSensor = shuffleboardLayout
-        .add("Stage Two Top Sensor", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(5, 1)
-        .withPosition(0, 4)
-        .getEntry();
-    private GenericEntry shuffleboardBottomSensorBoolean = shuffleboardLayout
-        .add("Bottom Sensor", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withSize(5, 1)
-        .withPosition(0, 5)
-        .getEntry();
     
     private double lastPosition = Double.NaN;
-    // Shuffleboard values are initialized at false, so these should be false
+    // Dashboard values are initialized at false, so these should be false
     private boolean lastUpperLimit_StageThree = false;
     private boolean lastUpperLimit_StageTwo = false;
     private boolean lastLowerLimit = false;
@@ -133,6 +78,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         this.lastSetGoal = getPosition();
+
+        SmartDashboard.putBoolean("Elevator/Sensor/Bottom", false);
+        SmartDashboard.putBoolean("Elevator/Sensor/StageTwo", false);
+        SmartDashboard.putBoolean("Elevator/Sensor/StageThree", false);
     }
 
     @Override
@@ -145,20 +94,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         double rotorVelocity = getRotorVelocity();
 
         if (position != this.lastPosition) {
-            this.shuffleboardPositionNumberBar.setDouble(position);
+            SmartDashboard.putNumber("Elevator/Position", position);
             Logger.recordOutput("Elevator/Position", position);
             this.lastPosition = position;
         }
         if (upperLimit_StageThree != this.lastUpperLimit_StageThree) {
-            this.shuffleboardStageThreeTopSensor.setBoolean(atUpperLimit_StageThree());
+            SmartDashboard.putBoolean("Elevator/Sensor/StageThree", atUpperLimit_StageThree());
             this.lastUpperLimit_StageThree = upperLimit_StageThree;
         }
         if (upperLimit_StageTwo != this.lastUpperLimit_StageTwo) {
-            this.shuffleboardStageTwoTopSensor.setBoolean(atUpperLimit_StageTwo());
+            SmartDashboard.putBoolean("Elevator/Sensor/StageTwo", atUpperLimit_StageTwo());
             this.lastUpperLimit_StageTwo = upperLimit_StageTwo;
         }
         if (lowerLimit != this.lastLowerLimit) {
-            this.shuffleboardBottomSensorBoolean.setBoolean(atLowerLimit());
+            SmartDashboard.putBoolean("Elevator/Sensor/Bottom", atLowerLimit());
             this.lastLowerLimit = lowerLimit;
         }
         if (rotorVelocity != this.lastRotorVelocity) {
@@ -166,11 +115,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             this.lastRotorVelocity = rotorVelocity;
         }
 
-        boolean inputToggled = this.shuffleboardToggleInput.getBoolean(false);
+        boolean inputToggled = SmartDashboard.getBoolean("Elevator/ToggleInputSlider", false);
         boolean atUpperLimit = atUpperLimit();
 
         if (!inputToggled) {
-            this.shuffleboardSliderInput.setDouble(position);
+            SmartDashboard.putNumber("Elevator/InputSlider", position);
         }
         
         if (DriverStation.isEnabled()) {
@@ -178,6 +127,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             String controlName = appliedControl.getControlInfo().get("Name");
             boolean leftMotor = false;
 
+            // Alexis says this is faster than an if statement
             switch (controlName) {
                 case "Follower":
                     appliedControl = this.leftMotor.getAppliedControl();
@@ -203,7 +153,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                         this.leftMotor.setControl(this.FOLLOW_RIGHT);
                     }
                     break;
-                
+
                 case "MotionMagicVoltage":
                     if (leftMotor) {
                         this.leftMotor.setControl(((MotionMagicVoltage) appliedControl)
@@ -231,14 +181,14 @@ public class ElevatorSubsystem extends SubsystemBase {
                 motionMagicPosition(position - 0.01, false, true);
             }
             else if (currentCommand != null) {
-                this.shuffleboardToggleInput.setBoolean(false);
+                SmartDashboard.putBoolean("Elevator/ToggleInputSlider", false);
             }
             else if (inputToggled && currentCommand == null) {
-                motionMagicPosition(this.shuffleboardSliderInput.getDouble(position), true, false);
+                motionMagicPosition(SmartDashboard.getNumber("Elevator/InputSlider", 0), true, false);
             }
         }
         else {
-            this.shuffleboardToggleInput.setBoolean(false);
+            SmartDashboard.putBoolean("Elevator/ToggleInputSlider", false);
             setVoltage(0);
         }
     }
