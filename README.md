@@ -83,17 +83,19 @@ First coral
 1. Starting Line -> `J`
 2. Remove `L3 Algae` & score `L3 Coral`
 3. `J` -> `Coral Station` and intake
-Second coral
-4. `Coral station` -> `K`
-5. Remove `L2 Algae` & score `L3 Coral`
-6. `K` -> `Coral Station` and intake
-Third coral
-7. `Coral station` -> `L`
-8. Score `L3 Coral`
-This runs during any leftover time during auton : 
-9. `L` -> `Coral Station` and intake
 
-![Path on testing field](https://github.com/user-attachments/assets/74acafa7-0642-4a69-975c-721236e07aed)
+Second coral
+1. `Coral station` -> `K`
+2. Remove `L2 Algae` & score `L3 Coral`
+3. `K` -> `Coral Station` and intake
+
+Third coral
+1. `Coral station` -> `L`
+2. Score `L3 Coral`<br>
+This runs during any leftover time during auton : 
+3. `L` -> `Coral Station` and intake
+
+https://github.com/user-attachments/assets/74acafa7-0642-4a69-975c-721236e07aed
 
 ### Controls
 
