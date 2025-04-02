@@ -17,6 +17,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "PIDAlignRightReef"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "MoveElevatorToL3Coral"
                 }
               },
@@ -61,6 +67,12 @@
               {
                 "type": "named",
                 "data": {
+                  "name": "PIDAlignRightReef"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
                   "name": "MoveElevatorToL3Coral"
                 }
               },
@@ -100,6 +112,12 @@
                 "type": "path",
                 "data": {
                   "pathName": "Coral Right To C (L3C)"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "PIDAlignLeftReef"
                 }
               },
               {
