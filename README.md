@@ -43,7 +43,9 @@ This code is for team 3482's on-season robot, Ceto.
 | Task                       | Capable |
 |----------------------------|:-------:|
 | Leave Starting Line (Auto) |   ✅    |
-| Processor                  |   ❌    |
+| Score in Processor         |   ❌    |
+| Score in Net               |   ❌    |
+
 
 🛈 `Ceto` scores **3** `L3 Coral` during the Autonomous period on the left or right side.<br>
 It is also capable of scoring **1** `L3 Coral` starting from the middle and staying out of the way of other autons.<br>
