@@ -44,22 +44,13 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class RobotContainer {
-    // Thread-safe singleton design pattern.
-    private static volatile RobotContainer instance;
-    private static Object mutex = new Object();
-
+    // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
+    private static class RobotContainerHolder {
+        private static final RobotContainer INSTANCE = new RobotContainer();
+    }
+    
     public static RobotContainer getInstance() {
-        RobotContainer result = instance;
-        
-        if (result == null) {
-            synchronized (mutex) {
-                result = instance;
-                if (result == null) {
-                    instance = result = new RobotContainer();
-                }
-            }
-        }
-        return instance;
+        return RobotContainerHolder.INSTANCE;
     }
 
     private final SendableChooser<Command> autoChooser;
@@ -242,22 +233,17 @@ public class RobotContainer {
         
         NamedCommands.registerCommand("PIDAlignRightReef",
             new PIDAlignReefCommand(1, false)
-                // .withTimeout(1.5)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
             new PIDAlignReefCommand(-1, false)
-                // .withTimeout(1.5)
         );
-        NamedCommands.registerCommand("PIDAlignCenterReef", // Algae
+        NamedCommands.registerCommand("PIDAlignCenterReef",
             new PIDAlignReefCommand(0, false)
-                // .withTimeout(1.5)
         );
         // NamedCommands.registerCommand("PIDAlignProcessor",
         //     new PIDAlignCommand.Processor()
         //         .withTimeout(1.5)
         // );
-
-        // TODO AUTO : TRY "Unlimited" check on PP app for each path ?
     }
 
     /** Configures the button bindings of the driver controller. */

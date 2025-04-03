@@ -6,6 +6,8 @@
 
 package frc.robot.auto;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AprilTagMap;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
@@ -87,8 +90,10 @@ public class PIDAlignReefCommand extends Command {
             this.direction * (this.flipTags && TagSets.REEF_TAGS_FLIPPED.contains(this.targetID) ? -1 : 1)
         );
 
-        Pose2d currentPose = SwerveSubsystem.getInstance().getState().Pose;
-        if (this.targetPose.getTranslation().getDistance(currentPose.getTranslation()) >= 2) {
+        if (
+            SwerveSubsystem.getInstance().robotDistanceToLocation(this.targetPose.getTranslation())
+            .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE
+        ) {
             this.targetPose = Pose2d.kZero;
         }
         
@@ -198,8 +203,10 @@ public class PIDAlignReefCommand extends Command {
         VisionSubsystem.getInstance().waitingForLimelights = true;
 
         double startTime = Utils.getSystemTimeSeconds();
-        while (SwerveSubsystem.getInstance().getState().Pose.getTranslation().getDistance(
-            VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()) > 0.03
+        while (
+            SwerveSubsystem.getInstance().robotDistanceToLocation(
+                VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
+            ).in(Meters) > 0.03
         ) {
             if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
         }

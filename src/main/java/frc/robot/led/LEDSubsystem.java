@@ -94,11 +94,9 @@ public class LEDSubsystem extends SubsystemBase {
             this.blinkTimer.reset();
         }
 
-        if (newColor != this.currentColor) {
-            LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
-            pattern.applyTo(this.LEDStripBuffer);
-            this.LEDStrip.setData(this.LEDStripBuffer);
-        }
+        LEDPattern pattern = LEDPattern.solid(newColor.color).atBrightness(newColor.brightness);
+        pattern.applyTo(this.LEDStripBuffer);
+        this.LEDStrip.setData(this.LEDStripBuffer);
 
         // Don't save black as a blink color on blinks
         if (this.shouldBlink && newColor == StatusColors.OFF) {
@@ -116,8 +114,6 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The new color to use.
      */
     private void updateDashboardAndLogs(StatusColors newColor) {
-        if (newColor == this.currentColor) return;
-        
         String hexString = newColor.color.toHexString();
         Map<String, Object> properties = Map.of("colorWhenFalse",
             // Have to do this because LEDs don't display orange properly so it is in reality
