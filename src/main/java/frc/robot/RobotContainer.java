@@ -11,7 +11,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -88,7 +87,6 @@ public class RobotContainer {
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
-        SmartDashboard.putData("Power Distribution", new PowerDistribution(1, PowerDistribution.ModuleType.kRev));
     }
 
     /**

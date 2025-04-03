@@ -60,7 +60,7 @@ public class Robot extends LoggedRobot {
             
             Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-            //new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
@@ -84,8 +84,6 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-        SmartDashboard.putNumber("RoboRIO/CPU Temperature", RobotController.getCPUTemp());
-        SmartDashboard.putBoolean("RoboRIO/RSL", RobotController.getRSLState());
         SmartDashboard.putNumber("RoboRIO/Input Current", RobotController.getInputCurrent());
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }
