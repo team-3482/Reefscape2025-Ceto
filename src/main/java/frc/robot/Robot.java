@@ -30,7 +30,7 @@ public class Robot extends LoggedRobot {
     private Command auton;
     private final PowerDistribution pdh;
 
-    @SuppressWarnings({ "resource", "unused" })
+    @SuppressWarnings("unused")
     public Robot() {
         for (int port = 5800; port <= 5809; port++) {
             PortForwarder.add(port, "10.34.82.12", port);
@@ -68,10 +68,8 @@ public class Robot extends LoggedRobot {
         FollowPathCommand.warmupCommand().schedule();
         RobotContainer.getInstance().getAutonomousCommand();
         
-        // Blink like the RSL when disabled
+        // Solid orange like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
-
-        double startTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -80,20 +78,21 @@ public class Robot extends LoggedRobot {
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         try {
+            // TODO : Needs to be tested further to make sure it works properly
             SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());
         }
         catch (Exception error) {
             // Happens when the PDH isn't connected to the RIO.
             // Don't want to spam console during matches.
         }
-        
+
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }
 
     @Override
     public void disabledInit() {
         // SignalLogger.stop();
-        // Blink like the RSL when disabled
+        // Solid orange like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
