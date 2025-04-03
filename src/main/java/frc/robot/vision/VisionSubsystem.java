@@ -4,6 +4,8 @@
 
 package frc.robot.vision;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -144,6 +146,15 @@ public class VisionSubsystem extends SubsystemBase {
         int primaryTag = getPrimaryTagInView();
         boolean reef = TagSets.REEF_TAGS.contains(primaryTag);
 
+        if (
+            SwerveSubsystem.getInstance().robotDistanceToLocation(
+                AprilTagMap.getPoseFromID(primaryTag)
+            )
+            .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE
+        ) {
+            reef = false;
+        }
+
         SmartDashboard.putNumberArray(
             "Primary Tag In View", 
             VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
@@ -155,46 +166,6 @@ public class VisionSubsystem extends SubsystemBase {
         if (reef && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
         }
-
-        // Resetting odometry near reef logic
-        /*
-        double firstLLDist = this.limelightDatas[0] != null && this.limelightDatas[0].MegaTag2 != null
-            ? this.limelightDatas[0].MegaTag2.avgTagDist : Double.MAX_VALUE;
-        // When there is no data, the avg dist is 0, which we can't consider to be near the reef because it is unknown
-        if (firstLLDist == 0) firstLLDist = Double.MAX_VALUE;
-        double secondLLDist = this.limelightDatas[1] != null && this.limelightDatas[1].MegaTag2 != null
-            ? this.limelightDatas[1].MegaTag2.avgTagDist : Double.MAX_VALUE;
-        if (secondLLDist == 0) secondLLDist = Double.MAX_VALUE;
-
-        boolean firstLLInRange = firstLLDist < LimelightConstants.REEF_TRUST_RANGE;
-        boolean secondLLInRange = secondLLDist < LimelightConstants.REEF_TRUST_RANGE;
-
-        // Do nothing if we have already reset for one LL, and we are still within range for at least one LL.
-        if ((this.withinReefRanges[0] || this.withinReefRanges[1]) && (firstLLInRange || secondLLInRange)) {
-            this.reefTimer.restart();
-            SmartDashboard.putBoolean("Reset Pose", false);
-        }
-        // If we were out of range and are now in range, reset odometry.
-        // Only do this if we have been out of range for a certain amount of time.
-        else if (
-            (!this.withinReefRanges[0] && !this.withinReefRanges[1])
-            && (firstLLInRange || secondLLInRange)
-            && this.reefTimer.hasElapsed(0.25)
-        ) {
-            Pose2d newPose = getPose2d();
-            if (newPose == Pose2d.kZero) {
-                // Could not reset this loop, try again next loop as if we weren't in range.
-                this.withinReefRanges = new boolean[] { false, false };
-                return;
-            }
-            this.reefTimer.restart();
-            SwerveSubsystem.getInstance().resetPose(getPose2d());
-            SmartDashboard.putBoolean("Reset Pose", true);
-        }
-
-        this.withinReefRanges = new boolean[] { firstLLInRange, secondLLInRange };
-        */
-        // End logic (DO NOT ADD CODE BELOW OR IN THIS LOGIC because the function may return early !)
     }
 
     /**

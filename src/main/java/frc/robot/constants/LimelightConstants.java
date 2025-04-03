@@ -20,6 +20,7 @@ public final class LimelightConstants {
      */
     public static final double REEF_TRUST_RANGE = 1.5;
     public static final double TRUST_RANGE = 5;
+    public static final double REEF_ALIGN_RANGE = 2.0;
 
     /** All valid tag IDs (used for tag filtering) */
     public static final int[] ALL_TAG_IDS = new int[]{

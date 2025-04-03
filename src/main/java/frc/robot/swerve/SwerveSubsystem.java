@@ -18,8 +18,11 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -275,5 +278,24 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
 
         SmartDashboard.putNumber("Acceleration", accel);
         return accel;
+    }
+
+    /**
+     * Finds the distance from the robot pose to another pose.
+     * @param pose - The pose to find the distance to.
+     * @return The distance.
+     */
+    public Distance robotDistanceToLocation(Pose2d pose) {
+        return robotDistanceToLocation(pose.getTranslation());
+    }
+
+    /**
+     * Finds the distance from the robot pose to a translation.
+     * @param translation - The translation to find the distance to.
+     * @return The distance.
+     */
+    public Distance robotDistanceToLocation(Translation2d translation) {
+        double distance = getState().Pose.getTranslation().getDistance(translation);
+        return Meters.of(distance);
     }
 }
