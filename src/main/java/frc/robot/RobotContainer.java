@@ -85,6 +85,9 @@ public class RobotContainer {
         registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
+
+        this.autoChooser.onChange((Command autoCommand) -> {this.auton = autoCommand;}); // Default auto will be Commands.none()
+        
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
     }
