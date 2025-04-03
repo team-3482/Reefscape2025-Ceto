@@ -76,7 +76,7 @@ If you have any additional questions about `Ceto`, feel free to talk to us!
 
 ### Autonomous Paths
 
-![Path](https://github.com/user-attachments/assets/861d3a10-e58d-4d72-9f47-eeee0bc79f18)
+![path](https://github.com/user-attachments/assets/8024ac9d-7fda-443e-8e0b-239d16ffaa52)
 
 This shows our preferred autonomous path. It can be ran on the left or right side.
 `Ceto` is capable of scoring 3 `L3 Coral` in 14±0.5 seconds consistently. It removes Algae automatically.
