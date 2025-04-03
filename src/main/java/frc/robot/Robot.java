@@ -28,6 +28,7 @@ import frc.robot.led.StatusColors;
 
 public class Robot extends LoggedRobot {
     private Command auton;
+    private final PowerDistribution pdh;
 
     @SuppressWarnings({ "resource", "unused" })
     public Robot() {
@@ -37,6 +38,8 @@ public class Robot extends LoggedRobot {
         }
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+        this.pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
@@ -53,7 +56,6 @@ public class Robot extends LoggedRobot {
             
             Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
@@ -77,8 +79,14 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-        // TODO : Fix current display
-        SmartDashboard.putNumber("RoboRIO/Input Current", RobotController.getInputCurrent());
+        try {
+            SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());
+        }
+        catch (Exception error) {
+            // Happens when the PDH isn't connected to the RIO.
+            // Don't want to spam console during matches.
+        }
+        
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }
 
