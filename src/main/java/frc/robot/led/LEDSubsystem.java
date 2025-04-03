@@ -12,8 +12,6 @@ import frc.robot.constants.PhysicalConstants.LEDConstants;
 
 import org.littletonrobotics.junction.Logger;
 
-import java.util.Map;
-
 public class LEDSubsystem extends SubsystemBase {
     // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
     private static class LEDSubsystemHolder {
@@ -115,16 +113,16 @@ public class LEDSubsystem extends SubsystemBase {
      */
     private void updateDashboardAndLogs(StatusColors newColor) {
         String hexString = newColor.color.toHexString();
-        Map<String, Object> properties = Map.of("colorWhenFalse",
-            // Have to do this because LEDs don't display orange properly so it is in reality
-            // very dark red that our eyes perceive as orange, but in driver station it shows
-            // in red, which could confuse the driver. Thus, it has to be modified to orange.
-            newColor.equals(StatusColors.RSL) ? Color.kDarkOrange.toHexString() : hexString);
 
         Logger.recordOutput("LED/Status", newColor);
         Logger.recordOutput("LED/Color", hexString);
 
-        SmartDashboard.putString("LED", hexString);
+        SmartDashboard.putString(
+            "LED",
+            newColor.equals(StatusColors.RSL)
+                ? Color.kDarkOrange.toHexString()
+                : hexString
+        );
     }
 
     /**
@@ -132,9 +130,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The color to set.
      */
     public void setColor(StatusColors newColor) {
-        // if (DriverStation.isEnabled() || newColor.equals(StatusColors.RSL) || newColor.equals(StatusColors.OFF)) {
-            setColor(newColor, false);
-        // }
+        setColor(newColor, false);
     }
 
     /**
@@ -142,9 +138,7 @@ public class LEDSubsystem extends SubsystemBase {
      * @param newColor - The color to blink.
      */
     public void blinkColor(StatusColors newColor) {
-        // if (DriverStation.isEnabled() || newColor.equals(StatusColors.RSL)) {
-            setColor(newColor, true);
-        // }
+        setColor(newColor, true);
     }
 
     /**

@@ -31,12 +31,10 @@ import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.elevator.MoveElevatorCommand;
 import frc.robot.elevator.ZeroElevatorCommand;
 import frc.robot.led.LEDSubsystem;
-import frc.robot.led.StatusColors;
 import frc.robot.swerve.OscillateXDirectionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.swerve.TunerConstants;
-import frc.robot.led.LEDSubsystem;
 import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.VisionSubsystem;
 
@@ -76,8 +74,7 @@ public class RobotContainer {
         registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-
-        this.autoChooser.onChange((Command autoCommand) -> {this.auton = autoCommand;}); // Default auto will be Commands.none()
+        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Re-loads the stored auto
         
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());

@@ -7,7 +7,6 @@ package frc.robot.vision;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
@@ -37,12 +36,8 @@ import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.constants.AprilTagMap;
-import frc.robot.constants.LimelightConstants;
 
 import org.littletonrobotics.junction.Logger;
-
-import java.util.Iterator;
-import java.util.Optional;
 
 /** 
  * A class that manages AprilTag Limelights for vision.

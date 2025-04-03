@@ -26,13 +26,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
-import java.io.File;
-
 public class Robot extends LoggedRobot {
     private Command auton;
 
@@ -84,6 +77,7 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        // TODO : Fix current display
         SmartDashboard.putNumber("RoboRIO/Input Current", RobotController.getInputCurrent());
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }

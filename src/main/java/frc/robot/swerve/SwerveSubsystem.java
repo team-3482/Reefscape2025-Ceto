@@ -3,7 +3,6 @@ package frc.robot.swerve;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -22,7 +21,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -249,10 +247,10 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             });
         }
 
-        Pigeon2 pigeon = getPigeon2();
-        // The Pigeon measures accelerations in Gs (1 G = 9.81 m/s^2)
-        this.xAccelFilter.calculate(pigeon.getAccelerationX().getValueAsDouble() * 9.80665);
-        this.yAccelFilter.calculate(pigeon.getAccelerationY().getValueAsDouble() * 9.80665);
+        // Pigeon2 pigeon = getPigeon2();
+        // // The Pigeon measures accelerations in Gs (1 G = 9.81 m/s^2)
+        // this.xAccelFilter.calculate(pigeon.getAccelerationX().getValueAsDouble() * 9.80665);
+        // this.yAccelFilter.calculate(pigeon.getAccelerationY().getValueAsDouble() * 9.80665);
     }
 
     private void startSimThread() {
@@ -273,12 +271,13 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     /**
      * Gets the Math.hypot(x, y) accelerations from the Pigeon2.
      * @return The acceleration.
+     * @deprecated The acceleration filters are disabled in periodic to save
+     * processing time, so this will always return zero.
      */
+    @Deprecated
     public double getAcceleration() {
-        double accel = Math.hypot(this.xAccelFilter.lastValue(), this.yAccelFilter.lastValue());
-
-        SmartDashboard.putNumber("Acceleration", accel);
-        return accel;
+        // To use this, uncomment the lines in Periodic that calculate the next values !
+        return Math.hypot(this.xAccelFilter.lastValue(), this.yAccelFilter.lastValue());
     }
 
     /**

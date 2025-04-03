@@ -10,7 +10,6 @@ import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.elevator.ElevatorSubsystem;
-import frc.robot.led.LEDSubsystem;
 
 /** A command that adjusts the coral in case it has been intook too far. */
 public class AdjustCoralCommand extends Command {
