@@ -165,3 +165,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void testExit() {}
 }
+
+// TODO : Clear deploy directory on Rio
+// TODO : Tune limelight exposure/gain on field
+// TODO : Test alignment, scoring, & removing algae on practice field
