@@ -116,7 +116,7 @@ public class VisionSubsystem extends SubsystemBase {
         boolean reef = TagSets.REEF_TAGS.contains(primaryTag);
 
         if (
-            SwerveSubsystem.getInstance().robotDistanceToLocation(
+            SwerveSubsystem.getInstance().getDistance(
                 AprilTagMap.getPoseFromID(primaryTag)
             )
             .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE

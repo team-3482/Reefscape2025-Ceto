@@ -74,7 +74,7 @@ public class RobotContainer {
         registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Re-loads the stored auto
+        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
         
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
@@ -177,7 +177,7 @@ public class RobotContainer {
         Drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    /** Creates instances of each subsystem so periodic always runs. */
+    /** Creates instances of each subsystem so periodic runs on startup. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
         VisionSubsystem.getInstance();
@@ -237,10 +237,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("PIDAlignCenterReef",
             new PIDAlignReefCommand(0, false)
         );
-        // NamedCommands.registerCommand("PIDAlignProcessor",
-        //     new PIDAlignCommand.Processor()
-        //         .withTimeout(1.5)
-        // );
     }
 
     /** Configures the button bindings of the driver controller. */
@@ -273,7 +269,6 @@ public class RobotContainer {
         this.driverController.leftBumper().whileTrue(new PIDAlignReefCommand(-1, true));
         this.driverController.rightBumper().whileTrue(new PIDAlignReefCommand(1, true));
         this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false));
-        // this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -296,14 +291,16 @@ public class RobotContainer {
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier, true));
 
         this.operatorController.a()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true))
+            .onTrue(CommandGenerators.EnableAlgaeCommand());
         this.operatorController.y()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true))
+            .onTrue(CommandGenerators.EnableAlgaeCommand());
         
         // Algae
         this.operatorController.x()
-            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable()))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+            .onTrue(CommandGenerators.EnableAlgaeCommand())
+            .onFalse(CommandGenerators.DisableAlgaeCommand());
 
         // Coral
         this.operatorController.leftBumper().whileTrue(

@@ -48,7 +48,7 @@ public class PIDAlignReefCommand extends Command {
     private final PIDController thetaController = new PIDController(4.3, 0, 0);
 
     private final double kF_linear = 0.065;
-    private final double kF_angular = 0.16; // Math.PI / 15 = 0.2094
+    private final double kF_angular = 0.16;
 
     private final Timer timer;
 
@@ -82,6 +82,7 @@ public class PIDAlignReefCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        // Necessary during auton, less so during teleop but makes the aligning more accurate.
         waitForLimelights();
 
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
@@ -91,7 +92,7 @@ public class PIDAlignReefCommand extends Command {
         );
 
         if (
-            SwerveSubsystem.getInstance().robotDistanceToLocation(this.targetPose.getTranslation())
+            SwerveSubsystem.getInstance().getDistance(this.targetPose.getTranslation())
             .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE
         ) {
             this.targetPose = Pose2d.kZero;
@@ -118,14 +119,15 @@ public class PIDAlignReefCommand extends Command {
         // To go from 0 to +x, you need a positive speed. If the setpoint is zero, you are doing +x to 0.
         double xSpeed = -this.xController.calculate(this.changePose2d.getX());
         if (this.xController.atSetpoint()) {
-            xSpeed = 0;
+            // Do this because around the tolerance PID is not zero,
+            // and combined with the friction speed this could mess up other directions.
+            xSpeed = 0; 
         }
 
         double ySpeed = -this.yController.calculate(this.changePose2d.getY());
         if (this.yController.atSetpoint()) {
             ySpeed = 0;
         }
-
         
         double thetaSpeed = -this.thetaController.calculate(this.changePose2d.getRotation().getRadians());
         if (this.thetaController.atSetpoint()) {
@@ -174,10 +176,15 @@ public class PIDAlignReefCommand extends Command {
                 this.changePose2d != null
                 && this.xController.atSetpoint()
                 && this.yController.atSetpoint()
-                && Math.abs(this.thetaController.getError()) <= 3
+                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(5)
             );
     }
 
+    /**
+     * The distances needed to drive to get to the target pose.
+     * Essentially just the values to use with the PIDControllers.
+     * @return The change pose.
+     */
     private Pose2d calculateChangeRobotRelative() {
         Pose2d robotPose = SwerveSubsystem.getInstance().getState().Pose;
         double robotCos = robotPose.getRotation().getCos();
@@ -204,7 +211,7 @@ public class PIDAlignReefCommand extends Command {
 
         double startTime = Utils.getSystemTimeSeconds();
         while (
-            SwerveSubsystem.getInstance().robotDistanceToLocation(
+            SwerveSubsystem.getInstance().getDistance(
                 VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
             ).in(Meters) > 0.03
         ) {

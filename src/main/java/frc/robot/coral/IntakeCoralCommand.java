@@ -11,7 +11,6 @@ import frc.robot.led.StatusColors;
 
 /** A command that intakes coral and stops when it reaches the end of the intake. */
 public class IntakeCoralCommand extends Command {
-
     /** Creates a new IntakeCoralCommand. */
     public IntakeCoralCommand() {
         setName("IntakeCoralCommand");
@@ -28,7 +27,7 @@ public class IntakeCoralCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // Checks whether the system has a note and stops if it does
+        // Checks whether the system has a coral and stops if it does
         if (CoralSubsystem.getInstance().hasCoral_frontLaser()) {
             CoralSubsystem.getInstance().intake(true);;
         }
@@ -44,6 +43,7 @@ public class IntakeCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return CoralSubsystem.getInstance().hasCoral_frontLaser() && !CoralSubsystem.getInstance().hasCoral_backLaser();
+        return CoralSubsystem.getInstance().hasCoral_frontLaser()
+            && !CoralSubsystem.getInstance().hasCoral_backLaser();
     }
 }

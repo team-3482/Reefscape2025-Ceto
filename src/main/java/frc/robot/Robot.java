@@ -13,6 +13,7 @@ import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.*;
 import frc.robot.constants.Constants;
 import frc.robot.utilities.Elastic;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -66,6 +67,7 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
+        // Eager-load the auton command
         RobotContainer.getInstance().getAutonomousCommand();
         
         // Solid orange like the RSL when disabled
@@ -84,6 +86,7 @@ public class Robot extends LoggedRobot {
         catch (Exception error) {
             // Happens when the PDH isn't connected to the RIO.
             // Don't want to spam console during matches.
+            error.printStackTrace();
         }
 
         SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
@@ -139,19 +142,7 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {
-        // if (
-        //     DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
-        //     TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
-        // ) {
-        //     CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-        //     SwerveSubsystem.getInstance().setControl(
-        //         new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
-        //             new ChassisSpeeds(-2, 0, 0)
-        //         )
-        //     );
-        // }
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void teleopExit() {}

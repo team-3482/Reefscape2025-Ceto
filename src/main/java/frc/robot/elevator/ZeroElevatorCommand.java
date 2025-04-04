@@ -44,6 +44,7 @@ public class ZeroElevatorCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return ElevatorSubsystem.getInstance().atLowerLimit() && ElevatorSubsystem.getInstance().getRotorVelocity() == 0;
+        return ElevatorSubsystem.getInstance().atLowerLimit()
+            && ElevatorSubsystem.getInstance().getRotorVelocity() == 0;
     }
 }

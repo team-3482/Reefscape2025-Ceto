@@ -201,7 +201,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         FeedbackConfigs feedbackConfigs = configuration.Feedback;
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        // Sets the gear ration from the rotor to the mechanism.
+        // Sets the gear ratio from the rotor to the mechanism.
         // This gear ratio needs to be exact.
         feedbackConfigs.SensorToMechanismRatio = ElevatorConstants.ROTOR_TO_MECHANISM_RATIO; 
 
@@ -256,14 +256,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     /**
      * Gets the position of the elevator in meters.
      * @return The position in meters.
+     * @apiNote Sources position data from the right motor.
      */
     public double getPosition() {
         return this.rotationsToMeters(this.rightMotor.getPosition().getValueAsDouble());
     }
 
     /**
-     * Returns the velocity of the motor with no unit conversions
-     * @return The velocity of the motors
+     * Returns the velocity of the mechanism in rot/s.
+     * @return The velocity of the mechanism.
      */
     public double getRotorVelocity() {
         return this.rightMotor.getVelocity().getValueAsDouble();

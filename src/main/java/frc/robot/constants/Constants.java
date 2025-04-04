@@ -38,6 +38,7 @@ public final class Constants {
             public static final double PARALLEL_DIST_TO_TAG = 0.18;
         }
 
+        @Deprecated
         public static final class Processor {
             /** How far (in meters) the robot should be from the tag perpendicularly to score. */
             public static final double PERPENDICULAR_DIST_TO_TAG = 0.7;
@@ -52,6 +53,7 @@ public final class Constants {
         public static final double L2_ALGAE = 0.08;
         public static final double L3_ALGAE = 0.48;
 
+        /** Our L1 coral scoring doesn't actually work. */
         public static final double L1_CORAL = 0.235;
         public static final double L2_CORAL = 0.34;
         public static final double L3_CORAL = 0.74;
@@ -74,7 +76,6 @@ public final class Constants {
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
         @Deprecated
         public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
-
     }
 
     /** States used with Algae and Coral subsystems, reduces overhead. */
