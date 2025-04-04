@@ -1,9 +1,10 @@
 package frc.robot.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.constants.Constants.ScoringConstants;
-import frc.robot.led.StatusColors;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 /** A command which lifts the elevator and lets it fall down slowly to reset position. */
 public class ZeroElevatorCommand extends Command {

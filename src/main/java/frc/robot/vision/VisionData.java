@@ -1,9 +1,9 @@
 package frc.robot.vision;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+
 import frc.robot.constants.LimelightConstants;
-import frc.robot.constants.Constants.TagSets;
-import frc.robot.vision.LimelightHelpers.RawFiducial;
 
 /**
  * <p>A helper class used for storing MegaTag and MegaTag2 data from a Limelight
@@ -63,17 +63,20 @@ public class VisionData {
     public boolean canTrustRotation() {
         if (this.canTrustRotation == null) {
             this.canTrustRotation = 
-                this.MegaTag != null
-                && this.MegaTag2 != null
-                && ((this.MegaTag.tagCount >= 1 && this.MegaTag2.avgTagDist <= 1.5)
-                || (this.MegaTag.tagCount >= 2 && this.MegaTag2.avgTagDist <= 3)
-                || (DriverStation.isDisabled() && bargeMegaTag())); // Important for pre-match positioning updates
+                this.MegaTag != null && this.MegaTag2 != null
+                && (this.MegaTag.tagCount > 0
+                    && (
+                        this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_RANGE
+                        // Trust any data when disabled, so that it can set initial position / rotation.
+                        || DriverStation.isDisabled()
+                    )
+                );
         }
         return this.canTrustRotation;
     }
 
     /**
-     * Checks if the average tag distance is within {@link LimelightConstants#TRUST_TAG_DISTANCE} of the robot.
+     * Checks if the average tag distance is within {@link LimelightConstants#REEF_TRUST_RANGE} of the robot.
      * @return Whether position data can be trusted.
      */
     public boolean canTrustPosition() {
@@ -81,24 +84,38 @@ public class VisionData {
             this.canTrustPosition =
                 this.MegaTag2 != null
                 && (
-                    (this.MegaTag2.tagCount > 0 && this.MegaTag2.avgTagDist < LimelightConstants.TRUST_TAG_DISTANCE)
-                    || (DriverStation.isDisabled() && bargeMegaTag())
+                    this.MegaTag2.tagCount > 0 
+                    && (
+                        this.MegaTag2.avgTagDist < LimelightConstants.TRUST_RANGE
+                        // Trust any data when disabled, so that it can set initial position / rotation.
+                        || DriverStation.isDisabled()
+                    )
                 );
         }
         return this.canTrustPosition;
     }
 
-    /**
-     * Checks if {@link VisionData#MegaTag} sees a barge tag. (4, 5, 14, or 15).
-     */
-    private boolean bargeMegaTag() {
-        if (this.MegaTag == null) return false;
-
-        for (RawFiducial fiducial : this.MegaTag.rawFiducials) {
-            if (TagSets.BARGE_TAGS.contains(fiducial.id)) {
-                return true;
-            }
+    public double calculatePositionDeviation() {
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
+            return 0.3;
         }
-        return false;
+        else if (this.MegaTag2.avgTagDist <= 3 || DriverStation.isDisabled()) {
+            return 1;
+        }
+        else if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
+            return 2;
+        }
+        else {
+            return 9999999;
+        }
+    }
+
+    public double calculateRotationDeviation() {
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE || DriverStation.isDisabled()) {
+            return Units.degreesToRadians(25);
+        }
+        else {
+            return 9999999;
+        }
     }
 }

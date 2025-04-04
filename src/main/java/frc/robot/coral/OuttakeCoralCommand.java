@@ -6,10 +6,11 @@ package frc.robot.coral;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.led.StatusColors;
+
 import frc.robot.constants.Constants.ScoringConstants;
 import frc.robot.elevator.ElevatorSubsystem;
 import frc.robot.led.LEDSubsystem;
+import frc.robot.led.StatusColors;
 
 /** A command that ejects the coral and stops a short time after. */
 public class OuttakeCoralCommand extends Command {
@@ -36,7 +37,9 @@ public class OuttakeCoralCommand extends Command {
     @Override
     public void execute() {
         // Starts the timer once the note doesn't break the beam
-        if (!CoralSubsystem.getInstance().hasCoral()) {
+        // Have to check for the front one, because the back one gets broken by
+        // the elevator when not in the intaking position
+        if (!CoralSubsystem.getInstance().hasCoral_frontLaser()) {
             this.timer.start();
         }
     }
@@ -52,7 +55,8 @@ public class OuttakeCoralCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // Stops the motor after 0.35 seconds of the coral leaving the beam
-        return timer.hasElapsed(0.35);
+        // Stops the motor after 0.06 seconds of the coral leaving the beam
+        // (That's 3 robot cycles at minimum)
+        return timer.hasElapsed(0.06);
     }
 }

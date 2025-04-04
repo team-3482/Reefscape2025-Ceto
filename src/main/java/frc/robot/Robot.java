@@ -5,39 +5,41 @@
 package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import java.io.File;
 
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.*;
+import frc.robot.constants.Constants;
+import frc.robot.utilities.Elastic;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
-import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.vision.VisionSubsystem;
 
 public class Robot extends LoggedRobot {
     private Command auton;
+    private final PowerDistribution pdh;
 
-    @SuppressWarnings({ "resource", "unused" })
+    @SuppressWarnings("unused")
     public Robot() {
         for (int port = 5800; port <= 5809; port++) {
             PortForwarder.add(port, "10.34.82.12", port);
             PortForwarder.add(port + 10, "10.34.82.13", port);
         }
+
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+        this.pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
@@ -54,7 +56,6 @@ public class Robot extends LoggedRobot {
             
             Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
             Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
@@ -65,22 +66,33 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
-
         RobotContainer.getInstance().getAutonomousCommand();
         
-        // Blink like the RSL when disabled
+        // Solid orange like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        try {
+            // TODO : Needs to be tested further to make sure it works properly
+            SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());
+        }
+        catch (Exception error) {
+            // Happens when the PDH isn't connected to the RIO.
+            // Don't want to spam console during matches.
+        }
+
+        SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
     }
 
     @Override
     public void disabledInit() {
-        SignalLogger.stop();
-        // Blink like the RSL when disabled
+        // SignalLogger.stop();
+        // Solid orange like the RSL when disabled
         LEDSubsystem.getInstance().setColor(StatusColors.RSL);
     }
 
@@ -89,7 +101,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledExit() {
-        SignalLogger.start();
+        // SignalLogger.start();
         LEDSubsystem.getInstance().setColor(StatusColors.OFF);
     }
 
@@ -106,6 +118,8 @@ public class Robot extends LoggedRobot {
             System.err.println("No auton command found.");
             LEDSubsystem.getInstance().setColor(StatusColors.ERROR);
         }
+
+        Elastic.selectTab(Constants.DashboardTabNames.AUTON);
     }
 
     @Override
@@ -120,21 +134,23 @@ public class Robot extends LoggedRobot {
             this.auton.cancel();
             LEDSubsystem.getInstance().setColor(StatusColors.OK);
         }
+
+        Elastic.selectTab(Constants.DashboardTabNames.TELEOP);
     }
 
     @Override
     public void teleopPeriodic() {
-        if (
-            DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
-            TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
-        ) {
-            CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-            SwerveSubsystem.getInstance().setControl(
-                new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
-                    new ChassisSpeeds(-2, 0, 0)
-                )
-            );
-        }
+        // if (
+        //     DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
+        //     TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
+        // ) {
+        //     CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
+        //     SwerveSubsystem.getInstance().setControl(
+        //         new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
+        //             new ChassisSpeeds(-2, 0, 0)
+        //         )
+        //     );
+        // }
     }
 
     @Override

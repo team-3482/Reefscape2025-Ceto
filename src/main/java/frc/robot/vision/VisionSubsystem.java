@@ -4,36 +4,38 @@
 
 package frc.robot.vision;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 
 import com.ctre.phoenix6.Utils;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+
 import frc.robot.constants.Constants.TagSets;
+import frc.robot.constants.LimelightConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.constants.LimelightConstants;
+import frc.robot.constants.AprilTagMap;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -55,49 +57,24 @@ public class VisionSubsystem extends SubsystemBase {
     /** Used to run vision processing on a separate thread. */
     private final Notifier notifier;
 
-    /** Latest Limelight data. May contain faulty data unsuitable for odometry. */
+    /**
+     * Latest Limelight data. May contain faulty data unsuitable for odometry.
+     * @apiNote [ Left, Right ]
+     */
     private VisionData[] limelightDatas = new VisionData[2];
     /** Last heartbeat of the front LL (updated every frame) */
-    private long lastHeartbeatBottomLL = 0;
+    private long lastHeartbeatBottomRightLL = 0;
     /** Last heartbeat of the back LL (updated every frame) */
-    private long lastHeartbeatToptLL = 0;
-    /**
-     * Timer used to track when the cameras last got data.
-     * @apiNote It would probably be better to track distance traveled instead,
-     * but this was the quickest solution.
-     */
-    private final Timer lastDataTimer = new Timer();
-
-    /* Shuffleboard */
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("VisionSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(5, 3)
-        .withPosition(1, 2);
-    private GenericEntry shuffleboardProcessorInView = shuffleboardLayout
-        .add("Processor Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    private GenericEntry shuffleboardReefInView = shuffleboardLayout
-        .add("Reef Align", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of(
-            "colorWhenTrue", StatusColors.CAN_ALIGN.color.toHexString(),
-            "colorWhenFalse", StatusColors.OFF.color.toHexString()
-        ))
-        .withSize(3, 1)
-        .withPosition(0, 2)
-        .getEntry();
+    private long lastHeartbeatBottomLeftLL = 0;
     
-    private boolean lastReef = false;
-    private boolean lastProcessor = false;
-    private boolean lastCanAlign = false;
+    @SuppressWarnings("unused")
+    private boolean[] withinReefRanges = new boolean[] { false, false};
+    /** Used to prevent resetting position over-and-over when barely over the range, by adding a timeout before resetting again. */
+    @SuppressWarnings("unused")
+    private Timer reefTimer = new Timer();
+
+    /** Not ideal but the easiest implementation. */
+    public volatile boolean waitingForLimelights = false;
 
     /** Creates a new VisionSubsystem. */
     private VisionSubsystem() {
@@ -105,40 +82,28 @@ public class VisionSubsystem extends SubsystemBase {
 
         if (LimelightConstants.PUBLISH_CAMERA_FEEDS) {
             // Shuffleboard camera feeds.
-            HttpCamera leftLLCamera = new HttpCamera(
-                LimelightConstants.BOTTOM_LL,
+            HttpCamera bottomRightLLCamera = new HttpCamera(
+                LimelightConstants.BOTTOM_RIGHT_LL,
                 "http://" + "10.34.82.12" + ":5800/stream.mjpg"
             );
-            HttpCamera rightLLCamera = new HttpCamera(
-                LimelightConstants.TOP_LL,
+            HttpCamera bottomLeftLLCamera = new HttpCamera(
+                LimelightConstants.BOTTOM_LEFT_LL,
                 "http://" + "10.34.82.13" + ":5800/stream.mjpg"
             );
 
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.TOP_LL, rightLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 0);
-            Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-                .add(LimelightConstants.BOTTOM_LL, leftLLCamera)
-                .withWidget(BuiltInWidgets.kCameraStream)
-                .withProperties(Map.of("Show Crosshair", false, "Show Controls", false))
-                .withSize(7, 4)
-                .withPosition(6, 4);
+            CameraServer.startAutomaticCapture(bottomLeftLLCamera);
+            CameraServer.startAutomaticCapture(bottomRightLLCamera);
         }
 
-        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LL, LimelightConstants.ALL_TAG_IDS);
-        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.TOP_LL, LimelightConstants.ALL_TAG_IDS);
-
-        this.lastDataTimer.start();
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_RIGHT_LL, LimelightConstants.ALL_TAG_IDS);
+        LimelightHelpers.SetFiducialIDFiltersOverride(LimelightConstants.BOTTOM_LEFT_LL, LimelightConstants.ALL_TAG_IDS);
 
         this.notifier = new Notifier(this::notifierLoop);
         this.notifier.setName("Vision Notifier");
         // The processing takes no longer than a regular robot cycle.
         // FPS will never be high enough to take advantage of every cycle,
         // but it's fine because repeat frames are entirely ignored (see heartbeats).
-        this.notifier.startPeriodic(0.02);
+        this.notifier.startPeriodic(0.01);
     }
 
     // This method will be called once per scheduler run
@@ -146,33 +111,28 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         // Uses a Notifier for separate-thread Vision processing
         // These methods are here because they are NOT thread-safe
-        boolean processor, reef, canAlign;
-        processor = reef = canAlign = false;
+        
+        int primaryTag = getPrimaryTagInView();
+        boolean reef = TagSets.REEF_TAGS.contains(primaryTag);
 
-        if (recentVisionData()) {
-            int primaryTag = getPrimaryTagInView_Bottom_MegaTag();
-            
-            reef = TagSets.REEF_TAGS.contains(primaryTag);
-            processor = TagSets.PROCESSOR_TAGS.contains(primaryTag);
-            canAlign = reef || processor;
+        if (
+            SwerveSubsystem.getInstance().robotDistanceToLocation(
+                AprilTagMap.getPoseFromID(primaryTag)
+            )
+            .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE
+        ) {
+            reef = false;
         }
+
+        SmartDashboard.putNumberArray(
+            "Primary Tag In View", 
+            VisionSubsystem.pose2dToArray(AprilTagMap.getPoseFromID(primaryTag, true))
+        );
+
+        SmartDashboard.putBoolean("Vision/ReefInView", reef);
+        Logger.recordOutput("Vision/ReefInView", reef);
         
-        if (reef != this.lastReef) {
-            this.shuffleboardReefInView.setBoolean(reef);
-            Logger.recordOutput("Vision/ReefInView", reef);
-            this.lastReef = reef;
-        }
-        if (processor != this.lastProcessor) {
-            this.shuffleboardProcessorInView.setBoolean(processor);
-            Logger.recordOutput("Vision/ProcessorInView", processor);
-            this.lastProcessor = processor;
-        }
-        if (canAlign != this.lastCanAlign) {
-            Logger.recordOutput("Vision/canAlign", processor || reef);
-            this.lastCanAlign = canAlign;
-        }
-        
-        if (canAlign && DriverStation.isEnabled()) {
+        if (reef && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CAN_ALIGN);
         }
     }
@@ -186,18 +146,14 @@ public class VisionSubsystem extends SubsystemBase {
         for (VisionData data : fetchLimelightData()) { // This method gets data in about 6 to 10 ms.
             if (data.optimized || data.MegaTag == null || data.MegaTag2 == null) continue;
 
-            if (
-                DriverStation.isEnabled()
-                && data.MegaTag2.rawFiducials.length > 0
-                && TagSets.BARGE_TAGS.contains(data.MegaTag2.rawFiducials[0].id)
-            ) continue;
-            
             if (data.canTrustRotation()) {
                 // Only trust rotational data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
                     9999999,
                     9999999,
-                    recentVisionData() ? 1 : 0.4
+                    this.waitingForLimelights
+                        ? Units.degreesToRadians(15)
+                        : data.calculateRotationDeviation()
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
                     data.MegaTag.pose,
@@ -208,8 +164,8 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    recentVisionData() ? 0.7 : 0.1,
-                    recentVisionData() ? 0.7 : 0.1,
+                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -217,12 +173,8 @@ public class VisionSubsystem extends SubsystemBase {
                     Utils.fpgaToCurrentTime(data.MegaTag2.timestampSeconds)
                 );
             }
-
-            hasRecentVisionData(
-                data.canTrustPosition() ? data.MegaTag2.pose.getTranslation() : null,
-                data.canTrustRotation() ? data.MegaTag.pose.getRotation() : null
-            );
         }
+
         // This method is suprprisingly efficient, generally below 1 ms.
         optimizeLimelights();
     }
@@ -234,29 +186,29 @@ public class VisionSubsystem extends SubsystemBase {
      * However, this happens at 2e9 frames, which would take consecutive 96 days at a consistent 240 fps.
      */
     private VisionData[] fetchLimelightData() {
-        long heartbeatBottomLL = -1;
-        long heartbeatTopLL = -1;
+        long heartbeatBottomRightLL = -1;
+        long heartbeatBottomLeftLL = -1;
 
         // Periodic logic
         double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.BOTTOM_LL,
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.BOTTOM_RIGHT_LL,
             rotationDegrees, 0, 0, 0, 0, 0
         );
-        LimelightHelpers.SetRobotOrientation(LimelightConstants.TOP_LL,
+        LimelightHelpers.SetRobotOrientation(LimelightConstants.BOTTOM_LEFT_LL,
             rotationDegrees, 0, 0, 0, 0, 0
         );
         
-        heartbeatBottomLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LL, "hb").getInteger(-1);
-        heartbeatTopLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.TOP_LL, "hb").getInteger(-1);
+        heartbeatBottomRightLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_RIGHT_LL, "hb").getInteger(-1);
+        heartbeatBottomLeftLL = LimelightHelpers.getLimelightNTTableEntry(LimelightConstants.BOTTOM_LEFT_LL, "hb").getInteger(-1);
 
-        if (heartbeatBottomLL == -1 || this.lastHeartbeatBottomLL < heartbeatBottomLL) {
-            this.limelightDatas[0] = getVisionData(LimelightConstants.BOTTOM_LL);
-            this.lastHeartbeatBottomLL = heartbeatBottomLL == -1 ? this.lastHeartbeatBottomLL : heartbeatBottomLL;
+        if (heartbeatBottomLeftLL == -1 || this.lastHeartbeatBottomLeftLL < heartbeatBottomLeftLL) {
+            this.limelightDatas[0] = getVisionData(LimelightConstants.BOTTOM_LEFT_LL);
+            this.lastHeartbeatBottomLeftLL = heartbeatBottomLeftLL == -1 ? this.lastHeartbeatBottomLeftLL : heartbeatBottomLeftLL;
         }
-        
-        if (heartbeatTopLL == -1 || this.lastHeartbeatToptLL < heartbeatTopLL) {
-            this.limelightDatas[1] = getVisionData(LimelightConstants.TOP_LL);
-            this.lastHeartbeatToptLL = heartbeatTopLL == -1 ? this.lastHeartbeatToptLL : heartbeatTopLL;
+
+        if (heartbeatBottomRightLL == -1 || this.lastHeartbeatBottomRightLL < heartbeatBottomRightLL) {
+            this.limelightDatas[1] = getVisionData(LimelightConstants.BOTTOM_RIGHT_LL);
+            this.lastHeartbeatBottomRightLL = heartbeatBottomRightLL == -1 ? this.lastHeartbeatBottomRightLL : heartbeatBottomRightLL;
         }
 
         // There is no point actually filtering out nonexistent or null data,
@@ -265,6 +217,11 @@ public class VisionSubsystem extends SubsystemBase {
         return this.limelightDatas;
     }
 
+    /**
+     * Helper that creates the VisionData object for a limelight.
+     * @param limelight - The limelight to process data for.
+     * @return The VisionData.
+     */
     private VisionData getVisionData(String limelight) {
         LimelightHelpers.PoseEstimate mt = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
@@ -347,51 +304,68 @@ public class VisionSubsystem extends SubsystemBase {
             // reset any optimization that might have been done previously.
             if (limelightData.MegaTag2 == null || limelightData.MegaTag2.tagCount == 0) {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
-                setDefaultCrops(limelightData.name);
+                LimelightHelpers.setCropWindow(
+                    limelightData.name,
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[1],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[2],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[3]
+                );
                 continue;
             }
 
             // Downscaling closer to tags.
-            if (limelightData.MegaTag2.avgTagDist < 1) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
+            if (DriverStation.isDisabled()) {
+                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
             }
-            else if (limelightData.MegaTag2.avgTagDist < 2) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
-            }
-            else if (limelightData.MegaTag2.avgTagDist < 3) {
-                LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
-            }
+            // else if (limelightData.MegaTag2.avgTagDist < 1) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 3.0f);
+            // }
+            // else if (limelightData.MegaTag2.avgTagDist < 2) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 2.0f);
+            // }
+            // else if (limelightData.MegaTag2.avgTagDist < 3) {
+            //     LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.5f);
+            // }
             else {
                 LimelightHelpers.SetFiducialDownscalingOverride(limelightData.name, 1.0f);
             }
 
             // Smart cropping around on-screen AprilTags
-            if (limelightData.leftX == -1) {
-                setDefaultCrops(limelightData.name);
+            if (limelightData.leftX == -1 || limelightData.MegaTag2.avgTagDist < 0.5) {
+                LimelightHelpers.setCropWindow(
+                    limelightData.name,
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[1],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[2],
+                    LimelightConstants.DEFAULT_BOTTTOM_CROP[3]
+                );
             }
             else {
                 double leftCrop = limelightData.leftX / (LimelightConstants.RES_X / 2) - 1;
                 double rightCrop = limelightData.rightX / (LimelightConstants.RES_X / 2) - 1;
                 double bottomCrop = limelightData.bottomY / (LimelightConstants.RES_Y / 2) - 1;
                 double topCrop = limelightData.topY / (LimelightConstants.RES_Y / 2) - 1;
-                
-                // Commented out because we will not be seeing more than one tag at once with the bottom LL this season
-                // if (
-                //     limelightData.MegaTag2.tagCount == 1
-                //     && (17 <= limelightData.MegaTag2.rawFiducials[0].id
-                //         || (6 <= limelightData.MegaTag2.rawFiducials[0].id
-                //             && limelightData.MegaTag2.rawFiducials[0].id <= 11))
-                // ) {
-                //     leftCrop -= 1.4 / limelightData.MegaTag2.avgTagDist;
-                //     rightCrop += 1.4 / limelightData.MegaTag2.avgTagDist;
+
+                // Remember, LL data has latency !
+                // If the robot is moving, a crop will happen too late and could be too small thus losing data when it is applied.
+                ChassisSpeeds robotSpeeds = SwerveSubsystem.getInstance().getState().Speeds;
+                double speed = Math.hypot(robotSpeeds.vxMetersPerSecond, robotSpeeds.vyMetersPerSecond);
+                double speedAdjustment = speed >= 0.5 ? LimelightConstants.BOUNDING_BOX : 0;
+                double sideAdjustment = Math.abs(robotSpeeds.omegaRadiansPerSecond) >= Math.toRadians(25)
+                    ? Math.abs(robotSpeeds.omegaRadiansPerSecond) * LimelightConstants.BOUNDING_BOX / (0.44 * 2)
+                    : 0;
+
+                leftCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
+                rightCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment + sideAdjustment;
+
+                // if (DriverStation.isAutonomous() && limelightData.MegaTag2.avgTagDist > 0.75) {
+                //     leftCrop = -1;
+                //     rightCrop = 1;
                 // }
-                // else {
-                leftCrop -= LimelightConstants.BOUNDING_BOX;
-                rightCrop += LimelightConstants.BOUNDING_BOX;
-                // }
                 
-                bottomCrop -= LimelightConstants.BOUNDING_BOX;
-                topCrop += LimelightConstants.BOUNDING_BOX;
+                bottomCrop -= LimelightConstants.BOUNDING_BOX + speedAdjustment;
+                topCrop += LimelightConstants.BOUNDING_BOX + speedAdjustment;
 
                 LimelightHelpers.setCropWindow(limelightData.name, leftCrop, rightCrop, bottomCrop, topCrop);
             }
@@ -399,74 +373,28 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Helper that sets the default crops for a limelight.
-     * @param limelight - The limelight to set the crops for.
-     */
-    private void setDefaultCrops(String limelight) {
-        double[] cropValues = limelight.equals(LimelightConstants.TOP_LL)
-            ? LimelightConstants.DEFAULT_TOP_CROP
-            : LimelightConstants.DEFAULT_BOTTTOM_CROP;
-
-        LimelightHelpers.setCropWindow(
-            limelight, cropValues[0], cropValues[1], cropValues[2], cropValues[3]
-        );
-    }
-
-    /**
-     * Returns if vision data has been processed in the last {@link LimelightConstants#RECENT_DATA_CUTOFF}.
-     * @return If there is recent vision data.
-     */
-    public boolean recentVisionData() {
-        return !this.lastDataTimer.hasElapsed(LimelightConstants.RECENT_DATA_CUTOFF);
-    }
-
-    /**
-     * A method that restarts the timer if there is recent data.
-     * @param translation - The estimated translation.
-     * @param rotation - The estimated rotation.
-     * @apiNote If either is {@code null}, it will be ignored.
-     */
-    private void hasRecentVisionData(Translation2d translation, Rotation2d rotation) {
-        Pose2d odometryPose = SwerveSubsystem.getInstance().getState().Pose;
-
-        boolean validTranslation = translation == null ? false
-            : odometryPose.getTranslation().getDistance(translation) <= 0.3;
-        
-        boolean validRotation = rotation != null;
-        if (validRotation) {
-            double oAngle = odometryPose.getRotation().getDegrees();
-            double lAngle = rotation.getDegrees();
-            double minAngle = Math.min(360 - Math.abs(oAngle - lAngle), Math.abs(oAngle - lAngle));
-            validRotation = minAngle < 10;
-        }
-
-        if (validTranslation && validRotation) {
-            this.lastDataTimer.restart();
-        }
-    }
-
-    /**
      * Gets the robot position according to the Limelight in target-space (the target is at the origin).
      * @return The robot position.
-     * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom one.
-     * Returns {@code null} if there is no tags in view for either Limelight.
+     * @apiNote This method will grab data from whichever Limelight sees a tag, with priority for the bottom right one.
+     * Returns an empty optional if there is no tags in view for either Limelight.
      */
     public Optional<Pose2d> getEstimatedPosition_TargetSpace() {
-        return getEstimatedPosition_TargetSpace(LimelightConstants.BOTTOM_LL)
-            .or(() -> getEstimatedPosition_TargetSpace(LimelightConstants.TOP_LL));
+        return getEstimatedPosition_TargetSpace(LimelightConstants.BOTTOM_RIGHT_LL)
+            .or(() -> getEstimatedPosition_TargetSpace(LimelightConstants.BOTTOM_LEFT_LL));
     }
 
     /**
      * Gets the robot position according to the Limelight in target-space (the target is at the origin).
+     * @param limelight - The limelight to source the position from.
      * @return The robot position.
-     * Returns {@code null} if there is no tags in view for the limelight.
+     * Returns an empty optional if there is no tags in view for the limelight.
      */
     private Optional<Pose2d> getEstimatedPosition_TargetSpace(String limelight) {
         /* [ x, z, y, pitch, yaw, roll ] (meters, degrees) */
-        double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(LimelightConstants.BOTTOM_LL);
+        double[] poseArray = LimelightHelpers.getBotPose_TargetSpace(limelight);
 
         // 0, 0, 0
-        if (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0) {
+        if (poseArray.length == 0 || (poseArray[0] == 0 && poseArray[2] == 0 && poseArray[4] == 0)) {
             return Optional.empty();
         }
 
@@ -477,11 +405,91 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the primary tag in view of the bottom limelight.
+     * Gets the primary tag in view of either bottom limelights, with priority for the right one.
      * @return The tag ID.
      */
-    public int getPrimaryTagInView_Bottom_MegaTag() {
-        return (int) NetworkTableInstance.getDefault().getTable(LimelightConstants.BOTTOM_LL)
-            .getEntry("tid").getInteger(0);
+    public int getPrimaryTagInView() {
+        int id = getPrimaryTagInView(LimelightConstants.BOTTOM_RIGHT_LL);
+        if (id == -1) {
+            id = getPrimaryTagInView(LimelightConstants.BOTTOM_LEFT_LL);
+        }
+        return id;
+    }
+
+    /**
+     * Gets the primary tag in view of the limelight.
+     * @param limelight - The limelight to get the ID for.
+     * @return The tag ID.
+     */
+    private int getPrimaryTagInView(String limelight) {
+        return (int) NetworkTableInstance.getDefault().getTable(limelight)
+            .getEntry("tid").getInteger(-1);
+    }
+
+    public static class Pose2dAndTimestamp {
+        public static final VisionSubsystem.Pose2dAndTimestamp kZero =
+            new VisionSubsystem.Pose2dAndTimestamp(Pose2d.kZero, 0);
+        public final Pose2d pose2d;
+        public final double timestampSeconds;
+
+        public Pose2dAndTimestamp(Pose2d pose2d, double timestampSeconds) {
+            this.pose2d = pose2d;
+            this.timestampSeconds = timestampSeconds;
+        }
+    }
+
+    /**
+     * Gets the current Pose2d. If one Limelight has data, it uses that one. If both do, it uses the one with the most recent data.
+     * @return The current Pose2d. If no data, Pose2d.kZero.
+     * @apiNote Does NOT filter for accuracy based on distance, etc. This is raw data at the instant the method was called.
+     * This method is not ideal, because Limelights have a significant latency to position updates.
+     */
+    public VisionSubsystem.Pose2dAndTimestamp getPose2d() {
+        VisionData leftLL = getVisionData(LimelightConstants.BOTTOM_LEFT_LL);
+        VisionData rightLL = getVisionData(LimelightConstants.BOTTOM_RIGHT_LL);
+
+        Pose2d leftPose, rightPose;
+        leftPose = rightPose = null;
+
+        if (
+            leftLL.MegaTag2 != null && leftLL.MegaTag2.tagCount > 0
+            && leftLL.MegaTag != null && leftLL.MegaTag.tagCount > 0
+        ) {
+            leftPose = new Pose2d(
+                leftLL.MegaTag2.pose.getTranslation(),
+                leftLL.MegaTag.pose.getRotation()
+            );
+        }
+
+        if (
+            rightLL.MegaTag2 != null && rightLL.MegaTag2.tagCount > 0
+            && rightLL.MegaTag != null && rightLL.MegaTag.tagCount > 0
+        ) {
+            rightPose = new Pose2d(
+                rightLL.MegaTag2.pose.getTranslation(),
+                rightLL.MegaTag.pose.getRotation()
+            );
+        }
+
+        if (leftPose == null && rightPose == null) return VisionSubsystem.Pose2dAndTimestamp.kZero;
+        else if (leftPose == null) return new VisionSubsystem.Pose2dAndTimestamp(rightPose, rightLL.MegaTag2.timestampSeconds);
+        else if (rightPose == null) return new VisionSubsystem.Pose2dAndTimestamp(leftPose, leftLL.MegaTag2.timestampSeconds);
+
+        return leftLL.MegaTag2.timestampSeconds < rightLL.MegaTag2.timestampSeconds
+            ? new VisionSubsystem.Pose2dAndTimestamp(leftPose, leftLL.MegaTag2.timestampSeconds)
+            : new VisionSubsystem.Pose2dAndTimestamp(rightPose, rightLL.MegaTag2.timestampSeconds);
+    }
+
+    /**
+     * Converts a Pose2d to the form [x, y, yaw]. The yaw is in degrees for legibility.
+     * @param pose - The pose to process.
+     * @return The array.
+     */
+    public static double[] pose2dToArray(Pose2d pose) {
+        return new double[] {
+            pose.getX(),
+            pose.getY(),
+            pose.getRotation().getDegrees()
+        };
     }
 }

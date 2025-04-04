@@ -1,12 +1,12 @@
 package frc.robot.led;
 
-import static edu.wpi.first.units.Units.Percent;
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.wpilibj.util.Color;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.wpilibj.util.Color;
+import static edu.wpi.first.units.Units.Percent;
 
 /** Colors used with the LEDSubsystem, these are named for readability and priority. */
 public enum StatusColors {

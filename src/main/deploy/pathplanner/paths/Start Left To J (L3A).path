@@ -1,0 +1,98 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.917,
+        "y": 5.613370901639343
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.144634053972226,
+        "y": 5.7167282307078215
+      },
+      "isLocked": false,
+      "linkedName": "Start Left"
+    },
+    {
+      "anchor": {
+        "x": 5.226639344262295,
+        "y": 5.397592213114754
+      },
+      "prevControl": {
+        "x": 5.373414451268408,
+        "y": 5.195213686676438
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Reef J"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.6596718809614586,
+      "rotationDegrees": -119.99999999999999
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.7479784366576828,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 4.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 180.0,
+        "maxAngularAcceleration": 270.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "Clear L3 Algae",
+      "waypointRelativePos": 0.6509401709401732,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "MoveElevatorToL3Algae"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "EnableAlgae"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.25,
+    "maxAcceleration": 7.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 540.0,
+    "nominalVoltage": 12.0,
+    "unlimited": true
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": "1. Start",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -135.0
+  },
+  "useDefaultConstraints": true
+}

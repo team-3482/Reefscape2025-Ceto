@@ -1,9 +1,10 @@
 package frc.robot.elevator;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.constants.Constants.ScoringConstants;
+
+import java.util.function.Supplier;
 
 /** A command that moves the elevator to a position. */
 public class MoveElevatorCommand extends Command {

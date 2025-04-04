@@ -4,10 +4,6 @@
 
 package frc.robot.coral;
 
-import java.util.Map;
-
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -15,20 +11,18 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.ShuffleboardTabNames;
+
 import frc.robot.constants.Constants.SubsystemStates;
 import frc.robot.constants.PhysicalConstants.CoralConstants;
 import frc.robot.constants.PhysicalConstants.RobotConstants;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
+
+import org.littletonrobotics.junction.Logger;
 
 /** A subsystem that manipulates the coral game piece. */
 public class CoralSubsystem extends SubsystemBase {
@@ -46,26 +40,6 @@ public class CoralSubsystem extends SubsystemBase {
     private DigitalInput frontLaser = new DigitalInput(CoralConstants.FRONT_LASER_ID);
     private DigitalInput backLaser = new DigitalInput(CoralConstants.BACK_LASER_ID);
 
-    private final ShuffleboardLayout shuffleboardLayout = Shuffleboard.getTab(ShuffleboardTabNames.DEFAULT)
-        .getLayout("CoralSubsystem", BuiltInLayouts.kGrid)
-        .withProperties(Map.of("Number of columns", 1, "Number of rows", 2, "Label position", "TOP"))
-        .withSize(5, 3)
-        .withPosition(1, 5);
-    private GenericEntry shuffleboard_entry_frontLaser = shuffleboardLayout
-        .add("Front Laser", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(5, 1)
-        .withPosition(0, 0)
-        .getEntry();
-    private GenericEntry shuffleboard_entry_backLaser = shuffleboardLayout
-        .add("Back Laser", false)
-        .withWidget(BuiltInWidgets.kBooleanBox)
-        .withProperties(Map.of("colorWhenFalse", "black", "colorWhenTrue", "white"))
-        .withSize(5, 1)
-        .withPosition(0, 1)
-        .getEntry();
-    
     private SubsystemStates state = SubsystemStates.STOPPED;
     private SubsystemStates lastLoggedState = SubsystemStates.STOPPED;
 
@@ -83,15 +57,12 @@ public class CoralSubsystem extends SubsystemBase {
     public void periodic() {
         boolean coralFront = hasCoral_frontLaser();
         boolean coralBack = hasCoral_backLaser();
-        
-        this.shuffleboard_entry_frontLaser.setBoolean(coralFront);
-        this.shuffleboard_entry_backLaser.setBoolean(coralBack);
-        
-        boolean coral = coralFront || coralBack;
-        
+
+        SmartDashboard.putBoolean("Coral/FrontLaserHasCoral", coralFront);
+        SmartDashboard.putBoolean("Coral/BackLaserHasCoral", coralBack);
+
         Logger.recordOutput("Coral/FrontLaserHasCoral", coralFront);
         Logger.recordOutput("Coral/BackLaserHasCoral", coralBack);
-        Logger.recordOutput("Coral/HasCoral", coral);
 
         // Avoids logging every loop
         if (this.state != this.lastLoggedState) {
@@ -99,7 +70,7 @@ public class CoralSubsystem extends SubsystemBase {
             this.lastLoggedState = this.state;
         }
 
-        if (coral && DriverStation.isEnabled()) {
+        if (coralFront && DriverStation.isEnabled()) {
             LEDSubsystem.getInstance().setColor(StatusColors.CORAL);
         }
     }
@@ -202,7 +173,10 @@ public class CoralSubsystem extends SubsystemBase {
     /**
      * Returns a boolean value of whether there is a coral in the outtake
      * @return whether it has coral
+     * @deprecated The back laser can be broken by the elevator, thus it is a poor indicator of having coral.
+     * Use {@link CoralSubsystem#hasCoral_frontLaser()} only instead.
      */
+    @Deprecated(since = "28 March 2025", forRemoval = true)
     public boolean hasCoral() {
         return hasCoral_backLaser() || hasCoral_frontLaser();
     }

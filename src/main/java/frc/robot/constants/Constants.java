@@ -8,10 +8,11 @@ import java.util.Set;
 
 /** Constants used throughout the code that are not categorized in other constants files. */
 public final class Constants {
-    /** Tab names in Shuffleboard. */
-    public static final class ShuffleboardTabNames {
-        public static final String DEFAULT = "Competition";
-        public static final String UTILITIES = "Utilities";
+    /** Tab names in Elastic. */
+    public static final class DashboardTabNames {
+        public static final String TELEOP = "Teleoperated";
+        public static final String AUTON = "Autonomous";
+        public static final String DEV = "Dev";
     }
 
     /** Constants for the controller and any controller related assignments. */
@@ -31,12 +32,10 @@ public final class Constants {
     /** Constants used for auto-aligning the robot when scoring. */
     public static final class AligningConstants {
         public static final class Reef {
-            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_CORAL = 0.48;
-            /** How far (in meters) the robot should be from the tag perpendicularly to score. */
-            public static final double PERPENDICULAR_DIST_TO_TAG_ALGAE = 0.42;
+            /** How far (in meters) the robot should be from the tag perpendicularly to be flush with the reef. */
+            public static final double PERPENDICULAR_DIST_TO_TAG = 0.44;
             /** How far (in meters) the robot should be parallel to the tag to score. */
-            public static final double PARALLEL_DIST_TO_TAG = 0.185;
+            public static final double PARALLEL_DIST_TO_TAG = 0.18;
         }
 
         public static final class Processor {
@@ -50,14 +49,17 @@ public final class Constants {
     /** Constants for elevator heights */
     public static final class ScoringConstants {
         /* Heights in elevator meters for scoring at these heights. */
+        public static final double L2_ALGAE = 0.08;
+        public static final double L3_ALGAE = 0.48;
+
         public static final double L1_CORAL = 0.235;
         public static final double L2_CORAL = 0.34;
-        public static final double L2_ALGAE = 0.63;
         public static final double L3_CORAL = 0.74;
+
         public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
         public static final double MAX_HEIGHT = 0.75;
 
-        public static final double IDLE_HEIGHT = L1_CORAL;
+        public static final double IDLE_HEIGHT = L2_ALGAE;
         public static final double SLOW_DRIVE_HEIGHT = 0.4;
     }
     
@@ -68,13 +70,15 @@ public final class Constants {
         public static final Set<Integer> REEF_TAGS = Set.of(6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22);
         public static final Set<Integer> EMPTY_SET = Set.of();
         
+        @Deprecated
         public static final Set<Integer> PROCESSOR_TAGS = Set.of(3, 16);
+        @Deprecated
         public static final Set<Integer> BARGE_TAGS = Set.of(4, 5, 14, 15);
 
     }
 
     /** States used with Algae and Coral subsystems, reduces overhead. */
     public static enum SubsystemStates {
-        STOPPED, INTAKING, SLOW_INTAKING, HOLDING, OUTTAKING, SLOW_OUTTAKING
+        STOPPED, INTAKING, SLOW_INTAKING, OUTTAKING, SLOW_OUTTAKING, DISCARDING
     }
 }
