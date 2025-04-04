@@ -164,8 +164,8 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
-                    this.waitingForLimelights ? 0.1 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.2 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.2 : data.calculatePositionDeviation(),
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -332,7 +332,10 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             // Smart cropping around on-screen AprilTags
-            if (limelightData.leftX == -1 || limelightData.MegaTag2.avgTagDist < 0.5) {
+            if (limelightData.leftX == -1
+                || limelightData.MegaTag2.avgTagDist < 0.5
+                || (DriverStation.isDisabled() && DriverStation.isAutonomous()) 
+            ) {
                 LimelightHelpers.setCropWindow(
                     limelightData.name,
                     LimelightConstants.DEFAULT_BOTTTOM_CROP[0],
