@@ -34,6 +34,8 @@ public final class Constants {
         public static final class Reef {
             /** How far (in meters) the robot should be from the tag perpendicularly to be flush with the reef. */
             public static final double PERPENDICULAR_DIST_TO_TAG = 0.44;
+            /** Coral distance added before the real lign up in meters. */
+            public static final double CORAL_DISTANCE = 0.11 /* Coral diameter */;
             /** How far (in meters) the robot should be parallel to the tag to score. */
             public static final double PARALLEL_DIST_TO_TAG = 0.18;
         }

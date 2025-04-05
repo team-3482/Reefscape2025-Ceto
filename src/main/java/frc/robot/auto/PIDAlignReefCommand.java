@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.Meters;
 
 import java.text.DecimalFormat;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AprilTagMap;
 import frc.robot.constants.LimelightConstants;
+import frc.robot.constants.Constants.AligningConstants;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
@@ -40,9 +43,12 @@ public class PIDAlignReefCommand extends Command {
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
     private final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
+    private final double[] ZERO_ARRAY = new double[] { 0, 0, 0 };
     
     private final int direction;
     private final boolean flipTags;
+    private final boolean coralFirst;
+    private final boolean waitForLimelights;
     
     private Pose2d targetPose;
     private int targetID;
@@ -62,12 +68,16 @@ public class PIDAlignReefCommand extends Command {
      * Creates a new PIDAlignCommand.
      * @param direction - The direction to align, robot-relative when facing the tag (-1, 0, 1).
      * @param flipTags - Whether to flip the tags on the opposite side of the driver to be driver-relative.
+     * @param coralFirst - Whether to align further away considering for a coral.
+     * @param waitForLimelights - Wait for data to be up-to-date.
      */
-    public PIDAlignReefCommand(int direction, boolean flipTags) {
+    public PIDAlignReefCommand(int direction, boolean flipTags, boolean coralFirst, boolean waitForLimelights) {
         setName("PIDAlignReefCommand");
 
         this.direction = (int) Math.signum(direction);
         this.flipTags = flipTags;
+        this.coralFirst = coralFirst;
+        this.waitForLimelights = waitForLimelights;
         this.timer = new Timer();
 
         this.xController.setTolerance(0.005);
@@ -89,7 +99,9 @@ public class PIDAlignReefCommand extends Command {
     @Override
     public void initialize() {
         // Necessary during auton, less so during teleop but makes the aligning more accurate.
-        waitForLimelights();
+        if (waitForLimelights /* && !DriverStation.isTeleop() */) {
+            waitForLimelights();
+        }
 
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
         this.targetPose = AprilTagMap.calculateReefAlignedPosition(
@@ -161,7 +173,9 @@ public class PIDAlignReefCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(PIDAlignReefCommand.ZERO_SPEEDS));
-        SmartDashboard.putNumberArray("Aligning Target Pose", VisionSubsystem.pose2dToArray(Pose2d.kZero));
+        SmartDashboard.putNumberArray("Aligning Target Pose", this.ZERO_ARRAY);
+        SmartDashboard.putNumberArray("Aligning Change Needed", this.ZERO_ARRAY);
+        SmartDashboard.putNumberArray("Aligning Speeds", this.ZERO_ARRAY);
 
         // The latter doesn't interrupt the Command even though it's an early end
         if (interrupted || this.targetPose == Pose2d.kZero) {
@@ -203,6 +217,10 @@ public class PIDAlignReefCommand extends Command {
             new Translation2d(
                 xChange * robotCos + yChange * robotSin,
                 -xChange * robotSin + yChange * robotCos
+            ).minus(
+                this.coralFirst
+                    ? new Translation2d(AligningConstants.Reef.CORAL_DISTANCE, 0)
+                    : Translation2d.kZero
             ),
             this.targetPose.getRotation().minus(robotPose.getRotation())
         );
@@ -219,13 +237,16 @@ public class PIDAlignReefCommand extends Command {
         while (
             SwerveSubsystem.getInstance().getDistance(
                 VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
-            ).in(Meters) > 0.03
+            ).in(Meters) > 0.06
         ) {
             if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
         }
 
+        String wastedTime = this.DOUBLE_FORMAT.format(Utils.getSystemTimeSeconds() - startTime);
+        Logger.recordOutput("PIDAlign Wasted Time", wastedTime);
+        
         String wastedTimeMsg = "Wasted "
-            + this.DOUBLE_FORMAT.format(Utils.getSystemTimeSeconds() - startTime)
+            + wastedTime
             + " seconds waiting for Limelights"; 
         System.out.println(wastedTimeMsg);
         Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "PIDAlign",  wastedTimeMsg));

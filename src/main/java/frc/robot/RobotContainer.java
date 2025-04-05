@@ -230,13 +230,13 @@ public class RobotContainer {
             CommandGenerators.DisableAlgaeCommand());
         
         NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignReefCommand(1, false)
+            new PIDAlignReefCommand(1, false, false, true)
         );
         NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignReefCommand(-1, false)
+            new PIDAlignReefCommand(-1, false, false, true)
         );
         NamedCommands.registerCommand("PIDAlignCenterReef",
-            new PIDAlignReefCommand(0, false)
+            new PIDAlignReefCommand(0, false, false, true)
         );
     }
 
@@ -267,9 +267,15 @@ public class RobotContainer {
         // );
         this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignReefCommand(-1, true));
-        this.driverController.rightBumper().whileTrue(new PIDAlignReefCommand(1, true));
-        this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false));
+        this.driverController.leftBumper().whileTrue(Commands.sequence(
+            new PIDAlignReefCommand(-1, true, true, true),
+            new PIDAlignReefCommand(-1, true, false, false)
+        ));
+        this.driverController.rightBumper().whileTrue(Commands.sequence(
+            new PIDAlignReefCommand(1, true, true, true),
+            new PIDAlignReefCommand(1, true, false, false)
+        ));
+        this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false, false, true));
     }
 
     /** Configures the button bindings of the operator controller. */
