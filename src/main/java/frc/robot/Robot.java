@@ -88,7 +88,9 @@ public class Robot extends LoggedRobot {
         //     error.printStackTrace();
         // }
 
-        SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+        double voltage = RobotController.getBatteryVoltage();
+        SmartDashboard.putNumber("Voltage", voltage);
+        Logger.recordOutput("Voltage", voltage);
     }
 
     @Override

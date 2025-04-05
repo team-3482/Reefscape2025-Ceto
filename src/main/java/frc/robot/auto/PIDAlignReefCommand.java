@@ -8,6 +8,8 @@ package frc.robot.auto;
 
 import static edu.wpi.first.units.Units.Meters;
 
+import java.text.DecimalFormat;
+
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -26,6 +28,9 @@ import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.utilities.Elastic;
+import frc.robot.utilities.Elastic.Notification;
+import frc.robot.utilities.Elastic.Notification.NotificationLevel;
 import frc.robot.vision.VisionSubsystem;
 
 /**
@@ -34,6 +39,7 @@ import frc.robot.vision.VisionSubsystem;
 public class PIDAlignReefCommand extends Command {
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
+    private final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
     
     private final int direction;
     private final boolean flipTags;
@@ -217,7 +223,12 @@ public class PIDAlignReefCommand extends Command {
         ) {
             if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
         }
-        System.out.println("Wasted " + (Utils.getSystemTimeSeconds() - startTime) + " seconds waiting for Limelights");
+
+        String wastedTimeMsg = "Wasted "
+            + this.DOUBLE_FORMAT.format(Utils.getSystemTimeSeconds() - startTime)
+            + " seconds waiting for Limelights"; 
+        System.out.println(wastedTimeMsg);
+        Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "PIDAlign",  wastedTimeMsg));
 
         VisionSubsystem.getInstance().waitingForLimelights = false;
     }

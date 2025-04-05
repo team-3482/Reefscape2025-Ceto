@@ -100,10 +100,10 @@ public class VisionData {
             return 1;
         }
         else if (this.MegaTag2.avgTagDist <= 3 || DriverStation.isDisabled()) {
-            return 2;
+            return 1.5;
         }
         else if (this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_RANGE) {
-            return 3;
+            return 2;
         }
         else {
             return 9999999;
@@ -111,11 +111,10 @@ public class VisionData {
     }
 
     public double calculateRotationDeviation() {
-        if (DriverStation.isAutonomous() && 
-            (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE
-                || DriverStation.isDisabled())
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE
+            || DriverStation.isDisabled()
         ) {
-            return Units.degreesToRadians(50);
+            return Units.degreesToRadians(40);
         }
         else {
             return 9999999;

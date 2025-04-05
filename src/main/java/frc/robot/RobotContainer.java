@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -303,18 +304,27 @@ public class RobotContainer {
             .onFalse(CommandGenerators.DisableAlgaeCommand());
 
         // Coral
-        this.operatorController.leftBumper().whileTrue(
-            Commands.parallel(
-                new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
-                new IntakeCoralCommand()
-            )
-        );
+        this.operatorController.leftBumper()
+            .onTrue(CommandGenerators.DisableAlgaeCommand())
+            .whileTrue(
+                Commands.parallel(
+                    new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
+                    new IntakeCoralCommand()
+                )
+            );
+
+        final Timer timer = new Timer();
+        
         this.operatorController.rightBumper()
+            .onTrue(Commands.runOnce(() -> timer.restart()))
+
             .whileTrue(new OuttakeCoralCommand())
+            
             .onFalse(Commands.sequence(
                 new MoveElevatorCommand(Double.NaN, false, false),
-                Commands.waitSeconds(0.5),
-                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
+                Commands.waitUntil(() -> timer.hasElapsed(1)),
+                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false),
+                CommandGenerators.DisableAlgaeCommand()
             ));
 
         this.operatorController.rightStick().onTrue(new AdjustCoralCommand());
