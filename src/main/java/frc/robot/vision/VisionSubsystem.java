@@ -152,7 +152,7 @@ public class VisionSubsystem extends SubsystemBase {
                     9999999,
                     9999999,
                     this.waitingForLimelights
-                        ? Units.degreesToRadians(15)
+                        ? Units.degreesToRadians(35)
                         : data.calculateRotationDeviation()
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
@@ -164,8 +164,8 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    this.waitingForLimelights ? 0.2 : data.calculatePositionDeviation(),
-                    this.waitingForLimelights ? 0.2 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.7 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.7 : data.calculatePositionDeviation(),
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
