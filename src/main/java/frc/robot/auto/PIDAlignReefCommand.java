@@ -237,7 +237,7 @@ public class PIDAlignReefCommand extends Command {
         while (
             SwerveSubsystem.getInstance().getDistance(
                 VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
-            ).in(Meters) > 0.08
+            ).in(Meters) > 0.1
         ) {
             if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
         }

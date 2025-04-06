@@ -97,7 +97,7 @@ public class VisionData {
 
     public double calculatePositionDeviation() {
         if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
-            return 0.65;
+            return 0.6;
         }
         else if (this.MegaTag2.avgTagDist <= 3 || DriverStation.isDisabled()) {
             return 1.2;

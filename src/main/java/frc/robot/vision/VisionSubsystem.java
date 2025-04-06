@@ -164,8 +164,8 @@ public class VisionSubsystem extends SubsystemBase {
             if (data.canTrustPosition()) {
                 // Only trust positional data when adding this pose.
                 SwerveSubsystem.getInstance().setVisionMeasurementStdDevs(VecBuilder.fill(
-                    this.waitingForLimelights ? 0.3 : data.calculatePositionDeviation(),
-                    this.waitingForLimelights ? 0.3 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.25 : data.calculatePositionDeviation(),
+                    this.waitingForLimelights ? 0.25 : data.calculatePositionDeviation(),
                     9999999
                 ));
                 SwerveSubsystem.getInstance().addVisionMeasurement(
