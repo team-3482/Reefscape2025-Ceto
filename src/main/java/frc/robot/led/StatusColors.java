@@ -16,7 +16,7 @@ public enum StatusColors {
     CAN_ALIGN(Color.kBlue, null, 1, 0.2),
     ERROR(Color.kRed, null, 2, 1),
     OK(Color.kGreen, null, 2, 2.5),
-    RSL(new Color(200, 50, 0), Percent.of(25), 5, -1),
+    RSL(new Color(200, 50, 0), Percent.of(40), 5, -1),
     ;
     
     /** The Color. */
@@ -47,7 +47,7 @@ public enum StatusColors {
      */
     private StatusColors(Color color, Dimensionless brightness, int priority, double stickyTime) {
         this.color = color;
-        this.brightness = brightness == null ? Percent.of(50) : brightness;
+        this.brightness = brightness == null ? Percent.of(75) : brightness;
         this.priority = priority;
         this.stickyTime = stickyTime;
     }
