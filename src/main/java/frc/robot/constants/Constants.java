@@ -60,11 +60,12 @@ public final class Constants {
         public static final double L2_CORAL = 0.34;
         public static final double L3_CORAL = 0.74;
 
-        public static final double BOTTOM_HEIGHT = 0; // Used for intaking also
+        public static final double BOTTOM_HEIGHT = 0;
         public static final double MAX_HEIGHT = 0.75;
-
-        public static final double IDLE_HEIGHT = L2_ALGAE;
+        
         public static final double SLOW_DRIVE_HEIGHT = 0.4;
+        public static final double INTAKING_HEIGHT = BOTTOM_HEIGHT;
+        public static final double IDLE_HEIGHT = L2_ALGAE;
     }
     
     /** Sets of tags for O(1) lookup. */

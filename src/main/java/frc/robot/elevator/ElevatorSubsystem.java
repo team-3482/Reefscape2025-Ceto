@@ -74,7 +74,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             // We do not do this every time because sometimes we deploy code while the elevator
             // is being worked on by mech, etc. and in that case the position is correct
             // because it is using the last reset
-            setPosition(ScoringConstants.BOTTOM_HEIGHT);
+            setPosition(ScoringConstants.INTAKING_HEIGHT);
         }
 
         this.lastSetGoal = getPosition();
@@ -278,7 +278,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public void motionMagicPosition(double position, boolean clamp, boolean slow) {
         if (clamp) {
-            position = MathUtil.clamp(position, ScoringConstants.BOTTOM_HEIGHT, ScoringConstants.MAX_HEIGHT);
+            position = MathUtil.clamp(position, ScoringConstants.INTAKING_HEIGHT, ScoringConstants.MAX_HEIGHT);
         }
 
         this.lastSetGoal = position;

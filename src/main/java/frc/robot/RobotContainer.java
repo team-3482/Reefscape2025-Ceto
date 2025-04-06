@@ -191,7 +191,7 @@ public class RobotContainer {
     /** Register all NamedCommands for PathPlanner use */
     private void registerNamedCommands() {
         NamedCommands.registerCommand("MoveElevatorToBottom",
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false));
+            new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, false, false));
         NamedCommands.registerCommand("MoveElevatorToIdle",
             new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false));
 
@@ -286,7 +286,7 @@ public class RobotContainer {
 
         // Elevator
         this.operatorController.leftTrigger()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
+            .onTrue(new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, slowElevatorSupplier, false));
         this.operatorController.povLeft()
             .onTrue(new ZeroElevatorCommand());
 
@@ -314,7 +314,7 @@ public class RobotContainer {
             .onTrue(CommandGenerators.DisableAlgaeCommand())
             .whileTrue(
                 Commands.parallel(
-                    new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
+                    new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, slowElevatorSupplier, true),
                     new IntakeCoralCommand()
                 )
             );
@@ -329,7 +329,9 @@ public class RobotContainer {
             .onFalse(Commands.sequence(
                 new MoveElevatorCommand(Double.NaN, false, false),
                 Commands.waitUntil(() -> timer.hasElapsed(1)),
-                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false),
+                new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
+                    // Only move elevator down if we aren't intaking
+                    .onlyIf(() -> ElevatorSubsystem.getInstance().getLastSetGoal() != ScoringConstants.INTAKING_HEIGHT),
                 CommandGenerators.DisableAlgaeCommand()
             ));
 
