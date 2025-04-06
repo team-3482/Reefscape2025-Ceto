@@ -77,7 +77,7 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        // SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         // try {
         //     // TODO : Currently broken, the CAN is disconnected
         //     SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());

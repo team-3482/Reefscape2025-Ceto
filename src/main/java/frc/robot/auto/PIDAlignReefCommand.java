@@ -237,7 +237,7 @@ public class PIDAlignReefCommand extends Command {
         while (
             SwerveSubsystem.getInstance().getDistance(
                 VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
-            ).in(Meters) > 0.06
+            ).in(Meters) > 0.08
         ) {
             if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
         }
@@ -252,5 +252,18 @@ public class PIDAlignReefCommand extends Command {
         Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "PIDAlign",  wastedTimeMsg));
 
         VisionSubsystem.getInstance().waitingForLimelights = false;
+    }
+
+    /**
+     * Check if the distance between the vision and odometry is good enough to align.
+     * @return Whether the distance is good enough to align.
+     */
+    @SuppressWarnings("unused")
+    private boolean validOdometry() {
+        Translation2d odometry = SwerveSubsystem.getInstance().getState().Pose.getTranslation();
+        Translation2d vision = VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation();
+
+        return Math.abs(odometry.getX() - vision.getX()) <= 0.05
+            && Math.abs(odometry.getY() - vision.getY()) <= 0.05;
     }
 }
