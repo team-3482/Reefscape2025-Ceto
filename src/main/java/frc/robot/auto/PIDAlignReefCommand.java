@@ -8,11 +8,6 @@ package frc.robot.auto;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import java.text.DecimalFormat;
-
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -20,7 +15,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,9 +25,6 @@ import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.utilities.Elastic;
-import frc.robot.utilities.Elastic.Notification;
-import frc.robot.utilities.Elastic.Notification.NotificationLevel;
 import frc.robot.vision.VisionSubsystem;
 
 /**
@@ -41,8 +32,7 @@ import frc.robot.vision.VisionSubsystem;
  */
 public class PIDAlignReefCommand extends Command {
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
-    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
-    private final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
+    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
     private final double[] ZERO_ARRAY = new double[] { 0, 0, 0 };
     
     private final int direction;
@@ -98,11 +88,6 @@ public class PIDAlignReefCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // Necessary during auton, less so during teleop but makes the aligning more accurate.
-        if (waitForLimelights /* && !DriverStation.isTeleop() */) {
-            waitForLimelights();
-        }
-
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
         this.targetPose = AprilTagMap.calculateReefAlignedPosition(
             this.targetID,
@@ -224,46 +209,5 @@ public class PIDAlignReefCommand extends Command {
             ),
             this.targetPose.getRotation().minus(robotPose.getRotation())
         );
-    }
-
-    /** 
-     * I hate limelights and everything that they stand for.
-     * Going band for band with Chromebooks for slowest processing imaginable.
-     */
-    private void waitForLimelights() {
-        VisionSubsystem.getInstance().waitingForLimelights = true;
-
-        double startTime = Utils.getSystemTimeSeconds();
-        while (
-            SwerveSubsystem.getInstance().getDistance(
-                VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
-            ).in(Meters) > 0.1
-        ) {
-            if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
-        }
-
-        String wastedTime = this.DOUBLE_FORMAT.format(Utils.getSystemTimeSeconds() - startTime);
-        Logger.recordOutput("PIDAlign Wasted Time", wastedTime);
-        
-        String wastedTimeMsg = "Wasted "
-            + wastedTime
-            + " seconds waiting for Limelights"; 
-        System.out.println(wastedTimeMsg);
-        Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "PIDAlign",  wastedTimeMsg));
-
-        VisionSubsystem.getInstance().waitingForLimelights = false;
-    }
-
-    /**
-     * Check if the distance between the vision and odometry is good enough to align.
-     * @return Whether the distance is good enough to align.
-     */
-    @SuppressWarnings("unused")
-    private boolean validOdometry() {
-        Translation2d odometry = SwerveSubsystem.getInstance().getState().Pose.getTranslation();
-        Translation2d vision = VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation();
-
-        return Math.abs(odometry.getX() - vision.getX()) <= 0.05
-            && Math.abs(odometry.getY() - vision.getY()) <= 0.05;
     }
 }

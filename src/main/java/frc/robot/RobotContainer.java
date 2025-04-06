@@ -229,15 +229,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("DisableAlgae",
             CommandGenerators.DisableAlgaeCommand());
         
-        NamedCommands.registerCommand("PIDAlignRightReef",
+        NamedCommands.registerCommand("PIDAlignRightReef", CommandGenerators.WaitForLimelightsCommand(
             new PIDAlignReefCommand(1, false, false, true)
-        );
-        NamedCommands.registerCommand("PIDAlignLeftReef",
+        ));
+        NamedCommands.registerCommand("PIDAlignLeftReef", CommandGenerators.WaitForLimelightsCommand(
             new PIDAlignReefCommand(-1, false, false, true)
-        );
-        NamedCommands.registerCommand("PIDAlignCenterReef",
+        ));
+        NamedCommands.registerCommand("PIDAlignCenterReef", CommandGenerators.WaitForLimelightsCommand(
             new PIDAlignReefCommand(0, false, false, true)
-        );
+        ));
     }
 
     /** Configures the button bindings of the driver controller. */
@@ -268,14 +268,16 @@ public class RobotContainer {
         this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
         this.driverController.leftBumper().whileTrue(Commands.sequence(
-            new PIDAlignReefCommand(-1, true, true, true),
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(-1, true, true, true)),
             new PIDAlignReefCommand(-1, true, false, false)
         ));
         this.driverController.rightBumper().whileTrue(Commands.sequence(
-            new PIDAlignReefCommand(1, true, true, true),
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(1, true, true, true)),
             new PIDAlignReefCommand(1, true, false, false)
         ));
-        this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false, false, true));
+        this.driverController.a().whileTrue(
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(0, false, false, true))
+        );
     }
 
     /** Configures the button bindings of the operator controller. */
