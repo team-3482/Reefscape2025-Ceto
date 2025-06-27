@@ -1,12 +1,23 @@
 package frc.robot.utilities;
 
+import static edu.wpi.first.units.Units.Meters;
+
+import java.text.DecimalFormat;
+
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.robot.algae.AlgaeSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.utilities.Elastic.Notification;
+import frc.robot.utilities.Elastic.Notification.NotificationLevel;
+import frc.robot.vision.VisionSubsystem;
 
 /**
  * A class that holds static methods that group Commands under specific names.
@@ -59,14 +70,6 @@ public final class CommandGenerators {
     //
     //
     //
-
-    // AUTO
-    //
-    //
-    //
-    //
-    //
-    //
     /**
      * A command that outtakes the algae.
      * @return The command.
@@ -84,6 +87,52 @@ public final class CommandGenerators {
     public static Command DisableAlgaeCommand() {
         return AlgaeSubsystem.getInstance().runOnce(
             () -> AlgaeSubsystem.getInstance().stop()
+        );
+    }
+
+    // AUTO
+    //
+    //
+    //
+    //
+    //
+    //
+    /**
+     * A command that waits for limelights to be close to odometry before finishing.
+     * @param The PIDAlign Command to run after waiting.
+     * @return The command.
+     */
+    public static Command WaitForLimelightsCommand(Command PIDAlignCommand) {
+        final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.##");
+        Timer timeoutTimer = new Timer();
+
+        return Commands.sequence(
+            Commands.runOnce(() -> timeoutTimer.restart()),
+
+            Commands.waitUntil(() -> {
+                VisionSubsystem.getInstance().waitingForLimelights = true;
+
+                if (!timeoutTimer.hasElapsed(DriverStation.isTeleop() ? 0.5 : 1)) {
+                    return SwerveSubsystem.getInstance().getDistance(
+                        VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
+                    ).in(Meters) <= 0.1;
+                }
+                else {
+                    String wastedTime = DOUBLE_FORMAT.format(timeoutTimer.get());
+                    Logger.recordOutput("PIDAlign Wasted Time", wastedTime);
+                    
+                    String wastedTimeMsg = "Wasted "
+                        + wastedTime
+                        + " seconds waiting for Limelights"; 
+                    System.out.println(wastedTimeMsg);
+                    Elastic.sendNotification(new Notification(NotificationLevel.WARNING, "PIDAlign",  wastedTimeMsg));
+
+                    VisionSubsystem.getInstance().waitingForLimelights = false;
+                    return true;
+                }
+            }),
+
+            PIDAlignCommand
         );
     }
 }

@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -74,7 +75,7 @@ public class RobotContainer {
         registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Re-loads the stored auto
+        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
         
         SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
@@ -177,7 +178,7 @@ public class RobotContainer {
         Drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    /** Creates instances of each subsystem so periodic always runs. */
+    /** Creates instances of each subsystem so periodic runs on startup. */
     private void initializeSubsystems() {
         LEDSubsystem.getInstance();
         VisionSubsystem.getInstance();
@@ -190,7 +191,7 @@ public class RobotContainer {
     /** Register all NamedCommands for PathPlanner use */
     private void registerNamedCommands() {
         NamedCommands.registerCommand("MoveElevatorToBottom",
-            new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, false, false));
+            new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, false, false));
         NamedCommands.registerCommand("MoveElevatorToIdle",
             new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false));
 
@@ -228,19 +229,15 @@ public class RobotContainer {
         NamedCommands.registerCommand("DisableAlgae",
             CommandGenerators.DisableAlgaeCommand());
         
-        NamedCommands.registerCommand("PIDAlignRightReef",
-            new PIDAlignReefCommand(1, false)
-        );
-        NamedCommands.registerCommand("PIDAlignLeftReef",
-            new PIDAlignReefCommand(-1, false)
-        );
-        NamedCommands.registerCommand("PIDAlignCenterReef",
-            new PIDAlignReefCommand(0, false)
-        );
-        // NamedCommands.registerCommand("PIDAlignProcessor",
-        //     new PIDAlignCommand.Processor()
-        //         .withTimeout(1.5)
-        // );
+        NamedCommands.registerCommand("PIDAlignRightReef", CommandGenerators.WaitForLimelightsCommand(
+            new PIDAlignReefCommand(1, false, false, true)
+        ));
+        NamedCommands.registerCommand("PIDAlignLeftReef", CommandGenerators.WaitForLimelightsCommand(
+            new PIDAlignReefCommand(-1, false, false, true)
+        ));
+        NamedCommands.registerCommand("PIDAlignCenterReef", CommandGenerators.WaitForLimelightsCommand(
+            new PIDAlignReefCommand(0, false, false, true)
+        ));
     }
 
     /** Configures the button bindings of the driver controller. */
@@ -270,10 +267,17 @@ public class RobotContainer {
         // );
         this.driverController.x().whileTrue(new OscillateXDirectionCommand());
 
-        this.driverController.leftBumper().whileTrue(new PIDAlignReefCommand(-1, true));
-        this.driverController.rightBumper().whileTrue(new PIDAlignReefCommand(1, true));
-        this.driverController.a().whileTrue(new PIDAlignReefCommand(0, false));
-        // this.driverController.y().whileTrue(new PIDAlignCommand.Processor());
+        this.driverController.leftBumper().whileTrue(Commands.sequence(
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(-1, true, true, true)),
+            new PIDAlignReefCommand(-1, true, false, false)
+        ));
+        this.driverController.rightBumper().whileTrue(Commands.sequence(
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(1, true, true, true)),
+            new PIDAlignReefCommand(1, true, false, false)
+        ));
+        this.driverController.a().whileTrue(
+            CommandGenerators.WaitForLimelightsCommand(new PIDAlignReefCommand(0, false, false, true))
+        );
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -284,7 +288,7 @@ public class RobotContainer {
 
         // Elevator
         this.operatorController.leftTrigger()
-            .onTrue(new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, false));
+            .onTrue(new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, slowElevatorSupplier, false));
         this.operatorController.povLeft()
             .onTrue(new ZeroElevatorCommand());
 
@@ -296,28 +300,41 @@ public class RobotContainer {
             .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_CORAL, slowElevatorSupplier, true));
 
         this.operatorController.a()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L2_ALGAE, slowElevatorSupplier, true))
+            .onTrue(CommandGenerators.EnableAlgaeCommand());
         this.operatorController.y()
-            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true));
+            .toggleOnTrue(new MoveElevatorCommand(ScoringConstants.L3_ALGAE, slowElevatorSupplier, true))
+            .onTrue(CommandGenerators.EnableAlgaeCommand());
         
         // Algae
         this.operatorController.x()
-            .onTrue(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().enable()))
-            .onFalse(AlgaeSubsystem.getInstance().runOnce(() -> AlgaeSubsystem.getInstance().stop()));
+            .onTrue(CommandGenerators.EnableAlgaeCommand())
+            .onFalse(CommandGenerators.DisableAlgaeCommand());
 
         // Coral
-        this.operatorController.leftBumper().whileTrue(
-            Commands.parallel(
-                new MoveElevatorCommand(ScoringConstants.BOTTOM_HEIGHT, slowElevatorSupplier, true),
-                new IntakeCoralCommand()
-            )
-        );
+        this.operatorController.leftBumper()
+            .onTrue(CommandGenerators.DisableAlgaeCommand())
+            .whileTrue(
+                Commands.parallel(
+                    new MoveElevatorCommand(ScoringConstants.INTAKING_HEIGHT, slowElevatorSupplier, true),
+                    new IntakeCoralCommand()
+                )
+            );
+
+        final Timer timer = new Timer();
+        
         this.operatorController.rightBumper()
+            .onTrue(Commands.runOnce(() -> timer.restart()))
+
             .whileTrue(new OuttakeCoralCommand())
+            
             .onFalse(Commands.sequence(
                 new MoveElevatorCommand(Double.NaN, false, false),
-                Commands.waitSeconds(0.5),
+                Commands.waitUntil(() -> timer.hasElapsed(1)),
                 new MoveElevatorCommand(ScoringConstants.IDLE_HEIGHT, false, false)
+                    // Only move elevator down if we aren't intaking
+                    .onlyIf(() -> ElevatorSubsystem.getInstance().getLastSetGoal() != ScoringConstants.INTAKING_HEIGHT),
+                CommandGenerators.DisableAlgaeCommand()
             ));
 
         this.operatorController.rightStick().onTrue(new AdjustCoralCommand());

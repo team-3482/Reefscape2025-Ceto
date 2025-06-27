@@ -165,19 +165,10 @@ public class CoralSubsystem extends SubsystemBase {
     /**
      * Checks if the back laser sees the coral
      * @return Whether it sees the coral
+     * @apiNote The elevator breaks this laser at certain heights,
+     * so don't use this method without checking the elevator height first.
      */
     public boolean hasCoral_backLaser() {
         return !this.backLaser.get();
-    }
-
-    /**
-     * Returns a boolean value of whether there is a coral in the outtake
-     * @return whether it has coral
-     * @deprecated The back laser can be broken by the elevator, thus it is a poor indicator of having coral.
-     * Use {@link CoralSubsystem#hasCoral_frontLaser()} only instead.
-     */
-    @Deprecated(since = "28 March 2025", forRemoval = true)
-    public boolean hasCoral() {
-        return hasCoral_backLaser() || hasCoral_frontLaser();
     }
 }

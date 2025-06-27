@@ -285,8 +285,8 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
      * @param pose - The pose to find the distance to.
      * @return The distance.
      */
-    public Distance robotDistanceToLocation(Pose2d pose) {
-        return robotDistanceToLocation(pose.getTranslation());
+    public Distance getDistance(Pose2d pose) {
+        return getDistance(pose.getTranslation());
     }
 
     /**
@@ -294,7 +294,7 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
      * @param translation - The translation to find the distance to.
      * @return The distance.
      */
-    public Distance robotDistanceToLocation(Translation2d translation) {
+    public Distance getDistance(Translation2d translation) {
         double distance = getState().Pose.getTranslation().getDistance(translation);
         return Meters.of(distance);
     }

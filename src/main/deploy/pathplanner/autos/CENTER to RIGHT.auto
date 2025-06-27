@@ -5,15 +5,21 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 7.0
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Start Middle To H (L2A)"
+            "pathName": "Start Middle To G (L2A)"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PIDAlignRightReef"
+            "name": "PIDAlignLeftReef"
           }
         },
         {
@@ -29,15 +35,9 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 7.0
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "End GH Left"
+            "pathName": "End GH Right"
           }
         }
       ]

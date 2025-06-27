@@ -49,7 +49,7 @@ public class OuttakeCoralCommand extends Command {
     public void end(boolean interrupted) {
         CoralSubsystem.getInstance().stop();
         this.timer.stop();
-        LEDSubsystem.getInstance().setColor(StatusColors.OK);
+        LEDSubsystem.getInstance().setColor(interrupted ? StatusColors.ERROR : StatusColors.OK);
     }
 
     // Returns true when the command should end.

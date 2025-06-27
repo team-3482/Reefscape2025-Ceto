@@ -8,7 +8,6 @@ package frc.robot.auto;
 
 import static edu.wpi.first.units.Units.Meters;
 
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -16,12 +15,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.AprilTagMap;
 import frc.robot.constants.LimelightConstants;
+import frc.robot.constants.Constants.AligningConstants;
 import frc.robot.constants.Constants.TagSets;
 import frc.robot.led.LEDSubsystem;
 import frc.robot.led.StatusColors;
@@ -33,10 +32,13 @@ import frc.robot.vision.VisionSubsystem;
  */
 public class PIDAlignReefCommand extends Command {
     private final static ChassisSpeeds ZERO_SPEEDS = new ChassisSpeeds();
-    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds(); 
+    private final double[] ZERO_ARRAY = new double[] { 0, 0, 0 };
     
     private final int direction;
     private final boolean flipTags;
+    private final boolean coralFirst;
+    private final boolean waitForLimelights;
     
     private Pose2d targetPose;
     private int targetID;
@@ -48,7 +50,7 @@ public class PIDAlignReefCommand extends Command {
     private final PIDController thetaController = new PIDController(4.3, 0, 0);
 
     private final double kF_linear = 0.065;
-    private final double kF_angular = 0.16; // Math.PI / 15 = 0.2094
+    private final double kF_angular = 0.16;
 
     private final Timer timer;
 
@@ -56,12 +58,16 @@ public class PIDAlignReefCommand extends Command {
      * Creates a new PIDAlignCommand.
      * @param direction - The direction to align, robot-relative when facing the tag (-1, 0, 1).
      * @param flipTags - Whether to flip the tags on the opposite side of the driver to be driver-relative.
+     * @param coralFirst - Whether to align further away considering for a coral.
+     * @param waitForLimelights - Wait for data to be up-to-date.
      */
-    public PIDAlignReefCommand(int direction, boolean flipTags) {
+    public PIDAlignReefCommand(int direction, boolean flipTags, boolean coralFirst, boolean waitForLimelights) {
         setName("PIDAlignReefCommand");
 
         this.direction = (int) Math.signum(direction);
         this.flipTags = flipTags;
+        this.coralFirst = coralFirst;
+        this.waitForLimelights = waitForLimelights;
         this.timer = new Timer();
 
         this.xController.setTolerance(0.005);
@@ -82,8 +88,6 @@ public class PIDAlignReefCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        waitForLimelights();
-
         this.targetID = VisionSubsystem.getInstance().getPrimaryTagInView();
         this.targetPose = AprilTagMap.calculateReefAlignedPosition(
             this.targetID,
@@ -91,7 +95,7 @@ public class PIDAlignReefCommand extends Command {
         );
 
         if (
-            SwerveSubsystem.getInstance().robotDistanceToLocation(this.targetPose.getTranslation())
+            SwerveSubsystem.getInstance().getDistance(this.targetPose.getTranslation())
             .in(Meters) >= LimelightConstants.REEF_ALIGN_RANGE
         ) {
             this.targetPose = Pose2d.kZero;
@@ -118,14 +122,15 @@ public class PIDAlignReefCommand extends Command {
         // To go from 0 to +x, you need a positive speed. If the setpoint is zero, you are doing +x to 0.
         double xSpeed = -this.xController.calculate(this.changePose2d.getX());
         if (this.xController.atSetpoint()) {
-            xSpeed = 0;
+            // Do this because around the tolerance PID is not zero,
+            // and combined with the friction speed this could mess up other directions.
+            xSpeed = 0; 
         }
 
         double ySpeed = -this.yController.calculate(this.changePose2d.getY());
         if (this.yController.atSetpoint()) {
             ySpeed = 0;
         }
-
         
         double thetaSpeed = -this.thetaController.calculate(this.changePose2d.getRotation().getRadians());
         if (this.thetaController.atSetpoint()) {
@@ -153,7 +158,9 @@ public class PIDAlignReefCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         SwerveSubsystem.getInstance().setControl(this.drive.withSpeeds(PIDAlignReefCommand.ZERO_SPEEDS));
-        SmartDashboard.putNumberArray("Aligning Target Pose", VisionSubsystem.pose2dToArray(Pose2d.kZero));
+        SmartDashboard.putNumberArray("Aligning Target Pose", this.ZERO_ARRAY);
+        SmartDashboard.putNumberArray("Aligning Change Needed", this.ZERO_ARRAY);
+        SmartDashboard.putNumberArray("Aligning Speeds", this.ZERO_ARRAY);
 
         // The latter doesn't interrupt the Command even though it's an early end
         if (interrupted || this.targetPose == Pose2d.kZero) {
@@ -174,10 +181,15 @@ public class PIDAlignReefCommand extends Command {
                 this.changePose2d != null
                 && this.xController.atSetpoint()
                 && this.yController.atSetpoint()
-                && Math.abs(this.thetaController.getError()) <= 3
+                && Math.abs(this.thetaController.getError()) <= Units.degreesToRadians(5)
             );
     }
 
+    /**
+     * The distances needed to drive to get to the target pose.
+     * Essentially just the values to use with the PIDControllers.
+     * @return The change pose.
+     */
     private Pose2d calculateChangeRobotRelative() {
         Pose2d robotPose = SwerveSubsystem.getInstance().getState().Pose;
         double robotCos = robotPose.getRotation().getCos();
@@ -190,28 +202,12 @@ public class PIDAlignReefCommand extends Command {
             new Translation2d(
                 xChange * robotCos + yChange * robotSin,
                 -xChange * robotSin + yChange * robotCos
+            ).minus(
+                this.coralFirst
+                    ? new Translation2d(AligningConstants.Reef.CORAL_DISTANCE, 0)
+                    : Translation2d.kZero
             ),
             this.targetPose.getRotation().minus(robotPose.getRotation())
         );
-    }
-
-    /** 
-     * I hate limelights and everything that they stand for.
-     * Going band for band with Chromebooks for slowest processing imaginable.
-     */
-    private void waitForLimelights() {
-        VisionSubsystem.getInstance().waitingForLimelights = true;
-
-        double startTime = Utils.getSystemTimeSeconds();
-        while (
-            SwerveSubsystem.getInstance().robotDistanceToLocation(
-                VisionSubsystem.getInstance().getPose2d().pose2d.getTranslation()
-            ).in(Meters) > 0.03
-        ) {
-            if (DriverStation.isTeleop() && Utils.getSystemTimeSeconds() - startTime > 0.5) break;
-        }
-        System.out.println("Wasted " + (Utils.getSystemTimeSeconds() - startTime) + " seconds waiting for Limelights");
-
-        VisionSubsystem.getInstance().waitingForLimelights = false;
     }
 }

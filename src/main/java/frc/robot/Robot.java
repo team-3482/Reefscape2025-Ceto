@@ -13,13 +13,13 @@ import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.*;
 import frc.robot.constants.Constants;
 import frc.robot.utilities.Elastic;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.net.PortForwarder;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,7 +28,7 @@ import frc.robot.led.StatusColors;
 
 public class Robot extends LoggedRobot {
     private Command auton;
-    private final PowerDistribution pdh;
+    // private final PowerDistribution pdh;
 
     @SuppressWarnings("unused")
     public Robot() {
@@ -39,7 +39,7 @@ public class Robot extends LoggedRobot {
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
-        this.pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+        // this.pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
         RobotContainer robotContainer = RobotContainer.getInstance();
         robotContainer.configureDriverBindings();
@@ -66,6 +66,7 @@ public class Robot extends LoggedRobot {
         }
 
         FollowPathCommand.warmupCommand().schedule();
+        // Eager-load the auton command
         RobotContainer.getInstance().getAutonomousCommand();
         
         // Solid orange like the RSL when disabled
@@ -77,16 +78,19 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-        try {
-            // TODO : Needs to be tested further to make sure it works properly
-            SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());
-        }
-        catch (Exception error) {
-            // Happens when the PDH isn't connected to the RIO.
-            // Don't want to spam console during matches.
-        }
+        // try {
+        //     // TODO : Currently broken, the CAN is disconnected
+        //     SmartDashboard.putNumber("Total Current", this.pdh.getTotalCurrent());
+        // }
+        // catch (Exception error) {
+        //     // Happens when the PDH isn't connected to the RIO.
+        //     // Don't want to spam console during matches.
+        //     error.printStackTrace();
+        // }
 
-        SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+        double voltage = RobotController.getBatteryVoltage();
+        SmartDashboard.putNumber("Voltage", voltage);
+        Logger.recordOutput("Voltage", voltage);
     }
 
     @Override
@@ -139,19 +143,7 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {
-        // if (
-        //     DriverStation.isFMSAttached() && DriverStation.getMatchTime() <= 1 &&
-        //     TagSets.REEF_TAGS.contains(VisionSubsystem.getInstance().getPrimaryTagInView_Bottom_MegaTag())
-        // ) {
-        //     CommandScheduler.getInstance().schedule(Commands.run(() -> {}, SwerveSubsystem.getInstance()));
-        //     SwerveSubsystem.getInstance().setControl(
-        //         new SwerveRequest.ApplyRobotSpeeds().withSpeeds(
-        //             new ChassisSpeeds(-2, 0, 0)
-        //         )
-        //     );
-        // }
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void teleopExit() {}

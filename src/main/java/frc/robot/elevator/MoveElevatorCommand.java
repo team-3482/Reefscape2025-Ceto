@@ -51,11 +51,9 @@ public class MoveElevatorCommand extends Command {
         );
     }
 
-
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {}
-
 
     // Called once the command ends or is interrupted.
     @Override
@@ -67,10 +65,13 @@ public class MoveElevatorCommand extends Command {
         }
     }
 
-
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return !this.returnToIdle && (Double.isNaN(this.position) || ElevatorSubsystem.getInstance().withinTolerance(this.position));
+        return !this.returnToIdle
+            && (
+                Double.isNaN(this.position)
+                || ElevatorSubsystem.getInstance().withinTolerance(this.position)
+            );
     }
 }

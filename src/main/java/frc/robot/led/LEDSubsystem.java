@@ -120,6 +120,8 @@ public class LEDSubsystem extends SubsystemBase {
         SmartDashboard.putString(
             "LED",
             newColor.equals(StatusColors.RSL)
+            // Do this because to display orange on the LEDs we have to use dark red,
+            // but it looks like orange and thus it should be an actual orange on the dashboard.
                 ? Color.kDarkOrange.toHexString()
                 : hexString
         );

@@ -97,13 +97,13 @@ public class VisionData {
 
     public double calculatePositionDeviation() {
         if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
-            return 0.3;
+            return 0.6;
         }
         else if (this.MegaTag2.avgTagDist <= 3 || DriverStation.isDisabled()) {
-            return 1;
+            return 1.2;
         }
-        else if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE) {
-            return 2;
+        else if (this.MegaTag2.avgTagDist <= LimelightConstants.TRUST_RANGE) {
+            return 1.8;
         }
         else {
             return 9999999;
@@ -111,8 +111,10 @@ public class VisionData {
     }
 
     public double calculateRotationDeviation() {
-        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE || DriverStation.isDisabled()) {
-            return Units.degreesToRadians(25);
+        if (this.MegaTag2.avgTagDist <= LimelightConstants.REEF_TRUST_RANGE
+            || DriverStation.isDisabled()
+        ) {
+            return Units.degreesToRadians(35);
         }
         else {
             return 9999999;
