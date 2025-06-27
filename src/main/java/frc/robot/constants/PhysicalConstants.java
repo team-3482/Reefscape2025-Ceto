@@ -4,6 +4,12 @@
 
 package frc.robot.constants;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -40,7 +46,7 @@ public final class PhysicalConstants {
         public static final int STAGE_TWO_UPPER_LASER_ID = 1;
         public static final int STAGE_THREE_UPPER_LASER_ID = 2;
 
-        /** 
+        /**
          * The dimater of the bar that the string wraps around on the elevator
          * @implSpec This is in meters and is very important to calculate the position of the elevator
          */
@@ -92,7 +98,20 @@ public final class PhysicalConstants {
 
         public static final double NORMAL_VOLTAGE = 2;
         public static final double SLOW_VOLTAGE = 0.75;
-        
+
         public static final double MECHANISM_RATIO = 1;
+    }
+
+    public static final class QuestNavConstants {
+        // TODO once quest is mounted
+        // https://questnav.gg/docs/getting-started/robot-code#getting-robot-pose
+        public static final Transform2d QUEST_OFFSET = new Transform2d(0, 0, new Rotation2d(0));
+
+        public static final Matrix<N3, N1> TRUST_STD_DEVS =
+            VecBuilder.fill(
+                0.02, // Trust down to 2cm in X direction
+                0.02, // Trust down to 2cm in Y direction
+                0.035 // Trust down to 2 degrees rotational
+            );
     }
 }
