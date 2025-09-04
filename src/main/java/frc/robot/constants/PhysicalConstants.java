@@ -79,6 +79,9 @@ public final class PhysicalConstants {
             public static final double kI = 0;
             public static final double kD = 0;
         }
+
+        /* Enable IR endstops, you may need to disable this when running outside in the bright sun */
+        public static final boolean USE_ENDSTOPS = true;
     }
 
     public static final class AlgaeConstants {

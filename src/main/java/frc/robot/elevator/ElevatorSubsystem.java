@@ -69,7 +69,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         this.leftMotor.setControl(this.FOLLOW_RIGHT);
 
-        if (atLowerLimit()) {
+        if (atLowerLimit() || !ElevatorConstants.USE_ENDSTOPS) {
             // If starting at the bottom (beginning of a match, etc.) reset the position
             // We do not do this every time because sometimes we deploy code while the elevator
             // is being worked on by mech, etc. and in that case the position is correct
@@ -82,6 +82,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Elevator/Sensor/Bottom", false);
         SmartDashboard.putBoolean("Elevator/Sensor/StageTwo", false);
         SmartDashboard.putBoolean("Elevator/Sensor/StageThree", false);
+
+        if(!ElevatorConstants.USE_ENDSTOPS) { System.out.println("!!! Ignoring elevator endstops !!!"); }
     }
 
     @Override
@@ -328,7 +330,11 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return Whether the second stage is at its highest point.
      */
     private boolean atUpperLimit_StageTwo() {
-        return this.stageTwoUpperLimitSwitch.get();
+        if (ElevatorConstants.USE_ENDSTOPS) {
+            return this.stageTwoUpperLimitSwitch.get();
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -336,12 +342,16 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return Whether the third stage is at its highest point.
      */
     private boolean atUpperLimit_StageThree() {
-        return this.stageThreeUpperLimitSwitch.get();
+        if (ElevatorConstants.USE_ENDSTOPS) {
+            return this.stageThreeUpperLimitSwitch.get();
+        } else {
+            return false;
+        }
     }
 
     /**
      * Checks if the current elevator position is at the top sensors
-     * @return Whether the current position is at the top  sensor
+     * @return Whether the current position is at the top sensor
      */
     public boolean atUpperLimit() {
         return atUpperLimit_StageTwo() && atUpperLimit_StageThree();
@@ -352,7 +362,11 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @return Whether the current position is at the bottom sensor
      */
     public boolean atLowerLimit() {
-        return this.lowerLimitSwitch.get();
+        if (ElevatorConstants.USE_ENDSTOPS) {
+            return this.lowerLimitSwitch.get();
+        } else {
+            return false;
+        }
     }
 
     /**
