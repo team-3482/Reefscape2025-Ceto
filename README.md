@@ -18,6 +18,8 @@
 
 This code is for team 3482's on-season robot, Ceto.
 
+<img width="350" height="350" alt="ceto" src="https://github.com/user-attachments/assets/98503e05-2517-48c2-9c60-b16aa41e0cf8" />
+
 <hr>
 
 ## Capabilities - Scouts, look here!
